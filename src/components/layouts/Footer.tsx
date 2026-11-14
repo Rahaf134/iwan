@@ -18,7 +18,6 @@ const columns = [
       { label: 'مصمم الذكاء الاصطناعي', to: '/designer' },
       { label: 'المصممون والنجارون', to: '/designers' },
       { label: 'شركاء النجاح', to: '/partners' },
-      { label: 'سحابة Supabase المباشرة', to: '/supabase-live' },
     ],
   },
   {
