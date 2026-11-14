@@ -23,8 +23,8 @@ import { cn } from '@/lib/utils';
 const trackerSteps = [
   { step: 1, label: 'تم تأكيد الطلب', desc: 'سُجل الطلب في المنصة' },
   { step: 2, label: 'قيد التجهيز بالمعرض', desc: 'تجهيز ومراجعة القطع' },
-  { step: 3, label: 'خرج للتوصيل', desc: 'في الطريق لموقعك بالمكلا' },
-  { step: 4, label: 'تم التسليم (مكتمل)', desc: 'المعاينة والاستلام' },
+  { step: 3, label: 'خرج للتوصيل', desc: 'طلبك في الطريق إليك مع مندوب التوصيل' },
+  { step: 4, label: 'تم التسليم', desc: 'المعاينة والاستلام' },
 ];
 
 // دالة توليد كود رسمي أنيق ومختصر مثل #EW-8492
@@ -69,12 +69,52 @@ export const MyOrdersPage = () => {
       }
     }
 
+    const storedStatuses: Record<string, string> = (() => {
+      try {
+        const raw = localStorage.getItem('ewan_order_statuses');
+        return raw ? JSON.parse(raw) : {};
+      } catch {
+        return {};
+      }
+    })();
+
+    // منع تكرار الطلبات واستخراج الحالة الدائمة
+    const seenIds = new Set<string>();
+    const seenFps = new Set<string>();
+    const deduplicatedSources: any[] = [];
+
+    for (const r of allSources) {
+      const idKey = r.dbId || r.id;
+      const details = parseOrderDetails(r.details, r.phone, r.name);
+      const client = (details.customerName || r.name || '').trim().toLowerCase();
+      const prod = (details.productName || '').trim().toLowerCase();
+      const price = details.price || 0;
+      const fp = `${client}|${prod}|${price}`;
+
+      if (idKey && seenIds.has(idKey)) continue;
+      if (seenFps.has(fp)) continue;
+
+      if (idKey) seenIds.add(idKey);
+      seenFps.add(fp);
+
+      const persistentStatus =
+        (r.dbId && storedStatuses[r.dbId]) ||
+        (r.id && storedStatuses[r.id]) ||
+        r.status ||
+        'new';
+
+      deduplicatedSources.push({
+        ...r,
+        status: persistentStatus,
+      });
+    }
+
     const userEmail = (profile.email || '').trim().toLowerCase();
     const userId = profile.id;
     const userPhoneClean = (profile.phone || '').replace(/\D/g, '');
     const userName = (profile.fullName || '').trim().toLowerCase();
 
-    return allSources.filter((r) => {
+    return deduplicatedSources.filter((r) => {
       const details = parseOrderDetails(r.details, r.phone, r.name);
 
       // 1. مطابقة البريد الإلكتروني للعميل
@@ -113,12 +153,16 @@ export const MyOrdersPage = () => {
   const getStepIndex = (status: string): number => {
     switch (status) {
       case 'new':
+      case 'confirmed':
         return 1;
+      case 'processing':
       case 'contacted':
         return 2;
-      case 'processing':
+      case 'shipping':
+      case 'in_progress':
         return 3;
       case 'done':
+      case 'delivered':
         return 4;
       default:
         return 1;
@@ -236,11 +280,17 @@ export const MyOrdersPage = () => {
                           className={cn(
                             'rounded-full px-3.5 py-1 text-xs font-semibold border',
                             isDelivered
-                              ? 'bg-[#EFE7DA] text-[#9C6644] border-[#E2D5C3]'
+                              ? 'bg-[#EFE7DA] text-[#231F1E] border-[#D8CBB8]'
+                              : currentStep === 3
+                              ? 'bg-[#F3EDE2] text-[#9C6644] border-[#DED4C6]'
                               : 'bg-[#FAF7F2] text-[#786C65] border-[#E5DEC9]',
                           )}
                         >
-                          {isDelivered ? 'تم التسليم بنجاح' : trackerSteps[currentStep - 1]?.label || 'قيد المتابعة'}
+                          {isDelivered
+                            ? 'تم التسليم بنجاح'
+                            : currentStep === 3
+                            ? 'طلبك في الطريق إليك مع مندوب التوصيل'
+                            : trackerSteps[currentStep - 1]?.label || 'قيد المتابعة'}
                         </span>
                       </div>
                     </div>
@@ -291,10 +341,12 @@ export const MyOrdersPage = () => {
                         <div className="flex items-center justify-between mb-4">
                           <p className="text-xs font-bold text-[#231F1E] flex items-center gap-1.5">
                             <Truck className="h-4 w-4 text-[#9C6644]" />
-                            مراحل سير الطلب والتوصيل:
+                            {currentStep === 3
+                              ? 'طلبك في الطريق إليك مع مندوب التوصيل:'
+                              : 'مراحل سير الطلب والتوصيل:'}
                           </p>
                           <span className="text-[11px] text-[#9C6644] font-medium">
-                            الموعد التقديري: خلال 24 - 48 ساعة
+                            {currentStep === 3 ? 'جاري التوصيل الآن بالمكلا' : 'الموعد التقديري: خلال 24 - 48 ساعة'}
                           </span>
                         </div>
 

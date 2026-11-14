@@ -12,13 +12,14 @@ import { useAuth } from '@/contexts/AuthContext';
 import type { RequestRecordFull } from '@/lib/catalogApi';
 import { formatPrice } from '@/data/catalog';
 import { parseOrderDetails } from '@/lib/order';
+import { cn } from '@/lib/utils';
 
-const statusLabels: Record<RequestRecordFull['status'], string> = {
-  new: 'تم تأكيد الطلب',
-  contacted: 'قيد التجهيز بالمعرض',
-  processing: 'خرج للتوصيل',
-  done: 'تم التسليم',
-};
+const adminSelectableStatuses = [
+  { value: 'new', label: 'تم تأكيد الطلب' },
+  { value: 'processing', label: 'قيد التجهيز بالمعرض' },
+  { value: 'shipping', label: 'خرج للتوصيل' },
+  { value: 'done', label: 'تم التسليم' },
+];
 
 export const RequestManager = () => {
   const { requests, setRequestStatus, removeRequest } = useCatalog();
@@ -103,11 +104,11 @@ export const RequestManager = () => {
                     </td>
 
                     {/* 3. القطعة والكمية */}
-                    <td className="px-3.5 py-3">
-                      <p className="font-semibold text-[#231F1E] line-clamp-1">
+                    <td className="px-3.5 py-3 max-w-[220px]">
+                      <p className="font-semibold text-[#231F1E] line-clamp-2 leading-relaxed">
                         {order.productName || 'طلب أثاث'}
                       </p>
-                      <span className="text-[11px] text-[#786C65]">
+                      <span className="text-[11px] text-[#786C65] block mt-0.5">
                         × {order.quantity || 1} قطعة
                       </span>
                     </td>
@@ -132,25 +133,48 @@ export const RequestManager = () => {
                       {new Date(order.date || request.createdAt || Date.now()).toLocaleDateString('ar-YE')}
                     </td>
 
-                    {/* 7. الحالة */}
+                    {/* 7. الحالة بتصميم Casa الدافئ */}
                     <td className="px-3.5 py-3 whitespace-nowrap">
-                      <Select
-                        value={request.status}
-                        onValueChange={(value) =>
-                          void setRequestStatus(request.dbId, value as RequestRecordFull['status'])
-                        }
-                      >
-                        <SelectTrigger className="h-8 w-32 rounded-full border-[#DED4C6] bg-[#FAF7F2] text-[11px] font-bold text-[#231F1E]">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent className="rounded-2xl border-[#E5DEC9] bg-[#FAF7F2]">
-                          {Object.entries(statusLabels).map(([value, label]) => (
-                            <SelectItem key={value} value={value} className="text-xs">
-                              {label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      {(() => {
+                        const normalizedStatus =
+                          request.status === 'contacted' ? 'processing' :
+                          request.status === 'in_progress' ? 'shipping' :
+                          request.status === 'confirmed' ? 'new' :
+                          request.status === 'delivered' ? 'done' :
+                          request.status || 'new';
+
+                        return (
+                          <Select
+                            value={normalizedStatus}
+                            onValueChange={(value) =>
+                              void setRequestStatus(request.dbId, value as RequestRecordFull['status'])
+                            }
+                          >
+                            <SelectTrigger
+                              className={cn(
+                                'h-7.5 w-auto min-w-[130px] rounded-full px-2.5 text-[11px] font-bold border transition-colors cursor-pointer',
+                                normalizedStatus === 'done' &&
+                                  'bg-[#EFE7DA] text-[#231F1E] border-[#D8CBB8] hover:bg-[#E5DCCB]',
+                                normalizedStatus === 'shipping' &&
+                                  'bg-[#F3EDE2] text-[#9C6644] border-[#DED4C6] hover:bg-[#EAE0D1]',
+                                normalizedStatus === 'processing' &&
+                                  'bg-[#FAF7F2] text-[#9C6644] border-[#E5DEC9] hover:bg-[#F3EDE2]',
+                                normalizedStatus === 'new' &&
+                                  'bg-[#FAF7F2] text-[#231F1E] border-[#DED4C6] hover:bg-[#F3EDE2]',
+                              )}
+                            >
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="rounded-2xl border-[#E5DEC9] bg-[#FAF7F2] p-1 shadow-md">
+                              {adminSelectableStatuses.map((item) => (
+                                <SelectItem key={item.value} value={item.value} className="text-xs font-semibold cursor-pointer">
+                                  {item.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        );
+                      })()}
                     </td>
 
                     {/* 8. حذف */}

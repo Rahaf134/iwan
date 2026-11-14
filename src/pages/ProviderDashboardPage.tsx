@@ -37,7 +37,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useCatalog } from '@/contexts/CatalogContext';
 import { useChat, type ChatMessage } from '@/contexts/ChatContext';
 import { categories, formatPrice } from '@/data/catalog';
-import { parseOrderDetails, waLink } from '@/lib/order';
+import { parseOrderDetails } from '@/lib/order';
 import { slugify, toValidStoreUuid, type ProductInput, type ProductRecord, type RequestRecordFull } from '@/lib/catalogApi';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -711,16 +711,9 @@ export const ProviderDashboardPage = () => {
                               </span>
                               <span className="font-bold text-sm text-[#231F1E]">{req.name}</span>
                             </div>
-                            <div className="mt-1 flex items-center gap-3 text-xs text-[#786C65]">
-                              <span dir="ltr" className="font-mono">{req.phone}</span>
-                              <a
-                                href={waLink(req.phone, `مرحباً ${req.name}، بخصوص طلبك في ${providerEntityName}`)}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="text-[#9C6644] hover:underline font-bold"
-                              >
-                                واتساب
-                              </a>
+                            <div className="mt-1 flex items-center gap-2 text-xs text-[#786C65]">
+                              <span className="text-[11px] text-[#786C65]">رقم الجوال:</span>
+                              <span dir="ltr" className="font-mono text-[#5C534E] font-medium">{req.phone || order.phone || '—'}</span>
                             </div>
                           </div>
 
@@ -728,7 +721,13 @@ export const ProviderDashboardPage = () => {
                           <div className="flex items-center gap-2">
                             <span className="text-[11px] font-bold text-[#786C65]">المرحلة:</span>
                             <Select
-                              value={req.status}
+                              value={
+                                req.status === 'contacted' ? 'processing' :
+                                req.status === 'in_progress' ? 'shipping' :
+                                req.status === 'confirmed' ? 'new' :
+                                req.status === 'delivered' ? 'done' :
+                                req.status || 'new'
+                              }
                               onValueChange={(val) =>
                                 void handleUpdateOrderStatus(req.dbId, val as RequestRecordFull['status'])
                               }
@@ -740,13 +739,13 @@ export const ProviderDashboardPage = () => {
                                 <SelectItem value="new" className="text-xs font-bold text-[#231F1E]">
                                   تم تأكيد الطلب
                                 </SelectItem>
-                                <SelectItem value="contacted" className="text-xs font-bold text-[#9C6644]">
+                                <SelectItem value="processing" className="text-xs font-bold text-[#9C6644]">
                                   قيد التجهيز بالمعرض
                                 </SelectItem>
-                                <SelectItem value="processing" className="text-xs font-bold text-blue-800">
+                                <SelectItem value="shipping" className="text-xs font-bold text-[#9C6644]">
                                   خرج للتوصيل
                                 </SelectItem>
-                                <SelectItem value="done" className="text-xs font-bold text-emerald-800">
+                                <SelectItem value="done" className="text-xs font-bold text-[#231F1E]">
                                   تم التسليم
                                 </SelectItem>
                               </SelectContent>

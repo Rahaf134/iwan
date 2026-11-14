@@ -191,9 +191,6 @@ export const DesignerManager = () => {
                               'bg-[#F4E8E3] text-[#8C4A32] border-[#E2C9BE] hover:bg-[#EEDCD3]',
                           )}
                         >
-                          {status === 'approved' && <Check className="h-3.5 w-3.5 text-[#9C6644] shrink-0" />}
-                          {status === 'pending' && <Clock className="h-3.5 w-3.5 text-[#7A6F68] shrink-0" />}
-                          {status === 'rejected' && <X className="h-3.5 w-3.5 text-[#8C4A32] shrink-0" />}
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent className="rounded-2xl border-[#E5DEC9] bg-[#FAF7F2] p-1 shadow-lg">
