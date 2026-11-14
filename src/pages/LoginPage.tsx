@@ -1,15 +1,15 @@
 import { useState } from 'react';
-import { ArrowLeft, Lock, Mail, Sparkles, UserCheck } from 'lucide-react';
+import { ArrowLeft, Lock, Mail } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import PageMeta from '@/components/common/PageMeta';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useAuth, DEMO_ACCOUNTS, type DemoAccount } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { heroImage } from '@/data/catalog';
 
 const LoginPage = () => {
-  const { signIn, quickLogin } = useAuth();
+  const { signIn } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -29,17 +29,6 @@ const LoginPage = () => {
     if (result.admin) {
       navigate('/admin', { replace: true });
     } else if (result.provider) {
-      navigate('/provider', { replace: true });
-    } else {
-      navigate('/', { replace: true });
-    }
-  };
-
-  const handleQuickDemo = (account: DemoAccount) => {
-    quickLogin(account);
-    if (account.role === 'admin') {
-      navigate('/admin', { replace: true });
-    } else if (account.role === 'merchant' || account.role === 'designer') {
       navigate('/provider', { replace: true });
     } else {
       navigate('/', { replace: true });
@@ -114,44 +103,6 @@ const LoginPage = () => {
               {loading ? 'جارٍ الدخول…' : 'تسجيل الدخول'}
             </Button>
           </form>
-
-          {/* بطاقة الدخول السريع للتجربة والمناقشة */}
-          <div className="mt-8 rounded-2xl border border-[#E5DEC9] bg-[#FAF7F2] p-5 shadow-xs">
-            <div className="flex items-center gap-2 mb-3 text-[#9C6644]">
-              <Sparkles className="h-4 w-4" />
-              <h3 className="text-xs font-bold uppercase tracking-wider">
-                دخول سريع للتجربة والمناقشة (Demo Quick Login)
-              </h3>
-            </div>
-            <p className="text-xs text-muted-foreground mb-4">
-              اختر أي حساب لتجربة المنصة فوراً (بصلاحيات مديرة المنصة أو بوابة المزودين):
-            </p>
-            <div className="space-y-2">
-              {DEMO_ACCOUNTS.map((acc) => (
-                <button
-                  key={acc.id}
-                  type="button"
-                  onClick={() => handleQuickDemo(acc)}
-                  className="w-full flex items-center justify-between gap-2 p-2.5 rounded-xl border border-[#E2D9C8] bg-white hover:border-[#9C6644] hover:bg-[#FAF7F2] transition-all text-right group"
-                >
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-bold text-[#231F1E] group-hover:text-[#9C6644]">
-                        {acc.name}
-                      </span>
-                      <span className="text-[10px] rounded-full bg-[#EFE7DA] text-[#9C6644] px-2 py-0.5 font-medium">
-                        {acc.badge}
-                      </span>
-                    </div>
-                    <p className="text-[11px] text-muted-foreground mt-0.5" dir="ltr">
-                      {acc.email} · {acc.password}
-                    </p>
-                  </div>
-                  <UserCheck className="h-4 w-4 text-[#C9B9A6] group-hover:text-[#9C6644] shrink-0" />
-                </button>
-              ))}
-            </div>
-          </div>
 
           <p className="mt-6 text-sm text-muted-foreground">
             ليس لديك حساب؟{' '}

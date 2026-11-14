@@ -20,6 +20,7 @@ import StoresPage from './pages/StoresPage';
 import WishlistPage from './pages/WishlistPage';
 import MyOrdersPage from './pages/MyOrdersPage';
 import ProviderDashboardPage from './pages/ProviderDashboardPage';
+import SupabaseLivePage from './pages/SupabaseLivePage';
 
 export interface RouteConfig {
   name: string;
@@ -51,6 +52,7 @@ export const routes: RouteConfig[] = [
   { name: 'لوحة تحكم المزود', path: '/provider', element: <ProviderGuard><ProviderDashboardPage /></ProviderGuard>, public: true },
   { name: 'لوحة التحكم', path: '/admin', element: <AdminGuard><AdminPage /></AdminGuard>, public: true },
   { name: 'لوحة التحكم', path: '/dashboard', element: <AdminGuard><AdminPage /></AdminGuard>, public: true },
+  { name: 'قاعدة بيانات Supabase المباشرة', path: '/supabase-live', element: <SupabaseLivePage />, public: true },
   // مسارات عربية بديلة (Aliases) — تعمل بنفس الصفحات
   { name: 'الرئيسية', path: '/الرئيسية', element: <HomePage />, public: true },
   { name: 'المتجر', path: '/المتجر', element: <ShopPage />, public: true },
@@ -67,4 +69,5 @@ export const routes: RouteConfig[] = [
   { name: 'إنشاء حساب', path: '/إنشاء-حساب', element: <RegisterPage />, public: true },
   { name: 'بوابة المزود', path: '/بوابة-المزود', element: <ProviderGuard><ProviderDashboardPage /></ProviderGuard>, public: true },
   { name: 'لوحة التحكم', path: '/لوحة-التحكم', element: <AdminGuard><AdminPage /></AdminGuard>, public: true },
+  { name: 'السحابة المباشرة', path: '/السحابة-المباشرة', element: <SupabaseLivePage />, public: true },
 ];

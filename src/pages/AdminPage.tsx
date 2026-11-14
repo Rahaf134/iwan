@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import {
+  Database,
   Hammer,
   HelpCircle,
   Inbox,
@@ -89,6 +90,12 @@ const AdminPage = () => {
                   {profile?.specialty || 'مزود معتمد'}
                 </span>
               )}
+              <Button asChild variant="outline" className="h-10 rounded-full border-[#DED4C6] bg-[#FAF7F2] text-[#9C6644] hover:bg-[#F3EDE2] px-4">
+                <Link to="/supabase-live">
+                  <Database className="ml-2 h-4 w-4 text-[#9C6644]" strokeWidth={1.6} />
+                  السحابة الحية
+                </Link>
+              </Button>
               <Button asChild variant="outline" className="h-10 rounded-full border-border px-4">
                 <Link to="/">
                   <LayoutDashboard className="ml-2 h-4 w-4" strokeWidth={1.6} />
