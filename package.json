@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "echo 'Do not use this command, only use lint to check'",
+    "build": "vite build",
     "lint": ".rules/lint.sh"
   },
   "dependencies": {
