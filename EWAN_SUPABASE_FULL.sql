@@ -2,7 +2,7 @@
 -- مشروع إيوان — المنصة الرقمية الموحدة لأثاث المكلا والتصميم الداخلي
 -- ملف قاعدة البيانات السحابية الشامل والموحد (EWAN FULL MASTER SQL)
 -- الربط المباشر: Supabase Cloud (xreahhaivntkriiaegra)
--- التاريخ: 2026-11-14T18:00:34.206Z
+-- التاريخ: 2026-11-14T18:19:16.698Z
 -- ==============================================================================
 
 -- 1. تفعيل الامتدادات الضرورية
@@ -430,7 +430,7 @@ ON CONFLICT (slug) DO UPDATE SET
   images = EXCLUDED.images,
   description = EXCLUDED.description;
 INSERT INTO public.products (id, legacy_id, slug, name, category, price, compare_at, rating, reviews, colors, materials, images, badge, featured, available, description, dimensions, care, store_id)
-VALUES ('b33001ed-c25f-43f9-b7b9-3c4ee282db3f', 'p10', 'marble-coffee-tables', 'طقم طاولات قهوة متداخلة سطح رخامي أبيض وقاعدة خشبية', 'ديكور', 135000, NULL, 4.8, 56, '[{"hex":"#EFE7DA","name":"رخام أبيض"},{"hex":"#B98A5A","name":"خشب طبيعي"}]'::jsonb, '["سطح رخام صناعي","قاعدة خشب طبيعي"]'::jsonb, '["https://miaoda-site-img.s3cdn.medo.dev/images/KLing_fbed43ea-cf88-4079-b733-4b2d5c60d4b0.jpg"]'::jsonb, 'الأكثر مبيعاً', FALSE, TRUE, 'طقم طاولات قهوة متداخلة بسطح رخامي أبيض وقاعدة خشبية، يمكن ترتيبها بثلاث طرق مختلفة لتناسب مساحة جلوسك.', '60 / 45 / 35 سم', 'مسح السطح بقطعة رطبة وتجفيفه فوراً.', 'ec65b6cd-afc8-49bf-93ce-0d1f05714848')
+VALUES ('b33001ed-c25f-43f9-b7b9-3c4ee282db3f', 'p10', 'marble-coffee-tables', 'طقم طاولات قهوة متداخلة سطح رخامي أبيض وقاعدة خشبية', 'ديكور', 135000, NULL, 4.8, 56, '[{"hex":"#EFE7DA","name":"رخام أبيض"},{"hex":"#B98A5A","name":"خشب طبيعي"}]'::jsonb, '["سطح رخام صناعي","قاعدة خشب طبيعي"]'::jsonb, '["https://miaoda-site-img.s3cdn.medo.dev/images/KLing_fbed43ea-cf88-4079-b733-4b2d5c60d4b0.jpg"]'::jsonb, 'الأكثر مبيعاً', TRUE, TRUE, 'طقم طاولات قهوة متداخلة بسطح رخامي أبيض وقاعدة خشبية، يمكن ترتيبها بثلاث طرق مختلفة لتناسب مساحة جلوسك.', '60 / 45 / 35 سم', 'مسح السطح بقطعة رطبة وتجفيفه فوراً.', 'ec65b6cd-afc8-49bf-93ce-0d1f05714848')
 ON CONFLICT (slug) DO UPDATE SET
   name = EXCLUDED.name,
   category = EXCLUDED.category,
@@ -486,7 +486,7 @@ ON CONFLICT (slug) DO UPDATE SET
   images = EXCLUDED.images,
   description = EXCLUDED.description;
 INSERT INTO public.products (id, legacy_id, slug, name, category, price, compare_at, rating, reviews, colors, materials, images, badge, featured, available, description, dimensions, care, store_id)
-VALUES ('c1025a1b-2c7f-493f-8fa3-1b2f68bd5253', 'p5', 'boucle-lounge-chair', 'كرسي استرخاء مفرد قماش بوكليه أبيض كريمي', 'طاولات وكراسي', 165000, NULL, 4.7, 63, '[{"hex":"#F2EDE4","name":"أبيض كريمي"},{"hex":"#D9CBB6","name":"بيج رملي"}]'::jsonb, '["قماش بوكليه","هيكل خشب صلب","قاعدة معدنية"]'::jsonb, '["https://miaoda-site-img.s3cdn.medo.dev/images/KLing_e33daea6-202c-4c2e-82e1-f700dd9ebf09.jpg"]'::jsonb, 'جديد', FALSE, TRUE, 'كرسي استرخاء مفرد بقماش بوكليه ناعم، مثالي لزوايا القراءة وغرف الاستقبال، بتصميم انسيابي مريح.', '85 × 80 × 78 سم', 'تنظيف جاف أو بالبخار الخفيف.', '3b3d9526-cd59-436d-802c-d7f1fd352d76')
+VALUES ('c1025a1b-2c7f-493f-8fa3-1b2f68bd5253', 'p5', 'boucle-lounge-chair', 'كرسي استرخاء مفرد قماش بوكليه أبيض كريمي', 'طاولات وكراسي', 165000, NULL, 4.7, 63, '[{"hex":"#F2EDE4","name":"أبيض كريمي"},{"hex":"#D9CBB6","name":"بيج رملي"}]'::jsonb, '["قماش بوكليه","هيكل خشب صلب","قاعدة معدنية"]'::jsonb, '["https://miaoda-site-img.s3cdn.medo.dev/images/KLing_e33daea6-202c-4c2e-82e1-f700dd9ebf09.jpg"]'::jsonb, 'جديد', TRUE, TRUE, 'كرسي استرخاء مفرد بقماش بوكليه ناعم، مثالي لزوايا القراءة وغرف الاستقبال، بتصميم انسيابي مريح.', '85 × 80 × 78 سم', 'تنظيف جاف أو بالبخار الخفيف.', '3b3d9526-cd59-436d-802c-d7f1fd352d76')
 ON CONFLICT (slug) DO UPDATE SET
   name = EXCLUDED.name,
   category = EXCLUDED.category,
@@ -526,7 +526,7 @@ ON CONFLICT (slug) DO UPDATE SET
   images = EXCLUDED.images,
   description = EXCLUDED.description;
 INSERT INTO public.products (id, legacy_id, slug, name, category, price, compare_at, rating, reviews, colors, materials, images, badge, featured, available, description, dimensions, care, store_id)
-VALUES ('756c5a37-d4fd-4d6e-871a-8938b061d134', 'p7', 'hadrami-floor-majlis', 'مجلس عربي أرضي فاخر بتطريز حضرمي عصري', 'كنب ومجالس', 540000, NULL, 4.9, 45, '[{"hex":"#D9CBB6","name":"بيج ذهبي"},{"hex":"#7C7F5B","name":"أخضر زيتي"},{"hex":"#7A3B3B","name":"عنابي"}]'::jsonb, '["قماش مخملي","إسفنج عالي الكثافة","تطريز يدوي"]'::jsonb, '["https://miaoda-site-img.s3cdn.medo.dev/images/KLing_553090e8-f382-4a61-a6b1-3b2342de7487.jpg"]'::jsonb, 'حضرمي أصيل', FALSE, TRUE, 'مجلس أرضي فاخر بتطريز حضرمي عصري، يجمع بين أصالة المجلس الحضرمي وراحة الجلسات الحديثة، مع مساند مبطنة.', 'يُفصّل حسب المساحة', 'تنظيف جاف فقط للحفاظ على التطريز.', 'e7100a86-752b-48d5-8482-13a09c9a9401')
+VALUES ('756c5a37-d4fd-4d6e-871a-8938b061d134', 'p7', 'hadrami-floor-majlis', 'مجلس عربي أرضي فاخر بتطريز حضرمي عصري', 'كنب ومجالس', 540000, NULL, 4.9, 45, '[{"hex":"#D9CBB6","name":"بيج ذهبي"},{"hex":"#7C7F5B","name":"أخضر زيتي"},{"hex":"#7A3B3B","name":"عنابي"}]'::jsonb, '["قماش مخملي","إسفنج عالي الكثافة","تطريز يدوي"]'::jsonb, '["https://miaoda-site-img.s3cdn.medo.dev/images/KLing_553090e8-f382-4a61-a6b1-3b2342de7487.jpg"]'::jsonb, 'حضرمي أصيل', TRUE, TRUE, 'مجلس أرضي فاخر بتطريز حضرمي عصري، يجمع بين أصالة المجلس الحضرمي وراحة الجلسات الحديثة، مع مساند مبطنة.', 'يُفصّل حسب المساحة', 'تنظيف جاف فقط للحفاظ على التطريز.', 'e7100a86-752b-48d5-8482-13a09c9a9401')
 ON CONFLICT (slug) DO UPDATE SET
   name = EXCLUDED.name,
   category = EXCLUDED.category,
@@ -582,7 +582,7 @@ ON CONFLICT (slug) DO UPDATE SET
   images = EXCLUDED.images,
   description = EXCLUDED.description;
 INSERT INTO public.products (id, legacy_id, slug, name, category, price, compare_at, rating, reviews, colors, materials, images, badge, featured, available, description, dimensions, care, store_id)
-VALUES ('d5943f52-657b-43c0-ae3d-f7bc7b3420fb', 'p6', 'minimal-tv-unit', 'وحدة تلفزيون معلقة بتصميم مينيملست خشب وأبيض', 'وحدات تخزين', 220000, NULL, 4.6, 38, '[{"hex":"#E4D6C3","name":"خشب وأبيض"},{"hex":"#5C3D2E","name":"جوز داكن"}]'::jsonb, '["خشب MDF","قشرة خشب طبيعية","دهان مطفي"]'::jsonb, '["https://miaoda-site-img.s3cdn.medo.dev/images/KLing_135df80f-2725-4447-ab1d-6e6da5322a8c.jpg"]'::jsonb, NULL, FALSE, TRUE, 'وحدة تلفزيون معلقة بتصميم مينيملست يجمع الخشب والأبيض، بأدراج مخفية وفتحات تهوية للشاشات والأجهزة.', 'العرض 200 سم', 'مسح بقطعة قماش جافة.', '3117f43e-d0ca-41e1-82a1-7dead277af20')
+VALUES ('d5943f52-657b-43c0-ae3d-f7bc7b3420fb', 'p6', 'minimal-tv-unit', 'وحدة تلفزيون معلقة بتصميم مينيملست خشب وأبيض', 'وحدات تخزين', 220000, NULL, 4.6, 38, '[{"hex":"#E4D6C3","name":"خشب وأبيض"},{"hex":"#5C3D2E","name":"جوز داكن"}]'::jsonb, '["خشب MDF","قشرة خشب طبيعية","دهان مطفي"]'::jsonb, '["https://miaoda-site-img.s3cdn.medo.dev/images/KLing_135df80f-2725-4447-ab1d-6e6da5322a8c.jpg"]'::jsonb, NULL, TRUE, TRUE, 'وحدة تلفزيون معلقة بتصميم مينيملست يجمع الخشب والأبيض، بأدراج مخفية وفتحات تهوية للشاشات والأجهزة.', 'العرض 200 سم', 'مسح بقطعة قماش جافة.', '3117f43e-d0ca-41e1-82a1-7dead277af20')
 ON CONFLICT (slug) DO UPDATE SET
   name = EXCLUDED.name,
   category = EXCLUDED.category,

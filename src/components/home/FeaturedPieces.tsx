@@ -8,32 +8,58 @@ export const FeaturedPieces = () => {
   const { products } = useCatalog();
 
   const pieces = useMemo(() => {
-    // 1. استخراج القطع المميزة وتثبيت القطع الـ 4 الأساسية
-    const featuredList = products.filter((p) => p.featured);
+    // الترتيب الدقيق للقطع الـ 8 الأصلية بالاسم والـ slug من ملف النسخة الاحتياطية
+    const targetOrder = [
+      'marble-coffee-tables',     // 1. طاولة القهوة الرخامية المتداخلة بقاعدة خشبية
+      'hadrami-floor-majlis',     // 2. الجلسة العربية / المجلس الأرضي البيج الفاخر مع الوسائد
+      'boucle-lounge-chair',      // 3. الكرسي المفرد البوكليه الكريمي الدائري
+      'master-bedroom-set',       // 4. السرير الخشبي المزدوج الفاخر مع الكومودينو واللوحة الجدارية
+      'walnut-round-dining-table',// 5. طاولة الطعام الدائرية الخشبية مع الكراسي القماشية البيج
+      'linen-corner-sofa',        // 6. الكنب المودرن الكريمي المتصل
+      'oak-kitchen-island',       // 7. مطبخ خشب السنديان العصري مع الجزيرة
+      'minimal-tv-unit',          // 8. وحدة تلفزيون معلقة بتصميم مينيملست خشب وأبيض
+    ];
 
-    const priorityKeywords = ['مطبخ', 'كنب', 'غرفة نوم', 'طاولة طعام'];
     const sorted: typeof products = [];
 
-    priorityKeywords.forEach((kw) => {
-      const match = featuredList.find((p) => p.name.includes(kw) && !sorted.some((s) => (s.dbId && s.dbId === p.dbId) || (s.id && s.id === p.id)));
+    // جلب القطع حسب الترتيب الدقيق المحدد
+    targetOrder.forEach((slug) => {
+      const match = products.find(
+        (p) =>
+          (p.slug === slug ||
+            (slug === 'marble-coffee-tables' && (p.name.includes('قهوة متداخلة') || p.name.includes('رخامي أبيض'))) ||
+            (slug === 'hadrami-floor-majlis' && (p.name.includes('مجلس عربي') || p.name.includes('أرضي فاخر'))) ||
+            (slug === 'boucle-lounge-chair' && (p.name.includes('بوكليه') || p.name.includes('كرسي استرخاء'))) ||
+            (slug === 'master-bedroom-set' && (p.name.includes('غرفة نوم') || p.name.includes('ماستر مودرن'))) ||
+            (slug === 'walnut-round-dining-table' && (p.name.includes('طاولة طعام') || p.name.includes('دائرية خشب'))) ||
+            (slug === 'linen-corner-sofa' && (p.name.includes('طقم كنب') || p.name.includes('كنب زاوية'))) ||
+            (slug === 'oak-kitchen-island' && (p.name.includes('مطبخ خشب سنديان') || p.name.includes('بجزيرة وسطية'))) ||
+            (slug === 'minimal-tv-unit' && (p.name.includes('تلفزيون') || p.name.includes('مينيملست')))) &&
+          !sorted.some((s) => (s.dbId && s.dbId === p.dbId) || (s.id && s.id === p.id))
+      );
       if (match) sorted.push(match);
     });
 
-    featuredList.forEach((p) => {
-      if (sorted.length < 4 && !sorted.some((s) => (s.dbId && s.dbId === p.dbId) || (s.id && s.id === p.id))) {
-        sorted.push(p);
-      }
-    });
-
-    if (sorted.length < 4) {
-      products.forEach((p) => {
-        if (sorted.length < 4 && !sorted.some((s) => (s.dbId && s.dbId === p.dbId) || (s.id && s.id === p.id))) {
+    // استكمال من القطع المميزة إن لم تكتمل
+    if (sorted.length < 8) {
+      const featured = products.filter((p) => p.featured);
+      featured.forEach((p) => {
+        if (sorted.length < 8 && !sorted.some((s) => (s.dbId && s.dbId === p.dbId) || (s.id && s.id === p.id))) {
           sorted.push(p);
         }
       });
     }
 
-    return sorted.slice(0, 4);
+    // استكمال من باقي المنتجات
+    if (sorted.length < 8) {
+      products.forEach((p) => {
+        if (sorted.length < 8 && !sorted.some((s) => (s.dbId && s.dbId === p.dbId) || (s.id && s.id === p.id))) {
+          sorted.push(p);
+        }
+      });
+    }
+
+    return sorted.slice(0, 8);
   }, [products]);
 
   return (
@@ -58,7 +84,7 @@ export const FeaturedPieces = () => {
           </Link>
         </div>
 
-        <div className="grid grid-cols-2 gap-x-4 gap-y-10 @md:grid-cols-3 @md:gap-x-6 @lg:grid-cols-4 @lg:gap-y-12">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-10 @md:grid-cols-3 @md:gap-x-6 @lg:grid-cols-4 @lg:gap-y-14">
           {pieces.map((product) => (
             <ProductCard key={product.dbId || product.id} product={product} />
           ))}
