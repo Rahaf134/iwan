@@ -1,0 +1,248 @@
+/* stylelint-disable */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Design system: Warm Minimalist Editorial
+   Cream paper base / espresso ink / sand bands / muted gold accent.
+   All colors are HSL. */
+
+@layer base {
+  :root {
+    --radius: 1rem;
+
+    /* Cream paper */
+    --background: 38 44% 96%;
+    --foreground: 12 8% 13%;
+
+    /* Sand card surface */
+    --card: 40 43% 93%;
+    --card-foreground: 12 8% 13%;
+    --popover: 38 44% 96%;
+    --popover-foreground: 12 8% 13%;
+
+    /* Espresso ink */
+    --primary: 12 8% 13%;
+    --primary-foreground: 38 44% 96%;
+
+    /* Sand band */
+    --secondary: 38 33% 91%;
+    --secondary-foreground: 12 8% 13%;
+
+    /* Category circle / quiet surface */
+    --muted: 39 30% 91%;
+    --muted-foreground: 30 9% 40%;
+
+    /* Muted gold */
+    --accent: 35 52% 53%;
+    --accent-foreground: 12 8% 13%;
+
+    /* Warm clay, used for editorial emphasis only */
+    --terracotta: 18 49% 41%;
+
+    /* Warm wood accents — small details only (icons, badges, hover frames) */
+    --wood: 28 26% 44%;
+    --wood-soft: 33 27% 53%;
+    --sand: 38 33% 83%;
+    --sand-foreground: 20 6% 34%;
+
+    --destructive: 8 55% 42%;
+    --destructive-foreground: 38 44% 96%;
+
+    /* Warm hairline */
+    --border: 45 35% 84%;
+    --input: 45 35% 84%;
+    --ring: 12 8% 13%;
+
+    --chart-1: 35 52% 53%;
+    --chart-2: 12 8% 13%;
+    --chart-3: 30 9% 40%;
+    --chart-4: 38 33% 71%;
+    --chart-5: 45 35% 84%;
+
+    --sidebar-background: 40 43% 93%;
+    --sidebar-foreground: 12 8% 13%;
+    --sidebar-primary: 12 8% 13%;
+    --sidebar-primary-foreground: 38 44% 96%;
+    --sidebar-accent: 39 30% 91%;
+    --sidebar-accent-foreground: 12 8% 13%;
+    --sidebar-border: 45 35% 84%;
+    --sidebar-ring: 12 8% 13%;
+  }
+
+  .dark {
+    --background: 20 8% 10%;
+    --foreground: 38 30% 92%;
+
+    --card: 20 7% 14%;
+    --card-foreground: 38 30% 92%;
+    --popover: 20 7% 14%;
+    --popover-foreground: 38 30% 92%;
+
+    --primary: 38 30% 92%;
+    --primary-foreground: 20 8% 10%;
+
+    --secondary: 20 6% 18%;
+    --secondary-foreground: 38 30% 92%;
+
+    --muted: 20 6% 18%;
+    --muted-foreground: 38 12% 66%;
+
+    --accent: 35 48% 56%;
+    --accent-foreground: 20 8% 10%;
+
+    --destructive: 8 45% 45%;
+    --destructive-foreground: 38 30% 92%;
+
+    --border: 20 6% 24%;
+    --input: 20 6% 24%;
+    --ring: 38 30% 92%;
+
+    --chart-1: 35 48% 56%;
+    --chart-2: 38 30% 92%;
+    --chart-3: 38 12% 66%;
+    --chart-4: 20 6% 34%;
+    --chart-5: 20 6% 24%;
+
+    --sidebar-background: 20 7% 14%;
+    --sidebar-foreground: 38 30% 92%;
+    --sidebar-primary: 38 30% 92%;
+    --sidebar-primary-foreground: 20 8% 10%;
+    --sidebar-accent: 20 6% 18%;
+    --sidebar-accent-foreground: 38 30% 92%;
+    --sidebar-border: 20 6% 24%;
+    --sidebar-ring: 38 30% 92%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    letter-spacing: 0;
+  }
+
+  html[dir='rtl'] body {
+    font-feature-settings: normal;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display font-normal tracking-tight;
+  }
+
+  ::selection {
+    background-color: hsl(var(--accent) / 0.28);
+    color: hsl(var(--foreground));
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--border)) transparent;
+  }
+
+  *::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--border));
+    border-radius: 9999px;
+  }
+}
+
+@layer components {
+  .eyebrow {
+    @apply text-[11px] font-semibold text-muted-foreground;
+  }
+
+  .hairline {
+    @apply h-px w-full bg-border;
+  }
+
+  .link-underline {
+    @apply relative inline-flex items-center gap-1.5 text-sm font-medium text-foreground transition-opacity hover:opacity-70;
+  }
+
+  .link-underline::after {
+    content: '';
+    @apply absolute -bottom-1 left-0 h-px w-full origin-left scale-x-0 bg-foreground transition-transform duration-300;
+  }
+
+  [dir='rtl'] .link-underline::after {
+    left: auto;
+    right: 0;
+    transform-origin: right;
+  }
+
+  .link-underline:hover::after {
+    @apply scale-x-100;
+  }
+
+  .surface-card {
+    @apply rounded-3xl bg-card;
+  }
+
+  .pill {
+    @apply inline-flex items-center justify-center gap-2 rounded-full;
+  }
+}
+
+@layer utilities {
+  .shadow-warm {
+    box-shadow: 0 34px 70px -40px rgba(35, 31, 30, 0.4);
+  }
+
+  .shadow-soft {
+    box-shadow: 0 18px 44px -30px rgba(35, 31, 30, 0.32);
+  }
+
+  .shadow-float {
+    box-shadow: 0 10px 30px -18px rgba(35, 31, 30, 0.35);
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .grain {
+    background-image: radial-gradient(hsl(var(--foreground) / 0.045) 0.5px, transparent 0.5px);
+    background-size: 4px 4px;
+  }
+
+  .reveal {
+    animation: reveal-up 0.75s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+}
+
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    animation: none;
+  }
+}

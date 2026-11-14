@@ -1,0 +1,1 @@
+alter table public.stores add column if not exists rating numeric(2,1) not null default 5.0;
