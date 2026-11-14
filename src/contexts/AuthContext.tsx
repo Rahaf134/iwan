@@ -34,6 +34,7 @@ export interface DemoAccount {
 }
 
 export const DEMO_ACCOUNTS: DemoAccount[] = [
+  // 1. الإدارة العامة
   {
     id: 'demo-admin',
     name: 'رحاف — مديرة المنصة',
@@ -43,15 +44,87 @@ export const DEMO_ACCOUNTS: DemoAccount[] = [
     businessName: 'إدارة منصة إيوان',
     badge: 'مديرة المنصة (إشراف كامل)',
   },
+
+  // 2. معارض الأثاث الـ 11
   {
-    id: 'demo-reem',
-    name: 'م. ريم الكثيري',
-    email: 'reem@ewan.com',
+    id: 'demo-ard',
+    name: 'معرض أرض حمير للأثاث والمطابخ',
+    email: 'ard@ewan.com',
     password: '123456',
-    role: 'designer',
-    designerId: '285c6c4b-8816-47b3-b68c-2e6de07df5ef',
-    businessName: 'استوديو م. ريم الكثيري للتصميم الداخلي',
-    badge: 'مصممة ديكور معتمدة',
+    role: 'merchant',
+    storeId: '3117f43e-d0ca-41e1-82a1-7dead277af20',
+    businessName: 'معرض أرض حمير للأثاث والمطابخ',
+    badge: 'مزود معتمد (معرض أثاث ومطابخ — الديس)',
+  },
+  {
+    id: 'demo-baseel',
+    name: 'مفروشات باصهيل',
+    email: 'baseel@ewan.com',
+    password: '123456',
+    role: 'merchant',
+    storeId: '19a63b7b-9e48-47b4-9143-b8542f6fe9a8',
+    businessName: 'مفروشات باصهيل',
+    badge: 'مزود معتمد (كنب ومجالس — الشرج)',
+  },
+  {
+    id: 'demo-bindool',
+    name: 'معرض بن دول للأثاث والديكور',
+    email: 'bindool@ewan.com',
+    password: '123456',
+    role: 'merchant',
+    storeId: '7e6b4eaf-0b9f-48ce-9b9b-b27fd2d6f87c',
+    businessName: 'معرض بن دول للأثاث والديكور',
+    badge: 'مزود معتمد (أثاث مودرن وديكور — فوة)',
+  },
+  {
+    id: 'demo-hadrami',
+    name: 'معرض الحضرمي للمطابخ والأثاث',
+    email: 'hadrami@ewan.com',
+    password: '123456',
+    role: 'merchant',
+    storeId: 'bb034e56-54b2-4c5b-b15d-4602d49bb90d',
+    businessName: 'معرض الحضرمي للمطابخ والأثاث',
+    badge: 'مزود معتمد (مطابخ وأثاث — الشرج)',
+  },
+  {
+    id: 'demo-qasr',
+    name: 'مفروشات القصر العصري',
+    email: 'qasr@ewan.com',
+    password: '123456',
+    role: 'merchant',
+    storeId: 'c913879b-4070-459d-b3ad-7c7a0909d514',
+    businessName: 'مفروشات القصر العصري',
+    badge: 'مزود معتمد (غرف نوم ومجالس — الديس)',
+  },
+  {
+    id: 'demo-nokhba',
+    name: 'معرض النخبة للأثاث والديكور',
+    email: 'nokhba@ewan.com',
+    password: '123456',
+    role: 'merchant',
+    storeId: '3b3d9526-cd59-436d-802c-d7f1fd352d76',
+    businessName: 'معرض النخبة للأثاث والديكور',
+    badge: 'مزود معتمد (طاولات وكراسي وإضاءة — فوة)',
+  },
+  {
+    id: 'demo-binhellabi',
+    name: 'مفروشات بن هلابي',
+    email: 'binhellabi@ewan.com',
+    password: '123456',
+    role: 'merchant',
+    storeId: 'e7100a86-752b-48d5-8482-13a09c9a9401',
+    businessName: 'مفروشات بن هلابي',
+    badge: 'مزود معتمد (مجالس وسجاد — باعبود)',
+  },
+  {
+    id: 'demo-fakhama',
+    name: 'معرض الفخامة للأثاث',
+    email: 'fakhama@ewan.com',
+    password: '123456',
+    role: 'merchant',
+    storeId: 'ec65b6cd-afc8-49bf-93ce-0d1f05714848',
+    businessName: 'معرض الفخامة للأثاث',
+    badge: 'مزود معتمد (أطقم جلوس وديكور — الأربعين)',
   },
   {
     id: 'demo-altaweel',
@@ -60,8 +133,8 @@ export const DEMO_ACCOUNTS: DemoAccount[] = [
     password: '123456',
     role: 'merchant',
     storeId: 'e8a10001-0000-4000-8000-000000000001',
-    businessName: 'معرض الطويل للأثاث — فوة',
-    badge: 'مزود معتمد (معرض أثاث)',
+    businessName: 'معرض الطويل للأثاث',
+    badge: 'مزود معتمد (كنب ومجالس — فوة)',
   },
   {
     id: 'demo-homecentre',
@@ -70,18 +143,60 @@ export const DEMO_ACCOUNTS: DemoAccount[] = [
     password: '123456',
     role: 'merchant',
     storeId: 'e8a10002-0000-4000-8000-000000000002',
-    businessName: 'معرض هوم سنتر — الديس',
-    badge: 'مزود معتمد (معرض أثاث)',
+    businessName: 'معرض هوم سنتر (Home Centre)',
+    badge: 'مزود معتمد (أثاث شامل — الديس)',
   },
   {
-    id: 'demo-ard',
-    name: 'معرض أرض حمير للأثاث والمطابخ',
-    email: 'ard@ewan.com',
+    id: 'demo-aydaroos',
+    name: 'مفروشات ومطابخ العيدروس',
+    email: 'aydaroos@ewan.com',
     password: '123456',
     role: 'merchant',
-    storeId: '3117f43e-d0ca-41e1-82a1-7dead277af20',
-    businessName: 'معرض أرض حمير للأثاث والمطابخ — الديس',
-    badge: 'مزود معتمد (معرض أثاث)',
+    storeId: 'e8a10003-0000-4000-8000-000000000003',
+    businessName: 'مفروشات ومطابخ العيدروس',
+    badge: 'مزود معتمد (مفروشات وغرف نوم — الشرج)',
+  },
+
+  // 3. المصممون وورش النجارة الـ 4
+  {
+    id: 'demo-reem',
+    name: 'م. ريم الكثيري',
+    email: 'reem@ewan.com',
+    password: '123456',
+    role: 'designer',
+    designerId: '285c6c4b-8816-47b3-b68c-2e6de07df5ef',
+    businessName: 'استوديو م. ريم الكثيري للتصميم الداخلي',
+    badge: 'مصممة ديكور داخلي معتمدة',
+  },
+  {
+    id: 'demo-mahfouz',
+    name: 'المعلم عبدالله بن محفوظ',
+    email: 'mahfouz@ewan.com',
+    password: '123456',
+    role: 'designer',
+    designerId: '39de3472-6097-464f-a904-30756ac13a13',
+    businessName: 'المعلم عبدالله بن محفوظ للنجارة',
+    badge: 'نجار ومعلم أثاث معتمد',
+  },
+  {
+    id: 'demo-omar',
+    name: 'م. عمر بن سميط',
+    email: 'omar@ewan.com',
+    password: '123456',
+    role: 'designer',
+    designerId: 'f5664289-cdce-49d7-9aa7-6d45347ef672',
+    businessName: 'م. عمر بن سميط للتصميم الداخلي',
+    badge: 'مصمم معماري واستشاري ديكور',
+  },
+  {
+    id: 'demo-bajaber',
+    name: 'ورشة باجابر للنجارة الحديثة والديكور',
+    email: 'bajaber@ewan.com',
+    password: '123456',
+    role: 'designer',
+    designerId: '1638aaca-8a33-43c5-846b-1e786f510386',
+    businessName: 'ورشة باجابر للنجارة الحديثة والديكور',
+    badge: 'ورشة نجارة وتفصيل متكامل',
   },
 ];
 
@@ -128,7 +243,7 @@ const ADMIN_PROFILE: EwanProfile = {
 
 const normalizeEmail = (value: string) => {
   const trimmed = value.trim().toLowerCase();
-  return trimmed.includes('@') ? trimmed : `${trimmed}@ewan.ye`;
+  return trimmed.includes('@') ? trimmed : `${trimmed}@ewan.com`;
 };
 
 const readAdminSession = (): boolean => {
@@ -232,7 +347,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // 1. التحقق من الحسابات التجريبية المعتمدة
     const matchedDemo = DEMO_ACCOUNTS.find(
-      (acc) => normalizeEmail(acc.email) === normalized && acc.password === password,
+      (acc) =>
+        (normalizeEmail(acc.email) === normalized ||
+          (acc.id === 'demo-baseel' && (normalized === 'basheel@ewan.com' || normalized === 'basheel'))) &&
+        acc.password === password,
     );
 
     if (matchedDemo) {
