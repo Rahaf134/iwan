@@ -178,7 +178,7 @@ export const stores: Store[] = [
     phone: '+967 5 308 910',
     rating: 4.8,
     verified: true,
-    imageUrl: 'https://images.unsplash.com/photo-1540518614846-7ede433c4ef0?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80',
     description:
       'تشكيلات نوم وأثاث مريح من أجود أنواع الأخشاب الطبيعية والقشرة المقاومة للرطوبة في المكلا.',
   },
@@ -373,6 +373,7 @@ export const products: Product[] = [
     ],
     materials: ['خشب جوز', 'قماش مبطّن', 'طلاء مقاوم للخدش'],
     images: [IMG.dining],
+    badge: 'متوفر',
     featured: true,
     description:
       'طاولة طعام دائرية من خشب الجوز مع ستة كراسي مبطنة، تصميم يجمع العائلة ويمنح غرفة الطعام حضوراً دافئاً.',
@@ -735,7 +736,8 @@ export const products: Product[] = [
       { name: 'بني تراكوتا', hex: '#9C6644' }
     ],
     materials: ['خشب سنديان', 'قماش بوكليه تيدي'],
-    images: ['https://images.unsplash.com/photo-1540518614846-7ede433c4ef0?auto=format&fit=crop&w=1000&q=80'],
+    images: ['https://images.unsplash.com/photo-1592078615290-033ee584e267?auto=format&fit=crop&w=1000&q=80'],
+    featured: false,
     description: 'مقعد جانبي يوضع عند طرف السرير أو في المداخل يجمع بين العملية والشكل الديكوري الجذاب.',
     dimensions: '120 × 40 × 45 سم',
     care: 'شفط الغبار بالمكنسة الكهربائية برأس مخصص.',
@@ -823,7 +825,7 @@ export const products: Product[] = [
       { name: 'سنديان مبيض', hex: '#EBE4D8' }
     ],
     materials: ['كتلة خشب جوز منحوتة'],
-    images: ['https://images.unsplash.com/photo-1533090161767-e6ffed986b88?auto=format&fit=crop&w=1000&q=80'],
+    images: ['https://images.unsplash.com/photo-1538688525198-9b88f6f53126?auto=format&fit=crop&w=1000&q=80'],
     description: 'طاولة جانبية مدمجة بتصميم نحتي مميز تصلح بجانب الكنب أو كحامل للمصابيح والقطع الديكورية.',
     dimensions: 'قطر 38 سم × ارتفاع 48 سم',
     care: 'مسح دوري بقماش جاف.',

@@ -2,7 +2,7 @@
 -- مشروع إيوان — المنصة الرقمية الموحدة لأثاث المكلا والتصميم الداخلي
 -- ملف قاعدة البيانات السحابية الشامل والموحد (EWAN FULL MASTER SQL)
 -- الربط المباشر: Supabase Cloud (xreahhaivntkriiaegra)
--- التاريخ: 2026-11-14T18:19:16.698Z
+-- التاريخ: 2026-11-14T18:32:57.114Z
 -- ==============================================================================
 
 -- 1. تفعيل الامتدادات الضرورية
@@ -267,7 +267,7 @@ ON CONFLICT (id) DO UPDATE SET
   rating = EXCLUDED.rating,
   image_url = EXCLUDED.image_url;
 INSERT INTO public.stores (id, legacy_id, name, city, area, address, specialty, phone, rating, verified, description, image_url)
-VALUES ('e8a10003-0000-4000-8000-000000000003', NULL, 'مفروشات ومطابخ العيدروس', 'المكلا', 'الشرج', 'المكلا — الشرج', 'مطابخ', '+967 5 308 910', 4.8, TRUE, 'معرض رائد ومتخصص في تصميم تفصيل وبيع المطابخ الحديثة وحدات التخزين المدمجة وتجهيزات المطابخ ومستلزمات المنازل بجودة عالية ودقة في التنفيذ تناسب الذوق العصري.', 'https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=1200&q=80')
+VALUES ('e8a10003-0000-4000-8000-000000000003', NULL, 'مفروشات ومطابخ العيدروس', 'المكلا', 'الشرج', 'المكلا — الشرج', 'مطابخ', '+967 5 308 910', 4.8, TRUE, 'معرض رائد ومتخصص في تصميم تفصيل وبيع المطابخ الحديثة وحدات التخزين المدمجة وتجهيزات المطابخ ومستلزمات المنازل بجودة عالية ودقة في التنفيذ تناسب الذوق العصري.', 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80')
 ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name,
   area = EXCLUDED.area,
@@ -302,7 +302,7 @@ ON CONFLICT (slug) DO UPDATE SET
   images = EXCLUDED.images,
   description = EXCLUDED.description;
 INSERT INTO public.products (id, legacy_id, slug, name, category, price, compare_at, rating, reviews, colors, materials, images, badge, featured, available, description, dimensions, care, store_id)
-VALUES ('e8b10020-0000-4000-8000-000000000020', NULL, 'boucle-bed-bench', 'بنش مقعد سرير بوكليه دافئ بقوائم خشب', 'غرف نوم', 95000, NULL, 4.7, 14, '[{"hex":"#FAF7F2","name":"كريمي"},{"hex":"#9C6644","name":"بني تراكوتا"}]'::jsonb, '["خشب سنديان","قماش بوكليه تيدي"]'::jsonb, '["https://images.unsplash.com/photo-1540518614846-7ede433c4ef0?auto=format&fit=crop&w=1000&q=80"]'::jsonb, NULL, FALSE, TRUE, 'مقعد جانبي يوضع عند طرف السرير أو في المداخل يجمع بين العملية والشكل الديكوري الجذاب.', '120 × 40 × 45 سم', 'شفط الغبار بالمكنسة الكهربائية برأس مخصص.', 'e8a10002-0000-4000-8000-000000000002')
+VALUES ('e8b10020-0000-4000-8000-000000000020', NULL, 'boucle-bed-bench', 'بنش مقعد سرير بوكليه دافئ بقوائم خشب', 'غرف نوم', 95000, NULL, 4.7, 14, '[{"hex":"#FAF7F2","name":"كريمي"},{"hex":"#9C6644","name":"بني تراكوتا"}]'::jsonb, '["خشب سنديان","قماش بوكليه تيدي"]'::jsonb, '["https://images.unsplash.com/photo-1592078615290-033ee584e267?auto=format&fit=crop&w=1000&q=80"]'::jsonb, NULL, FALSE, TRUE, 'مقعد جانبي يوضع عند طرف السرير أو في المداخل يجمع بين العملية والشكل الديكوري الجذاب.', '120 × 40 × 45 سم', 'شفط الغبار بالمكنسة الكهربائية برأس مخصص.', 'e8a10002-0000-4000-8000-000000000002')
 ON CONFLICT (slug) DO UPDATE SET
   name = EXCLUDED.name,
   category = EXCLUDED.category,
@@ -374,7 +374,7 @@ ON CONFLICT (slug) DO UPDATE SET
   images = EXCLUDED.images,
   description = EXCLUDED.description;
 INSERT INTO public.products (id, legacy_id, slug, name, category, price, compare_at, rating, reviews, colors, materials, images, badge, featured, available, description, dimensions, care, store_id)
-VALUES ('e8b10024-0000-4000-8000-000000000024', NULL, 'sculptural-side-table', 'طاولة جانبية منحوتة خشب جوز طبيعي', 'طاولات وكراسي', 85000, NULL, 4.7, 16, '[{"hex":"#5E3E2B","name":"جوز طبيعي"},{"hex":"#EBE4D8","name":"سنديان مبيض"}]'::jsonb, '["كتلة خشب جوز منحوتة"]'::jsonb, '["https://images.unsplash.com/photo-1533090161767-e6ffed986b88?auto=format&fit=crop&w=1000&q=80"]'::jsonb, NULL, FALSE, TRUE, 'طاولة جانبية مدمجة بتصميم نحتي مميز تصلح بجانب الكنب أو كحامل للمصابيح والقطع الديكورية.', 'قطر 38 سم × ارتفاع 48 سم', 'مسح دوري بقماش جاف.', '7e6b4eaf-0b9f-48ce-9b9b-b27fd2d6f87c')
+VALUES ('e8b10024-0000-4000-8000-000000000024', NULL, 'sculptural-side-table', 'طاولة جانبية منحوتة خشب جوز طبيعي', 'طاولات وكراسي', 85000, NULL, 4.7, 16, '[{"hex":"#5E3E2B","name":"جوز طبيعي"},{"hex":"#EBE4D8","name":"سنديان مبيض"}]'::jsonb, '["كتلة خشب جوز منحوتة"]'::jsonb, '["https://images.unsplash.com/photo-1538688525198-9b88f6f53126?auto=format&fit=crop&w=1000&q=80"]'::jsonb, NULL, FALSE, TRUE, 'طاولة جانبية مدمجة بتصميم نحتي مميز تصلح بجانب الكنب أو كحامل للمصابيح والقطع الديكورية.', 'قطر 38 سم × ارتفاع 48 سم', 'مسح دوري بقماش جاف.', '7e6b4eaf-0b9f-48ce-9b9b-b27fd2d6f87c')
 ON CONFLICT (slug) DO UPDATE SET
   name = EXCLUDED.name,
   category = EXCLUDED.category,
@@ -390,7 +390,7 @@ ON CONFLICT (slug) DO UPDATE SET
   images = EXCLUDED.images,
   description = EXCLUDED.description;
 INSERT INTO public.products (id, legacy_id, slug, name, category, price, compare_at, rating, reviews, colors, materials, images, badge, featured, available, description, dimensions, care, store_id)
-VALUES ('5f9c2da7-fdb4-4906-a238-a2ea0c4a6ecb', 'p4', 'walnut-round-dining-table', 'طاولة طعام دائرية خشب جوز مع 6 كراسي مبطنة', 'طاولات وكراسي', 390000, NULL, 4.7, 41, '[{"hex":"#5C3D2E","name":"جوز داكن"},{"hex":"#D9CBB6","name":"بيج"}]'::jsonb, '["خشب جوز","قماش مبطّن","طلاء مقاوم للخدش"]'::jsonb, '["https://miaoda-site-img.s3cdn.medo.dev/images/KLing_b1a41b3f-361b-4f3b-80ed-849b089526ce.jpg"]'::jsonb, NULL, TRUE, TRUE, 'طاولة طعام دائرية من خشب الجوز مع ستة كراسي مبطنة، تصميم يجمع العائلة ويمنح غرفة الطعام حضوراً دافئاً.', 'القطر 150 سم', 'استخدام قواعد لباد أسفل الأواني الساخنة.', '7e6b4eaf-0b9f-48ce-9b9b-b27fd2d6f87c')
+VALUES ('5f9c2da7-fdb4-4906-a238-a2ea0c4a6ecb', 'p4', 'walnut-round-dining-table', 'طاولة طعام دائرية خشب جوز مع 6 كراسي مبطنة', 'طاولات وكراسي', 390000, NULL, 4.7, 41, '[{"hex":"#5C3D2E","name":"جوز داكن"},{"hex":"#D9CBB6","name":"بيج"}]'::jsonb, '["خشب جوز","قماش مبطّن","طلاء مقاوم للخدش"]'::jsonb, '["https://miaoda-site-img.s3cdn.medo.dev/images/KLing_b1a41b3f-361b-4f3b-80ed-849b089526ce.jpg"]'::jsonb, 'متوفر', TRUE, TRUE, 'طاولة طعام دائرية من خشب الجوز مع ستة كراسي مبطنة، تصميم يجمع العائلة ويمنح غرفة الطعام حضوراً دافئاً.', 'القطر 150 سم', 'استخدام قواعد لباد أسفل الأواني الساخنة.', '7e6b4eaf-0b9f-48ce-9b9b-b27fd2d6f87c')
 ON CONFLICT (slug) DO UPDATE SET
   name = EXCLUDED.name,
   category = EXCLUDED.category,
@@ -478,7 +478,7 @@ ON CONFLICT (slug) DO UPDATE SET
   images = EXCLUDED.images,
   description = EXCLUDED.description;
 INSERT INTO public.products (id, legacy_id, slug, name, category, price, compare_at, rating, reviews, colors, materials, images, badge, featured, available, description, dimensions, care, store_id)
-VALUES ('02df7d9d-5bff-48b5-b041-7044b0e29f3a', 'p3', 'master-bedroom-set', 'غرفة نوم ماستر مودرن بتصميم هادئ — 6 قطع', 'غرف نوم', 1250000, NULL, 4.8, 27, '[{"hex":"#6B4A34","name":"قشرة جوز"},{"hex":"#EFE7DA","name":"كريمي"}]'::jsonb, '["خشب MDF ماليزي","قشرة جوز طبيعية","مفصلات هيدروليكية"]'::jsonb, '["https://miaoda-site-img.s3cdn.medo.dev/images/KLing_528e41bf-416b-4769-91cc-0d997545a968.jpg"]'::jsonb, NULL, TRUE, TRUE, 'غرفة نوم ماستر من ست قطع بتصميم هادئ، خشب MDF ماليزي ملبس قشرة جوز، مع سرير رئيسي وخزانة وتسريحة وطاولتي سرير.', 'السرير 180 × 200 سم', 'تلميع الخشب بزيت مخصص كل ستة أشهر.', 'c913879b-4070-459d-b3ad-7c7a0909d514')
+VALUES ('02df7d9d-5bff-48b5-b041-7044b0e29f3a', 'p3', 'master-bedroom-set', 'غرفة نوم ماستر مودرن بتصميم هادئ — 6 قطع', 'غرف نوم', 1250000, NULL, 4.8, 27, '[{"hex":"#6B4A34","name":"قشرة جوز"},{"hex":"#EFE7DA","name":"كريمي"}]'::jsonb, '["خشب MDF ماليزي","قشرة جوز طبيعية","مفصلات هيدروليكية"]'::jsonb, '["https://miaoda-site-img.s3cdn.medo.dev/images/KLing_528e41bf-416b-4769-91cc-0d997545a968.jpg"]'::jsonb, 'تصميم مميز', TRUE, TRUE, 'غرفة نوم ماستر من ست قطع بتصميم هادئ، خشب MDF ماليزي ملبس قشرة جوز، مع سرير رئيسي وخزانة وتسريحة وطاولتي سرير.', 'السرير 180 × 200 سم', 'تلميع الخشب بزيت مخصص كل ستة أشهر.', 'c913879b-4070-459d-b3ad-7c7a0909d514')
 ON CONFLICT (slug) DO UPDATE SET
   name = EXCLUDED.name,
   category = EXCLUDED.category,
@@ -582,7 +582,7 @@ ON CONFLICT (slug) DO UPDATE SET
   images = EXCLUDED.images,
   description = EXCLUDED.description;
 INSERT INTO public.products (id, legacy_id, slug, name, category, price, compare_at, rating, reviews, colors, materials, images, badge, featured, available, description, dimensions, care, store_id)
-VALUES ('d5943f52-657b-43c0-ae3d-f7bc7b3420fb', 'p6', 'minimal-tv-unit', 'وحدة تلفزيون معلقة بتصميم مينيملست خشب وأبيض', 'وحدات تخزين', 220000, NULL, 4.6, 38, '[{"hex":"#E4D6C3","name":"خشب وأبيض"},{"hex":"#5C3D2E","name":"جوز داكن"}]'::jsonb, '["خشب MDF","قشرة خشب طبيعية","دهان مطفي"]'::jsonb, '["https://miaoda-site-img.s3cdn.medo.dev/images/KLing_135df80f-2725-4447-ab1d-6e6da5322a8c.jpg"]'::jsonb, NULL, TRUE, TRUE, 'وحدة تلفزيون معلقة بتصميم مينيملست يجمع الخشب والأبيض، بأدراج مخفية وفتحات تهوية للشاشات والأجهزة.', 'العرض 200 سم', 'مسح بقطعة قماش جافة.', '3117f43e-d0ca-41e1-82a1-7dead277af20')
+VALUES ('d5943f52-657b-43c0-ae3d-f7bc7b3420fb', 'p6', 'minimal-tv-unit', 'وحدة تلفزيون معلقة بتصميم مينيملست خشب وأبيض', 'وحدات تخزين', 220000, NULL, 4.6, 38, '[{"hex":"#E4D6C3","name":"خشب وأبيض"},{"hex":"#5C3D2E","name":"جوز داكن"}]'::jsonb, '["خشب MDF","قشرة خشب طبيعية","دهان مطفي"]'::jsonb, '["https://miaoda-site-img.s3cdn.medo.dev/images/KLing_135df80f-2725-4447-ab1d-6e6da5322a8c.jpg"]'::jsonb, 'تصميم مميز', TRUE, TRUE, 'وحدة تلفزيون معلقة بتصميم مينيملست يجمع الخشب والأبيض، بأدراج مخفية وفتحات تهوية للشاشات والأجهزة.', 'العرض 200 سم', 'مسح بقطعة قماش جافة.', '3117f43e-d0ca-41e1-82a1-7dead277af20')
 ON CONFLICT (slug) DO UPDATE SET
   name = EXCLUDED.name,
   category = EXCLUDED.category,

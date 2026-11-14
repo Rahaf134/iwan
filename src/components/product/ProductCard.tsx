@@ -10,7 +10,13 @@ import { cn } from '@/lib/utils';
 export const ProductCard = ({ product }: { product: Product }) => {
   const { addToCart, toggleWishlist, isWishlisted } = useStore();
   const { stores } = useCatalog();
-  const store = stores.find((item) => item.id === product.storeId);
+  const store = stores.find(
+    (item) =>
+      item.id === product.storeId ||
+      item.dbId === product.storeId ||
+      item.legacyId === product.storeId ||
+      (product.storeDbId && (item.id === product.storeDbId || item.dbId === product.storeDbId)),
+  );
   const saved = isWishlisted(product.id);
   const [colorIndex, setColorIndex] = useState(0);
 
@@ -23,7 +29,9 @@ export const ProductCard = ({ product }: { product: Product }) => {
     ? { label: 'نفذت الكمية', className: 'bg-sand text-sand-foreground' }
     : product.badge?.includes('جديد')
       ? { label: 'جديد', className: 'bg-wood text-primary-foreground' }
-      : { label: 'متوفر', className: 'bg-primary text-primary-foreground' };
+      : product.badge && product.badge !== 'متوفر'
+        ? { label: product.badge, className: 'bg-primary text-primary-foreground' }
+        : { label: 'متوفر', className: 'bg-primary text-primary-foreground' };
 
   return (
     <article className="group flex h-full flex-col">

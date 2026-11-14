@@ -40,9 +40,15 @@ export const FeaturedPieces = () => {
       if (match) sorted.push(match);
     });
 
+    // استبعاد القطع المحظورة (طاولة الكراسي الخضراء وبنش السرير المعطوب)
+    const isExcluded = (p: { slug?: string; name?: string }) =>
+      p.slug === 'solid-oak-dining-table' ||
+      p.slug === 'boucle-bed-bench' ||
+      (p.name && (p.name.includes('8 أشخاص') || p.name.includes('بنش مقعد')));
+
     // استكمال من القطع المميزة إن لم تكتمل
     if (sorted.length < 8) {
-      const featured = products.filter((p) => p.featured);
+      const featured = products.filter((p) => p.featured && !isExcluded(p));
       featured.forEach((p) => {
         if (sorted.length < 8 && !sorted.some((s) => (s.dbId && s.dbId === p.dbId) || (s.id && s.id === p.id))) {
           sorted.push(p);
@@ -53,6 +59,7 @@ export const FeaturedPieces = () => {
     // استكمال من باقي المنتجات
     if (sorted.length < 8) {
       products.forEach((p) => {
+        if (isExcluded(p)) return;
         if (sorted.length < 8 && !sorted.some((s) => (s.dbId && s.dbId === p.dbId) || (s.id && s.id === p.id))) {
           sorted.push(p);
         }

@@ -23,6 +23,17 @@ const sortOptions = [
   { value: 'rating', label: 'الأعلى تقييماً' },
 ];
 
+const featuredPrioritySlugs = [
+  'marble-coffee-tables',     // 1. طاولة القهوة الرخامية المتداخلة بقاعدة خشبية
+  'hadrami-floor-majlis',     // 2. الجلسة العربية / المجلس الأرضي البيج الفاخر
+  'boucle-lounge-chair',      // 3. كرسي استرخاء مفرد قماش بوكليه أبيض كريمي
+  'master-bedroom-set',       // 4. غرفة نوم ماستر مودرن بتصميم هادئ — 6 قطع
+  'walnut-round-dining-table',// 5. طاولة طعام دائرية خشب جوز مع 6 كراسي مبطنة
+  'linen-corner-sofa',        // 6. طقم كنب زاوية مودرن كتان بيج فاتح
+  'oak-kitchen-island',       // 7. مطبخ خشب سنديان عصري متكامل بجزيرة وسطية
+  'minimal-tv-unit',          // 8. وحدة تلفزيون معلقة بتصميم مينيملست خشب وأبيض
+];
+
 const ShopPage = () => {
   const { products, stores } = useCatalog();
   const [params, setParams] = useSearchParams();
@@ -59,6 +70,14 @@ const ShopPage = () => {
       if (sort === 'price-asc') return a.price - b.price;
       if (sort === 'price-desc') return b.price - a.price;
       if (sort === 'rating') return b.rating - a.rating;
+
+      const aIndex = featuredPrioritySlugs.indexOf(a.slug);
+      const bIndex = featuredPrioritySlugs.indexOf(b.slug);
+
+      if (aIndex !== -1 && bIndex !== -1) return aIndex - bIndex;
+      if (aIndex !== -1) return -1;
+      if (bIndex !== -1) return 1;
+
       return Number(b.featured) - Number(a.featured);
     });
   }, [products, activeCategory, activeStore, maxPrice, sort]);
