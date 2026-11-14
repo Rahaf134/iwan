@@ -8,59 +8,99 @@ export const FeaturedPieces = () => {
   const { products } = useCatalog();
 
   const pieces = useMemo(() => {
-    // الترتيب الدقيق للقطع الـ 8 الأصلية بالاسم والـ slug من ملف النسخة الاحتياطية
-    const targetOrder = [
-      'marble-coffee-tables',     // 1. طاولة القهوة الرخامية المتداخلة بقاعدة خشبية
-      'hadrami-floor-majlis',     // 2. الجلسة العربية / المجلس الأرضي البيج الفاخر مع الوسائد
-      'boucle-lounge-chair',      // 3. الكرسي المفرد البوكليه الكريمي الدائري
-      'master-bedroom-set',       // 4. السرير الخشبي المزدوج الفاخر مع الكومودينو واللوحة الجدارية
-      'walnut-round-dining-table',// 5. طاولة الطعام الدائرية الخشبية مع الكراسي القماشية البيج
-      'linen-corner-sofa',        // 6. الكنب المودرن الكريمي المتصل
-      'oak-kitchen-island',       // 7. مطبخ خشب السنديان العصري مع الجزيرة
-      'minimal-tv-unit',          // 8. وحدة تلفزيون معلقة بتصميم مينيملست خشب وأبيض
+    // 1. استبعاد تام لأي قطعة محظورة (طاولة الكراسي الخضراء وبنش السرير المعطوب)
+    const isExcluded = (p: { slug?: string; name?: string }) =>
+      p.slug === 'solid-oak-dining-table' ||
+      p.slug === 'boucle-bed-bench' ||
+      Boolean(p.name && (p.name.includes('8 أشخاص') || p.name.includes('بنش مقعد')));
+
+    // 2. معايير المطابقة الدقيقة للقطع الـ 8 الأصلية
+    const targetMatchers = [
+      {
+        slug: 'marble-coffee-tables',
+        match: (p: (typeof products)[0]) =>
+          p.slug === 'marble-coffee-tables' ||
+          p.name.includes('متداخلة سطح رخامي') ||
+          (p.name.includes('قهوة') && p.name.includes('رخام')),
+      },
+      {
+        slug: 'hadrami-floor-majlis',
+        match: (p: (typeof products)[0]) =>
+          p.slug === 'hadrami-floor-majlis' ||
+          p.name.includes('مجلس عربي أرضي') ||
+          p.name.includes('بتطريز حضرمي'),
+      },
+      {
+        slug: 'boucle-lounge-chair',
+        match: (p: (typeof products)[0]) =>
+          p.slug === 'boucle-lounge-chair' ||
+          p.name.includes('كرسي استرخاء مفرد') ||
+          (p.name.includes('كرسي') && p.name.includes('بوكليه')),
+      },
+      {
+        slug: 'master-bedroom-set',
+        match: (p: (typeof products)[0]) =>
+          p.slug === 'master-bedroom-set' || p.name.includes('غرفة نوم ماستر'),
+      },
+      {
+        slug: 'walnut-round-dining-table',
+        match: (p: (typeof products)[0]) =>
+          p.slug === 'walnut-round-dining-table' ||
+          p.name.includes('دائرية خشب جوز') ||
+          p.name.includes('طاولة طعام دائرية'),
+      },
+      {
+        slug: 'linen-corner-sofa',
+        match: (p: (typeof products)[0]) =>
+          p.slug === 'linen-corner-sofa' || p.name.includes('طقم كنب زاوية'),
+      },
+      {
+        slug: 'oak-kitchen-island',
+        match: (p: (typeof products)[0]) =>
+          p.slug === 'oak-kitchen-island' ||
+          (p.name.includes('مطبخ خشب سنديان') && p.name.includes('بجزيرة')),
+      },
+      {
+        slug: 'minimal-tv-unit',
+        match: (p: (typeof products)[0]) =>
+          p.slug === 'minimal-tv-unit' || p.name.includes('وحدة تلفزيون معلقة'),
+      },
     ];
 
     const sorted: typeof products = [];
 
-    // جلب القطع حسب الترتيب الدقيق المحدد
-    targetOrder.forEach((slug) => {
-      const match = products.find(
+    // مطابقة واختيار القطع الـ 8 بالتسلسل المباشر
+    targetMatchers.forEach(({ match }) => {
+      const found = products.find(
         (p) =>
-          (p.slug === slug ||
-            (slug === 'marble-coffee-tables' && (p.name.includes('قهوة متداخلة') || p.name.includes('رخامي أبيض'))) ||
-            (slug === 'hadrami-floor-majlis' && (p.name.includes('مجلس عربي') || p.name.includes('أرضي فاخر'))) ||
-            (slug === 'boucle-lounge-chair' && (p.name.includes('بوكليه') || p.name.includes('كرسي استرخاء'))) ||
-            (slug === 'master-bedroom-set' && (p.name.includes('غرفة نوم') || p.name.includes('ماستر مودرن'))) ||
-            (slug === 'walnut-round-dining-table' && (p.name.includes('طاولة طعام') || p.name.includes('دائرية خشب'))) ||
-            (slug === 'linen-corner-sofa' && (p.name.includes('طقم كنب') || p.name.includes('كنب زاوية'))) ||
-            (slug === 'oak-kitchen-island' && (p.name.includes('مطبخ خشب سنديان') || p.name.includes('بجزيرة وسطية'))) ||
-            (slug === 'minimal-tv-unit' && (p.name.includes('تلفزيون') || p.name.includes('مينيملست')))) &&
-          !sorted.some((s) => (s.dbId && s.dbId === p.dbId) || (s.id && s.id === p.id))
+          !isExcluded(p) &&
+          match(p) &&
+          !sorted.some((s) => (s.dbId && s.dbId === p.dbId) || (s.id && s.id === p.id)),
       );
-      if (match) sorted.push(match);
+      if (found) sorted.push(found);
     });
 
-    // استبعاد القطع المحظورة (طاولة الكراسي الخضراء وبنش السرير المعطوب)
-    const isExcluded = (p: { slug?: string; name?: string }) =>
-      p.slug === 'solid-oak-dining-table' ||
-      p.slug === 'boucle-bed-bench' ||
-      (p.name && (p.name.includes('8 أشخاص') || p.name.includes('بنش مقعد')));
-
-    // استكمال من القطع المميزة إن لم تكتمل
+    // استكمال من القطع المميزة غير المحظورة في حال وجود نقص
     if (sorted.length < 8) {
       const featured = products.filter((p) => p.featured && !isExcluded(p));
       featured.forEach((p) => {
-        if (sorted.length < 8 && !sorted.some((s) => (s.dbId && s.dbId === p.dbId) || (s.id && s.id === p.id))) {
+        if (
+          sorted.length < 8 &&
+          !sorted.some((s) => (s.dbId && s.dbId === p.dbId) || (s.id && s.id === p.id))
+        ) {
           sorted.push(p);
         }
       });
     }
 
-    // استكمال من باقي المنتجات
+    // استكمال من باقي المنتجات غير المحظورة في حال النقص
     if (sorted.length < 8) {
       products.forEach((p) => {
         if (isExcluded(p)) return;
-        if (sorted.length < 8 && !sorted.some((s) => (s.dbId && s.dbId === p.dbId) || (s.id && s.id === p.id))) {
+        if (
+          sorted.length < 8 &&
+          !sorted.some((s) => (s.dbId && s.dbId === p.dbId) || (s.id && s.id === p.id))
+        ) {
           sorted.push(p);
         }
       });
