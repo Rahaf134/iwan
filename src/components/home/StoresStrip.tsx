@@ -1,9 +1,42 @@
+import { useMemo } from 'react';
 import { ArrowLeft, BadgeCheck, MapPin, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useCatalog } from '@/contexts/CatalogContext';
 
 export const StoresStrip = () => {
   const { stores } = useCatalog();
+
+  // المعارض الـ 4 الأساسية المميزة بصور صالات العرض الداخلية الفاخرة
+  const featuredStoreKeywords = [
+    'أرض حمير',
+    'باصهيل',
+    'بن دول',
+    'القصر العصري',
+  ];
+
+  const displayedStores = useMemo(() => {
+    const picked: typeof stores = [];
+    featuredStoreKeywords.forEach((keyword) => {
+      const match = stores.find((s) => s.name.includes(keyword) && !picked.some((p) => (p.dbId && p.dbId === s.dbId) || (p.id && p.id === s.id)));
+      if (match) {
+        picked.push(match);
+      }
+    });
+
+    // إكمال المعارض بصالات عرض حقيقية (واستبعاد أي شعارات)
+    stores.forEach((s) => {
+      if (
+        picked.length < 4 &&
+        !picked.some((p) => (p.dbId && p.dbId === s.dbId) || (p.id && p.id === s.id)) &&
+        s.imageUrl &&
+        !s.imageUrl.startsWith('data:')
+      ) {
+        picked.push(s);
+      }
+    });
+
+    return picked.slice(0, 4);
+  }, [stores]);
 
   return (
     <section className="w-full bg-[#EFE7DA] py-20 lg:py-24 border-y border-[#E5DEC9]">
@@ -29,7 +62,7 @@ export const StoresStrip = () => {
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          {stores.slice(0, 4).map((store) => (
+          {displayedStores.map((store) => (
             <Link
               key={store.dbId || store.id}
               to={`/stores?store=${encodeURIComponent(store.id)}`}

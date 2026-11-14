@@ -865,7 +865,7 @@ export const products: Product[] = [
       { name: 'رمادي حجري دافئ', hex: '#8C827A' }
     ],
     materials: ['خشب مقاوم للرطوبة والحرارة', 'أسطح كوارتز كلكتا إسباني'],
-    images: ['https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1000&q=80'],
+    images: ['https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=1000&q=80'],
     badge: 'تصميم فاخر',
     featured: true,
     description: 'مطبخ متكامل بجزيرة طهي مركزية، خزائن علوية مخفية المقابض، وإضاءة ليد دافئة مدمجة تحت الرفوف.',
@@ -930,7 +930,7 @@ export const products: Product[] = [
       { name: 'رمادي غامق', hex: '#4A4644' }
     ],
     materials: ['سطح سيراميك حراري مقاوم للخدش', 'هيكل خشب زان بعجلات مخفية'],
-    images: ['https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=1000&q=80'],
+    images: ['https://images.unsplash.com/photo-1565538810643-b5bdb714032a?auto=format&fit=crop&w=1000&q=80'],
     description: 'حل مثالي لزيادة مساحة العمل والتقطيع في المطابخ مع رفوف سفلية لترتيب الأواني وأدوات الطهي.',
     dimensions: '130 × 75 × 90 سم',
     care: 'سطح السيراميك يتحمل الحرارة العالية وسهل التنظيف.',
@@ -1058,7 +1058,7 @@ export const products: Product[] = [
       { name: 'بني جوزي دافئ', hex: '#523A2A' }
     ],
     materials: ['خشب سنديان طبيعي مع واجهات مضلعة'],
-    images: ['https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1000&q=80'],
+    images: ['https://miaoda-site-img.s3cdn.medo.dev/images/KLing_135df80f-2725-4447-ab1d-6e6da5322a8c.jpg'],
     badge: 'طراز Casa',
     featured: true,
     description: 'طاولة تلفزيون معلقة على الجدار تمنح الصالة مظهراً عصرياً واسعاً وسهولة تامة في تنظيف الأرضية تحتها.',

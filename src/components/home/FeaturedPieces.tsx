@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { ProductCard } from '@/components/product/ProductCard';
@@ -5,8 +6,35 @@ import { useCatalog } from '@/contexts/CatalogContext';
 
 export const FeaturedPieces = () => {
   const { products } = useCatalog();
-  const featured = products.filter((product) => product.featured).slice(0, 8);
-  const pieces = featured.length > 0 ? featured : products.slice(0, 8);
+
+  const pieces = useMemo(() => {
+    // 1. استخراج القطع المميزة وتثبيت القطع الـ 4 الأساسية
+    const featuredList = products.filter((p) => p.featured);
+
+    const priorityKeywords = ['مطبخ', 'كنب', 'غرفة نوم', 'طاولة طعام'];
+    const sorted: typeof products = [];
+
+    priorityKeywords.forEach((kw) => {
+      const match = featuredList.find((p) => p.name.includes(kw) && !sorted.some((s) => (s.dbId && s.dbId === p.dbId) || (s.id && s.id === p.id)));
+      if (match) sorted.push(match);
+    });
+
+    featuredList.forEach((p) => {
+      if (sorted.length < 4 && !sorted.some((s) => (s.dbId && s.dbId === p.dbId) || (s.id && s.id === p.id))) {
+        sorted.push(p);
+      }
+    });
+
+    if (sorted.length < 4) {
+      products.forEach((p) => {
+        if (sorted.length < 4 && !sorted.some((s) => (s.dbId && s.dbId === p.dbId) || (s.id && s.id === p.id))) {
+          sorted.push(p);
+        }
+      });
+    }
+
+    return sorted.slice(0, 4);
+  }, [products]);
 
   return (
     <section className="w-full bg-[#FAF7F2] py-20 lg:py-24">
