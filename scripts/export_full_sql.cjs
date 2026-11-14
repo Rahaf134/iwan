@@ -2,8 +2,8 @@ const fs = require('fs');
 const path = require('path');
 const { createClient } = require('@supabase/supabase-js');
 
-const url = 'https://bgncjnjahxpecuxezwrk.supabase.co';
-const key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJnbmNqbmphaHhwZWN1eGV6d3JrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQwMzU2OTMsImV4cCI6MjEwOTYxMTY5M30.-Kb7EaWpqgk_3w2Ir0vy6LMie_jpxV3Ypan66YIpdeQ';
+const url = 'https://xreahhaivntkriiaegra.supabase.co';
+const key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhyZWFoaGFpdm50a3JpaWFlZ3JhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ2Mzg4NzIsImV4cCI6MjExMDIxNDg3Mn0.Wcgovbcc4BhWh5LPfgIAv9h_IOXTO57-mFNFArVf6Ho';
 
 const supabase = createClient(url, key);
 
@@ -30,7 +30,7 @@ async function run() {
   let sql = `-- ==============================================================================
 -- مشروع إيوان — المنصة الرقمية الموحدة لأثاث المكلا والتصميم الداخلي
 -- ملف قاعدة البيانات السحابية الشامل والموحد (EWAN FULL MASTER SQL)
--- الربط المباشر: Supabase Cloud (bgncjnjahxpecuxezwrk)
+-- الربط المباشر: Supabase Cloud (xreahhaivntkriiaegra)
 -- التاريخ: ${new Date().toISOString()}
 -- ==============================================================================
 
