@@ -65,6 +65,7 @@ export const routes: RouteConfig[] = [
   { name: 'المفضلة', path: '/المفضلة', element: <WishlistPage />, public: true },
   { name: 'تسجيل الدخول', path: '/تسجيل-الدخول', element: <LoginPage />, public: true },
   { name: 'إنشاء حساب', path: '/إنشاء-حساب', element: <RegisterPage />, public: true },
+  { name: 'من نحن', path: '/من-نحن', element: <AboutPage />, public: true },
   { name: 'بوابة المزود', path: '/بوابة-المزود', element: <ProviderGuard><ProviderDashboardPage /></ProviderGuard>, public: true },
   { name: 'لوحة التحكم', path: '/لوحة-التحكم', element: <AdminGuard><AdminPage /></AdminGuard>, public: true },
 ];

@@ -40,6 +40,7 @@ const primaryLinks = [
   { label: 'المصممون', to: '/designers' },
   { label: 'مصمم الذكاء الاصطناعي', to: '/designer' },
   { label: 'كتالوج الإلهام', to: '/lookbook' },
+  { label: 'من نحن', to: '/about' },
 ];
 
 export const Navbar = () => {

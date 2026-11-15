@@ -48,11 +48,11 @@ export const Footer = () => (
             </p>
             <p className="flex items-center gap-2">
               <Phone className="h-4 w-4 shrink-0" strokeWidth={1.6} />
-              <span dir="ltr">+967 5 000 100</span>
+              <span dir="ltr">733592486</span>
             </p>
             <p className="flex items-center gap-2">
               <Mail className="h-4 w-4 shrink-0" strokeWidth={1.6} />
-              <span dir="ltr">hello@ewan.ye</span>
+              <span dir="ltr">rahafsager34@gmail.com</span>
             </p>
           </div>
         </div>

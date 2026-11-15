@@ -64,14 +64,14 @@ const ContactPage = () => {
               <Phone className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" strokeWidth={1.6} />
               <div>
                 <p className="text-sm font-medium">الهاتف</p>
-                <p className="mt-1 text-sm text-muted-foreground" dir="ltr">+967 5 000 100</p>
+                <p className="mt-1 text-sm text-muted-foreground" dir="ltr">733592486</p>
               </div>
             </div>
             <div className="flex items-start gap-3 rounded-2xl border border-border bg-card p-4">
               <Mail className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" strokeWidth={1.6} />
               <div>
                 <p className="text-sm font-medium">البريد</p>
-                <p className="mt-1 text-sm text-muted-foreground" dir="ltr">hello@ewan.ye</p>
+                <p className="mt-1 text-sm text-muted-foreground" dir="ltr">rahafsager34@gmail.com</p>
               </div>
             </div>
             <div className="flex items-start gap-3 rounded-2xl border border-border bg-card p-4">
