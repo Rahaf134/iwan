@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Hammer, Store, User } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import PageMeta from '@/components/common/PageMeta';
 import { ImageUploadField } from '@/components/common/ImageUploadField';
 import { Button } from '@/components/ui/button';
@@ -64,6 +65,7 @@ const RegisterPage = () => {
       setError('تعذّر إنشاء الحساب. تحقق من البيانات وحاول مرة أخرى.');
       return;
     }
+    toast.success('تم إنشاء الحساب بنجاح! تم تسجيل دخولك تلقائياً.');
     if (isProvider) {
       navigate('/provider', { replace: true });
     } else {

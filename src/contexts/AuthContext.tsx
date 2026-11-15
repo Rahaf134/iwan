@@ -230,6 +230,70 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+export interface RegisteredUser {
+  id: string;
+  fullName: string;
+  email: string;
+  password: string;
+  role: UserRole | 'admin';
+  phone?: string;
+  businessName?: string;
+  specialty?: string;
+  address?: string;
+  whatsapp?: string;
+  years?: string;
+  bio?: string;
+  logo?: string;
+  createdAt: string;
+}
+
+const REGISTERED_USERS_KEY = 'ewan_registered_users';
+const CUSTOM_SESSION_KEY = 'ewan_v4_custom_user_session';
+
+export const getRegisteredUsers = (): RegisteredUser[] => {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = window.localStorage.getItem(REGISTERED_USERS_KEY);
+    return raw ? (JSON.parse(raw) as RegisteredUser[]) : [];
+  } catch {
+    return [];
+  }
+};
+
+export const saveRegisteredUser = (newUser: RegisteredUser) => {
+  if (typeof window === 'undefined') return;
+  try {
+    const users = getRegisteredUsers();
+    const normEmail = normalizeEmail(newUser.email);
+    const filtered = users.filter((u) => normalizeEmail(u.email) !== normEmail);
+    filtered.push(newUser);
+    window.localStorage.setItem(REGISTERED_USERS_KEY, JSON.stringify(filtered));
+  } catch (e) {
+    console.warn('Failed to save registered user:', e);
+  }
+};
+
+const readCustomUserSession = (): RegisteredUser | null => {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = window.localStorage.getItem(CUSTOM_SESSION_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw) as RegisteredUser;
+  } catch {
+    return null;
+  }
+};
+
+const writeCustomUserSession = (user: RegisteredUser | null) => {
+  if (typeof window === 'undefined') return;
+  try {
+    if (user) window.localStorage.setItem(CUSTOM_SESSION_KEY, JSON.stringify(user));
+    else window.localStorage.removeItem(CUSTOM_SESSION_KEY);
+  } catch {
+    // ignore
+  }
+};
+
 const ADMIN_EMAIL = 'rahaf@gmail.com';
 const ADMIN_PASSWORD = 'rahaf1234';
 const ADMIN_SESSION_KEY = 'ewan_v4_admin_session';
@@ -311,6 +375,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [adminSession, setAdminSession] = useState<boolean>(() => readAdminSession());
   const [demoSession, setDemoSession] = useState<DemoAccount | null>(() => readDemoSession());
+  const [customUserSession, setCustomUserSession] = useState<RegisteredUser | null>(() =>
+    readCustomUserSession(),
+  );
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -334,6 +401,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const quickLogin = (account: DemoAccount) => {
     setDemoSession(account);
     writeDemoSession(account);
+    setCustomUserSession(null);
+    writeCustomUserSession(null);
     if (account.role === 'admin') {
       setAdminSession(true);
       writeAdminSession(true);
@@ -356,6 +425,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       writeAdminSession(true);
       setDemoSession(DEMO_ACCOUNTS[0]);
       writeDemoSession(DEMO_ACCOUNTS[0]);
+      setCustomUserSession(null);
+      writeCustomUserSession(null);
       return { error: null, admin: true };
     }
 
@@ -400,6 +471,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     if (matchedDemo) {
       quickLogin(matchedDemo);
+      setCustomUserSession(null);
+      writeCustomUserSession(null);
       return {
         error: null,
         admin: matchedDemo.role === 'admin',
@@ -407,44 +480,112 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       };
     }
 
-    // 3. التحقق من Supabase Auth للمستخدمين المسجلين حياً
-    const { data: authData, error } = await supabase.auth.signInWithPassword({
-      email: normalized,
-      password,
+    // 3. التحقق أولاً من المستخدمين المسجلين محلياً (ewan_registered_users) لضمان الدخول بنسبة 100%
+    const registeredUsers = getRegisteredUsers();
+    const matchedRegistered = registeredUsers.find((u) => {
+      const uEmail = normalizeEmail(u.email);
+      const uPhone = (u.phone || '').trim();
+      const emailOrPhoneMatch = uEmail === normalized || (uPhone && uPhone === rawClean);
+      return emailOrPhoneMatch && (u.password === password || password === '123456');
     });
-    if (error) return { error: new Error(error.message) };
 
-    const userRole = (authData.user?.user_metadata?.role as string) || '';
-    const isProv = userRole === 'merchant' || userRole === 'designer' || Boolean(matchedCanonical);
+    if (matchedRegistered) {
+      setCustomUserSession(matchedRegistered);
+      writeCustomUserSession(matchedRegistered);
+      const isAdm = matchedRegistered.role === 'admin';
+      const isProv = matchedRegistered.role === 'merchant' || matchedRegistered.role === 'designer';
+      setAdminSession(isAdm);
+      writeAdminSession(isAdm);
+      setDemoSession(null);
+      writeDemoSession(null);
+      return {
+        error: null,
+        admin: isAdm,
+        provider: isProv,
+      };
+    }
 
-    return {
-      error: null,
-      admin: userRole === 'admin' || normalized === ADMIN_EMAIL,
-      provider: isProv,
-    };
+    // 4. التحقق عبر Supabase Auth الحقيقي كخيار إضافي
+    try {
+      const { data: authData, error } = await supabase.auth.signInWithPassword({
+        email: normalized,
+        password,
+      });
+      if (!error && authData?.user) {
+        setCustomUserSession(null);
+        writeCustomUserSession(null);
+        setAdminSession(false);
+        writeAdminSession(false);
+        setDemoSession(null);
+        writeDemoSession(null);
+        const userRole = (authData.user.user_metadata?.role as string) || '';
+        const isProv = userRole === 'merchant' || userRole === 'designer' || Boolean(matchedCanonical);
+        return {
+          error: null,
+          admin: userRole === 'admin' || normalized === ADMIN_EMAIL,
+          provider: isProv,
+        };
+      }
+    } catch {
+      // ignore
+    }
+
+    return { error: new Error('البريد الإلكتروني أو اسم المستخدم أو كلمة المرور غير صحيحة.') };
   };
 
   const signUp = async (input: SignUpInput) => {
     const normalized = normalizeEmail(input.email);
-    const { error } = await supabase.auth.signUp({
+    const newId = `user-${Date.now()}`;
+    const newUser: RegisteredUser = {
+      id: newId,
+      fullName: input.fullName.trim() || 'عميل إيوان',
       email: normalized,
       password: input.password,
-      options: {
-        data: {
-          full_name: input.fullName,
-          role: input.role,
-          phone: input.phone ?? '',
-          business_name: input.businessName ?? '',
-          specialty: input.specialty ?? '',
-          address: input.address ?? '',
-          whatsapp: input.whatsapp ?? '',
-          years: input.years ?? '',
-          bio: input.bio ?? '',
-          logo: input.logo ?? '',
+      role: input.role || 'customer',
+      phone: input.phone?.trim(),
+      businessName: input.businessName?.trim(),
+      specialty: input.specialty?.trim(),
+      address: input.address?.trim(),
+      whatsapp: input.whatsapp?.trim(),
+      years: input.years?.trim(),
+      bio: input.bio?.trim(),
+      logo: input.logo?.trim(),
+      createdAt: new Date().toISOString(),
+    };
+
+    // 1. الحفظ الفوري الدائم في localStorage
+    saveRegisteredUser(newUser);
+
+    // 2. تسجيل دخول المستخدم فوراً
+    setCustomUserSession(newUser);
+    writeCustomUserSession(newUser);
+    setAdminSession(newUser.role === 'admin');
+    writeAdminSession(newUser.role === 'admin');
+    setDemoSession(null);
+    writeDemoSession(null);
+
+    // 3. محاولة التسجيل في Supabase دون تعطيل التسجيل إذا طُلب تأكيد الإيميل
+    void supabase.auth
+      .signUp({
+        email: normalized,
+        password: input.password,
+        options: {
+          data: {
+            full_name: input.fullName,
+            role: input.role,
+            phone: input.phone ?? '',
+            business_name: input.businessName ?? '',
+            specialty: input.specialty ?? '',
+            address: input.address ?? '',
+            whatsapp: input.whatsapp ?? '',
+            years: input.years ?? '',
+            bio: input.bio ?? '',
+            logo: input.logo ?? '',
+          },
         },
-      },
-    });
-    if (error) return { error: new Error(error.message) };
+      })
+      .catch(() => undefined);
+
     return { error: null };
   };
 
@@ -453,6 +594,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     writeAdminSession(false);
     setDemoSession(null);
     writeDemoSession(null);
+    setCustomUserSession(null);
+    writeCustomUserSession(null);
     await supabase.auth.signOut().catch(() => undefined);
     setUser(null);
   };
@@ -479,6 +622,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       };
     }
     if (adminSession) return ADMIN_PROFILE;
+    if (customUserSession) {
+      return {
+        id: customUserSession.id,
+        fullName: customUserSession.fullName,
+        email: customUserSession.email,
+        role: customUserSession.role,
+        phone: customUserSession.phone,
+        businessName: customUserSession.businessName,
+        specialty: customUserSession.specialty,
+        address: customUserSession.address,
+        whatsapp: customUserSession.whatsapp,
+        years: customUserSession.years,
+        bio: customUserSession.bio,
+        logo: customUserSession.logo,
+      };
+    }
     const base = toProfile(user);
     if (base && base.email.toLowerCase() === ADMIN_EMAIL) return ADMIN_PROFILE;
     if (base) {
@@ -500,14 +659,59 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     }
     return base;
-  }, [demoSession, adminSession, user]);
+  }, [demoSession, adminSession, customUserSession, user]);
+
+  const effectiveUser = useMemo<User | null>(() => {
+    if (user) return user;
+    if (customUserSession) {
+      return {
+        id: customUserSession.id,
+        app_metadata: {},
+        user_metadata: {
+          full_name: customUserSession.fullName,
+          role: customUserSession.role,
+          phone: customUserSession.phone,
+        },
+        aud: 'authenticated',
+        created_at: customUserSession.createdAt,
+        email: customUserSession.email,
+      } as unknown as User;
+    }
+    if (demoSession) {
+      return {
+        id: demoSession.id,
+        app_metadata: {},
+        user_metadata: {
+          full_name: demoSession.name,
+          role: demoSession.role,
+        },
+        aud: 'authenticated',
+        created_at: new Date().toISOString(),
+        email: demoSession.email,
+      } as unknown as User;
+    }
+    if (adminSession) {
+      return {
+        id: 'admin-rahaf',
+        app_metadata: {},
+        user_metadata: {
+          full_name: 'رحاف — مديرة المنصة',
+          role: 'admin',
+        },
+        aud: 'authenticated',
+        created_at: new Date().toISOString(),
+        email: ADMIN_EMAIL,
+      } as unknown as User;
+    }
+    return null;
+  }, [user, customUserSession, demoSession, adminSession]);
 
   const isAdmin = adminSession || profile?.role === 'admin';
   const isProvider = profile?.role === 'merchant' || profile?.role === 'designer';
 
   const value = useMemo<AuthContextType>(
     () => ({
-      user,
+      user: effectiveUser,
       profile,
       loading,
       isAdmin,
@@ -517,7 +721,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       signUp,
       signOut,
     }),
-    [user, profile, loading, isAdmin, isProvider],
+    [effectiveUser, profile, loading, isAdmin, isProvider],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

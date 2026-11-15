@@ -25,7 +25,7 @@ const CartPage = () => {
   const navigate = useNavigate();
   const { cart, setQuantity, removeLine, subtotal, clearCart } = useStore();
   const { products, stores, createRequest } = useCatalog();
-  const { profile } = useAuth();
+  const { profile, user } = useAuth();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
@@ -56,6 +56,13 @@ const CartPage = () => {
   const delivery = subtotal > 0 ? 15000 : 0;
 
   const checkout = async () => {
+    if (!profile && !user) {
+      toast.error('يرجى تسجيل الدخول أولاً لإتمام الطلب', {
+        description: 'سجّل دخولك لمتابعة عملية الشراء وتأكيد طلبك.',
+      });
+      navigate('/login');
+      return;
+    }
     if (!name.trim() || !phone.trim()) {
       toast.error('الاسم ورقم التواصل مطلوبان');
       return;

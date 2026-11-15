@@ -7,7 +7,9 @@ import {
   useState,
   type ReactNode,
 } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { useAuth } from '@/contexts/AuthContext';
 import { useCatalog } from '@/contexts/CatalogContext';
 import type { Product } from '@/data/catalog';
 
@@ -101,6 +103,8 @@ const writePersisted = (state: PersistedState) => {
 
 export const StoreProvider = ({ children }: { children: ReactNode }) => {
   const { products } = useCatalog();
+  const { user, profile } = useAuth();
+  const navigate = useNavigate();
   const [cart, setCart] = useState<CartLine[]>(() => readPersisted().cart);
   const [wishlist, setWishlist] = useState<string[]>(() => readPersisted().wishlist);
   const [cartOpen, setCartOpen] = useState(false);
@@ -112,6 +116,16 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
 
   const addToCart = useCallback(
     (product: Product, color: string, quantity = 1, options?: { silent?: boolean }) => {
+      // تحقق حاسم: منع الإضافة للسلة لغير المسجلين
+      const isAuthenticated = Boolean(user || profile);
+      if (!isAuthenticated) {
+        toast.error('يرجى تسجيل الدخول أولاً لإضافة القطع إلى السلة', {
+          description: 'سجّل دخولك لمتابعة التسوق وإضافة المنتجات إلى سلتك.',
+        });
+        navigate('/login');
+        return;
+      }
+
       const key = `${product.id}-${color}`;
       setCart((current) => {
         const existing = current.find((line) => line.key === key);
@@ -128,7 +142,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
         });
       }
     },
-    [],
+    [user, profile, navigate],
   );
 
   const removeLine = useCallback((key: string) => {
