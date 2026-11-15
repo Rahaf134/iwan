@@ -549,6 +549,8 @@ export const CatalogProvider = ({ children }: { children: ReactNode }) => {
               ? {
                   ...p,
                   ...input,
+                  compareAt: input.compareAt ?? undefined,
+                  badge: input.badge ?? undefined,
                   storeId: safeStoreId,
                   storeDbId: safeStoreId,
                 }
