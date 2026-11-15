@@ -16,6 +16,7 @@ import {
   Wand2,
   Bed,
   Compass,
+  RotateCw,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import PageMeta from '@/components/common/PageMeta';
@@ -96,6 +97,35 @@ const roomImages: Record<
   },
 };
 
+// خيارات التصاميم البديلة لكل غرفة (3 خيارات فخمة ومتناسقة مع هوية إيوان الدافئة)
+const roomVariations: Record<RoomId, string[]> = {
+  living: [
+    IMG.showroomLuxury || 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1200&q=85',
+    'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1200&q=85',
+    'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1200&q=85',
+  ],
+  bedroom: [
+    IMG.bedroom || 'https://images.unsplash.com/photo-1616594039964-ae9021a400a0?auto=format&fit=crop&w=1200&q=85',
+    'https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?auto=format&fit=crop&w=1200&q=85',
+    'https://images.unsplash.com/photo-1540518614846-7ede433c4ef4?auto=format&fit=crop&w=1200&q=85',
+  ],
+  majlis: [
+    IMG.majlis || 'https://images.unsplash.com/photo-1540932239986-30128078f3c5?auto=format&fit=crop&w=1200&q=85',
+    'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?auto=format&fit=crop&w=1200&q=85',
+    'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=85',
+  ],
+  dining: [
+    IMG.dining || 'https://images.unsplash.com/photo-1617806118233-18e1de247200?auto=format&fit=crop&w=1200&q=85',
+    'https://images.unsplash.com/photo-1615066390971-03e4e1c36ddf?auto=format&fit=crop&w=1200&q=85',
+    'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=85',
+  ],
+  coffee: [
+    IMG.coffee || 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1200&q=85',
+    'https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=1200&q=85',
+    'https://images.unsplash.com/photo-1554995207-c18c203602cb?auto=format&fit=crop&w=1200&q=85',
+  ],
+};
+
 // نقاط التسوق التفاعلية فوق قطع الأثاث (Hotspots)
 interface HotspotPin {
   id: string;
@@ -151,6 +181,10 @@ const DesignerPage = () => {
   const [phase, setPhase] = useState<'idle' | 'analyzing' | 'done'>('idle');
   const [split, setSplit] = useState<number>(50);
   const [activeHotspotId, setActiveHotspotId] = useState<string | null>(null);
+
+  // حالة المقترحات المتعددة وإعادة التوليد
+  const [variationIndex, setVariationIndex] = useState<number>(0);
+  const [isRegenerating, setIsRegenerating] = useState<boolean>(false);
 
   // نتائج التحليل البصري ومطابقة Gemini
   const [analysisResult, setAnalysisResult] = useState<{
@@ -243,15 +277,41 @@ const DesignerPage = () => {
       });
 
       setPhase('done');
+      setVariationIndex(0);
       setSplit(50); // ضبط المقبض في المنتصف مباشرة
     }, 1800);
   };
+
+  // إعادة توليد اقتراح تصميم بديل
+  const handleRegenerate = () => {
+    if (isRegenerating) return;
+    setIsRegenerating(true);
+    setActiveHotspotId(null);
+    window.setTimeout(() => {
+      setVariationIndex((prev) => (prev + 1) % 3);
+      setIsRegenerating(false);
+    }, 800);
+  };
+
+  // اختيار مقترح بديل مباشر من المصغرات
+  const handleSelectVariation = (idx: number) => {
+    if (idx === variationIndex || isRegenerating) return;
+    setIsRegenerating(true);
+    setActiveHotspotId(null);
+    window.setTimeout(() => {
+      setVariationIndex(idx);
+      setIsRegenerating(false);
+    }, 400);
+  };
+
+  // الصور المقترحة للغرفة الحالية
+  const activeVariations = roomVariations[selectedRoom] ?? roomVariations.living;
 
   // الصورة الحالية لـ (قبل وبعد)
   const currentBeforeImage = userPhoto ?? roomImages[selectedRoom].before;
   const currentAfterImage =
     phase === 'done'
-      ? roomImages[selectedRoom].generated
+      ? activeVariations[variationIndex] || roomImages[selectedRoom].generated
       : roomImages[selectedRoom].after;
 
   // النقاط التفاعلية للغرفة المحددة
@@ -296,6 +356,7 @@ const DesignerPage = () => {
                         type="button"
                         onClick={() => {
                           setSelectedRoom(item.id);
+                          setVariationIndex(0);
                           setPhase('idle');
                           setActiveHotspotId(null);
                         }}
@@ -578,16 +639,32 @@ const DesignerPage = () => {
               {/* صندوق المعاينة التفاعلي */}
               <div className="overflow-hidden rounded-3xl border border-[#E5DEC9] bg-[#F3EDE2]/70 shadow-md">
                 {/* رأس صندوق المعاينة */}
-                <div className="flex items-center justify-between border-b border-[#F0EAE1] bg-[#FAF7F2] px-5 py-3">
+                <div className="flex items-center justify-between border-b border-[#F0EAE1] bg-[#FAF7F2] px-4 sm:px-5 py-3">
                   <div className="flex items-center gap-2">
                     <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
                     <span className="text-xs font-semibold text-[#231F1E]">
                       معاينة المساحة: {activeRoomData.label} · {activeStyleData.label}
                     </span>
                   </div>
-                  <span className="text-[11px] font-medium text-[#786C65]">
-                    {roomWidth}×{roomLength} متر
-                  </span>
+
+                  <div className="flex items-center gap-2.5">
+                    {phase === 'done' && (
+                      <button
+                        type="button"
+                        onClick={handleRegenerate}
+                        disabled={isRegenerating}
+                        className="inline-flex items-center gap-1.5 rounded-full border border-[#D8CBB8] bg-[#F5EFE6] px-3 py-1 text-xs font-medium text-[#231F1E] hover:bg-[#EFE7DA] transition-all active:scale-95 disabled:opacity-60 cursor-pointer shadow-2xs"
+                        title="إعادة توليد اقتراح آخر"
+                      >
+                        <RotateCw className={cn('h-3.5 w-3.5 text-[#8C7355]', isRegenerating && 'animate-spin')} />
+                        <span className="hidden sm:inline">إعادة توليد اقتراح آخر</span>
+                        <span className="sm:hidden">اقتراح آخر</span>
+                      </button>
+                    )}
+                    <span className="text-[11px] font-medium text-[#786C65]">
+                      {roomWidth}×{roomLength} متر
+                    </span>
+                  </div>
                 </div>
 
                 {/* صورة المقارنة المباشرة مع شريط السحب التفاعلي */}
@@ -720,7 +797,67 @@ const DesignerPage = () => {
                       </p>
                     </div>
                   )}
+
+                  {/* مؤشر التحميل السريع عند إعادة التوليد */}
+                  {isRegenerating && (
+                    <div className="absolute inset-0 z-40 flex flex-col items-center justify-center gap-2.5 bg-black/65 backdrop-blur-xs text-white animate-in fade-in duration-150">
+                      <RotateCw className="h-7 w-7 animate-spin text-[#EFE7DA]" />
+                      <p className="text-xs font-medium text-[#FAF7F2]">
+                        جارٍ استكشاف توزيع بديل للمساحة…
+                      </p>
+                    </div>
+                  )}
                 </div>
+
+                {/* شريط المصغرات الأنيق للـ 3 مقترحات البديلة */}
+                {phase === 'done' && (
+                  <div className="border-t border-[#E5DEC9] bg-[#FAF7F2] px-4 sm:px-5 py-3 flex flex-wrap items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <span className="text-xs font-medium text-[#786C65]">
+                        مقترحات بديلة ({variationIndex + 1}/3):
+                      </span>
+                      <div className="flex items-center gap-2">
+                        {activeVariations.map((imgUrl, idx) => {
+                          const isActive = idx === variationIndex;
+                          return (
+                            <button
+                              key={idx}
+                              type="button"
+                              onClick={() => handleSelectVariation(idx)}
+                              disabled={isRegenerating}
+                              className={cn(
+                                'relative h-12 w-16 overflow-hidden rounded-xl border transition-all duration-200 active:scale-95 cursor-pointer',
+                                isActive
+                                  ? 'border-[#231F1E] ring-2 ring-[#231F1E]/20 shadow-xs scale-105'
+                                  : 'border-[#E5DEC9] opacity-75 hover:opacity-100 hover:border-[#8C7355]',
+                              )}
+                              title={`المقترح ${idx + 1}`}
+                            >
+                              <img
+                                src={imgUrl}
+                                alt={`مقترح ${idx + 1}`}
+                                className="h-full w-full object-cover"
+                              />
+                              {isActive && (
+                                <span className="absolute inset-0 bg-[#231F1E]/10" />
+                              )}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={handleRegenerate}
+                      disabled={isRegenerating}
+                      className="inline-flex items-center gap-1.5 rounded-full border border-[#D8CBB8] bg-[#F5EFE6] px-3.5 py-1.5 text-xs font-medium text-[#231F1E] hover:bg-[#EFE7DA] transition-all active:scale-95 cursor-pointer"
+                    >
+                      <RotateCw className={cn('h-3.5 w-3.5 text-[#8C7355]', isRegenerating && 'animate-spin')} />
+                      <span>اقتراح آخر</span>
+                    </button>
+                  </div>
+                )}
 
                 {/* تذييل المعاينة وإرشادات التفاعل */}
                 <div className="flex items-center justify-between border-t border-[#F0EAE1] p-4 text-xs text-[#6B5E55]">
