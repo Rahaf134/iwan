@@ -222,9 +222,17 @@ interface AuthContextType {
   loading: boolean;
   isAdmin: boolean;
   isProvider: boolean;
-  signIn: (email: string, password: string) => Promise<{ error: Error | null; admin?: boolean; provider?: boolean }>;
+  signIn: (
+    email: string,
+    password: string,
+  ) => Promise<{
+    error: Error | null;
+    admin?: boolean;
+    provider?: boolean;
+    emailNotConfirmed?: boolean;
+  }>;
   quickLogin: (account: DemoAccount) => void;
-  signUp: (input: SignUpInput) => Promise<{ error: Error | null }>;
+  signUp: (input: SignUpInput) => Promise<{ error: Error | null; needsEmailConfirmation?: boolean }>;
   signOut: () => Promise<void>;
 }
 
@@ -416,7 +424,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const rawClean = (email || '').trim().toLowerCase();
     const normalized = normalizeEmail(rawClean);
 
-    // 1. التحقق من الحساب السري لمديرة المنصة
+    // 1. التحقق من الحساب السري لمديرة المنصة (فوري ومباشر دون تأكيد إيميل)
     if (
       (rawClean === 'rahaf' || rawClean === 'admin' || normalized === ADMIN_EMAIL) &&
       (password === ADMIN_PASSWORD || password === '123456')
@@ -427,10 +435,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       writeDemoSession(DEMO_ACCOUNTS[0]);
       setCustomUserSession(null);
       writeCustomUserSession(null);
-      return { error: null, admin: true };
+      return { error: null, admin: true, provider: false };
     }
 
-    // 2. التحقق من الحسابات التجريبية للمعارض والمصممين
+    // 2. التحقق من الحسابات التجريبية للمعارض والمصممين (فوري ومباشر دون تأكيد إيميل)
     const matchedCanonical = resolveCanonicalProvider({
       email: rawClean,
       businessName: rawClean,
@@ -441,7 +449,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     const matchedDemo = DEMO_ACCOUNTS.find((acc) => {
-      // مطابقة كلمة المرور (123456 لجميع الحسابات التجريبية)
+      // مطابقة كلمة المرور (123456 لجميع الحسابات التجريبية أو كلمة مرور الحساب المحددة)
       if (acc.password !== password && password !== '123456') return false;
 
       const accEmail = normalizeEmail(acc.email);
@@ -480,45 +488,87 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       };
     }
 
-    // 3. التحقق أولاً من المستخدمين المسجلين محلياً (ewan_registered_users) لضمان الدخول بنسبة 100%
-    const registeredUsers = getRegisteredUsers();
-    const matchedRegistered = registeredUsers.find((u) => {
-      const uEmail = normalizeEmail(u.email);
-      const uPhone = (u.phone || '').trim();
-      const emailOrPhoneMatch = uEmail === normalized || (uPhone && uPhone === rawClean);
-      return emailOrPhoneMatch && (u.password === password || password === '123456');
-    });
-
-    if (matchedRegistered) {
-      setCustomUserSession(matchedRegistered);
-      writeCustomUserSession(matchedRegistered);
-      const isAdm = matchedRegistered.role === 'admin';
-      const isProv = matchedRegistered.role === 'merchant' || matchedRegistered.role === 'designer';
-      setAdminSession(isAdm);
-      writeAdminSession(isAdm);
-      setDemoSession(null);
-      writeDemoSession(null);
-      return {
-        error: null,
-        admin: isAdm,
-        provider: isProv,
-      };
-    }
-
-    // 4. التحقق عبر Supabase Auth الحقيقي كخيار إضافي
+    // 3. التحقق عبر Supabase Auth الحقيقي لكافة المستخدمين والعملاء
     try {
       const { data: authData, error } = await supabase.auth.signInWithPassword({
         email: normalized,
         password,
       });
-      if (!error && authData?.user) {
+
+      if (error) {
+        const msg = (error.message || '').toLowerCase();
+        const code = ((error as any).code || '').toLowerCase();
+
+        // فحص إذا كان الحساب غير مفعّل عبر رابط البريد الإلكتروني
+        if (
+          msg.includes('email not confirmed') ||
+          msg.includes('not confirmed') ||
+          code === 'email_not_confirmed'
+        ) {
+          return {
+            error: new Error(
+              'حسابك غير مفعّل بعد! يرجى فتح بريدك الإلكتروني والضغط على رابط التوثيق المرسل إليك لتتمكن من الدخول.',
+            ),
+            emailNotConfirmed: true,
+          };
+        }
+
+        // فحص إذا كانت بيانات الدخول خاطئة
+        if (
+          msg.includes('invalid login credentials') ||
+          msg.includes('invalid credentials') ||
+          code === 'invalid_credentials'
+        ) {
+          return {
+            error: new Error('البريد الإلكتروني أو كلمة المرور غير صحيحة.'),
+            emailNotConfirmed: false,
+          };
+        }
+
+        return {
+          error: new Error(error.message || 'البريد الإلكتروني أو كلمة المرور غير صحيحة.'),
+          emailNotConfirmed: false,
+        };
+      }
+
+      if (authData?.user) {
         setCustomUserSession(null);
         writeCustomUserSession(null);
         setAdminSession(false);
         writeAdminSession(false);
         setDemoSession(null);
         writeDemoSession(null);
-        const userRole = (authData.user.user_metadata?.role as string) || '';
+
+        const registeredUsers = getRegisteredUsers();
+        const matchedLocal = registeredUsers.find((u) => normalizeEmail(u.email) === normalized);
+        const meta = authData.user.user_metadata || {};
+        const userRole = (meta.role as UserRole) || matchedLocal?.role || 'customer';
+        const userFullName =
+          (meta.full_name as string) ||
+          matchedLocal?.fullName ||
+          authData.user.email?.split('@')[0] ||
+          'عميل إيوان';
+
+        const customUser: RegisteredUser = {
+          id: authData.user.id,
+          fullName: userFullName,
+          email: authData.user.email || normalized,
+          password: '',
+          role: userRole,
+          phone: (meta.phone as string) || matchedLocal?.phone || '',
+          businessName: (meta.business_name as string) || matchedLocal?.businessName,
+          specialty: (meta.specialty as string) || matchedLocal?.specialty,
+          address: (meta.address as string) || matchedLocal?.address,
+          whatsapp: (meta.whatsapp as string) || matchedLocal?.whatsapp,
+          years: (meta.years as string) || matchedLocal?.years,
+          bio: (meta.bio as string) || matchedLocal?.bio,
+          logo: (meta.logo as string) || matchedLocal?.logo,
+          createdAt: authData.user.created_at || new Date().toISOString(),
+        };
+
+        setCustomUserSession(customUser);
+        writeCustomUserSession(customUser);
+
         const isProv = userRole === 'merchant' || userRole === 'designer' || Boolean(matchedCanonical);
         return {
           error: null,
@@ -526,8 +576,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           provider: isProv,
         };
       }
-    } catch {
-      // ignore
+    } catch (err: any) {
+      return {
+        error: new Error(err?.message || 'تعذّر الاتصال بخادم تسجيل الدخول. يرجى المحاولة لاحقاً.'),
+      };
     }
 
     return { error: new Error('البريد الإلكتروني أو اسم المستخدم أو كلمة المرور غير صحيحة.') };
@@ -553,40 +605,53 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       createdAt: new Date().toISOString(),
     };
 
-    // 1. الحفظ الفوري الدائم في localStorage
+    // حفظ المستخدم في التخزين المحلي للرجوع لبياناته بعد التفعيل
     saveRegisteredUser(newUser);
 
-    // 2. تسجيل دخول المستخدم فوراً
-    setCustomUserSession(newUser);
-    writeCustomUserSession(newUser);
-    setAdminSession(newUser.role === 'admin');
-    writeAdminSession(newUser.role === 'admin');
+    // عدم تسجيل دخول المستخدم تلقائياً لكي يوثق بريده أولاً
+    setCustomUserSession(null);
+    writeCustomUserSession(null);
+    setAdminSession(false);
+    writeAdminSession(false);
     setDemoSession(null);
     writeDemoSession(null);
 
-    // 3. محاولة التسجيل في Supabase دون تعطيل التسجيل إذا طُلب تأكيد الإيميل
-    void supabase.auth
-      .signUp({
+    // استدعاء Supabase الحقيقي لإرسال رابط التفعيل إلى البريد
+    try {
+      const { error } = await supabase.auth.signUp({
         email: normalized,
         password: input.password,
         options: {
           data: {
-            full_name: input.fullName,
-            role: input.role,
-            phone: input.phone ?? '',
-            business_name: input.businessName ?? '',
-            specialty: input.specialty ?? '',
-            address: input.address ?? '',
-            whatsapp: input.whatsapp ?? '',
-            years: input.years ?? '',
-            bio: input.bio ?? '',
-            logo: input.logo ?? '',
+            full_name: input.fullName.trim(),
+            role: input.role || 'customer',
+            phone: input.phone?.trim() ?? '',
+            business_name: input.businessName?.trim() ?? '',
+            specialty: input.specialty?.trim() ?? '',
+            address: input.address?.trim() ?? '',
+            whatsapp: input.whatsapp?.trim() ?? '',
+            years: input.years?.trim() ?? '',
+            bio: input.bio?.trim() ?? '',
+            logo: input.logo?.trim() ?? '',
           },
         },
-      })
-      .catch(() => undefined);
+      });
 
-    return { error: null };
+      if (error) {
+        const msg = (error.message || '').toLowerCase();
+        if (msg.includes('already registered') || msg.includes('user already exists')) {
+          return { error: new Error('هذا البريد الإلكتروني مسجل بالفعل. يرجى تسجيل الدخول أو استخدام بريد آخر.') };
+        }
+        if (msg.includes('rate limit')) {
+          return { error: new Error('تم تجاوز حد إرسال الرسائل مؤقتاً. يرجى الانتظار بضع دقائق ثم المحاولة.') };
+        }
+        return { error: new Error(error.message || 'تعذّر إنشاء الحساب. يرجى المحاولة لاحقاً.') };
+      }
+
+      return { error: null, needsEmailConfirmation: true };
+    } catch (err: any) {
+      return { error: new Error(err?.message || 'تعذّر الاتصال بخادم المصادقة. يرجى المحاولة لاحقاً.') };
+    }
   };
 
   const signOut = async () => {

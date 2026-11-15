@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowLeft, Lock, Mail } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Lock, Mail, MailWarning } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import PageMeta from '@/components/common/PageMeta';
 import { Button } from '@/components/ui/button';
@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/contexts/AuthContext';
 import { heroImage } from '@/data/catalog';
+import { cn } from '@/lib/utils';
 
 const LoginPage = () => {
   const { signIn } = useAuth();
@@ -14,16 +15,24 @@ const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [isUnconfirmed, setIsUnconfirmed] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setLoading(true);
     setError(null);
+    setIsUnconfirmed(false);
     const result = await signIn(email, password);
     setLoading(false);
     if (result.error) {
-      setError('البريد الإلكتروني أو اسم المستخدم أو كلمة المرور غير صحيحة.');
+      if (result.emailNotConfirmed) {
+        setIsUnconfirmed(true);
+        setError('حسابك غير مفعّل بعد! يرجى فتح بريدك الإلكتروني والضغط على رابط التوثيق المرسل إليك لتتمكن من الدخول.');
+      } else {
+        setIsUnconfirmed(false);
+        setError(result.error.message || 'البريد الإلكتروني أو كلمة المرور غير صحيحة.');
+      }
       return;
     }
     if (result.admin) {
@@ -92,9 +101,30 @@ const LoginPage = () => {
             </div>
 
             {error && (
-              <p className="rounded-xl border border-wood/30 bg-sand/40 px-4 py-3 text-xs text-sand-foreground">
-                {error}
-              </p>
+              <div
+                className={cn(
+                  'rounded-2xl border p-4 text-xs transition-all shadow-sm',
+                  isUnconfirmed
+                    ? 'border-amber-300 bg-amber-50/95 text-amber-950'
+                    : 'border-rose-200 bg-rose-50/95 text-rose-950',
+                )}
+              >
+                <div className="flex items-start gap-3">
+                  {isUnconfirmed ? (
+                    <MailWarning className="h-5 w-5 shrink-0 text-amber-600 mt-0.5" strokeWidth={1.8} />
+                  ) : (
+                    <AlertCircle className="h-5 w-5 shrink-0 text-rose-600 mt-0.5" strokeWidth={1.8} />
+                  )}
+                  <div className="space-y-1">
+                    <p className="font-bold text-[13px]">
+                      {isUnconfirmed ? 'تنبيه تفعيل الحساب' : 'تعذّر تسجيل الدخول'}
+                    </p>
+                    <p className="leading-relaxed font-sans">
+                      {error}
+                    </p>
+                  </div>
+                </div>
+              </div>
             )}
 
             <Button

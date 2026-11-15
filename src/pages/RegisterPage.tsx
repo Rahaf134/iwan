@@ -1,7 +1,6 @@
 import { useState } from 'react';
-import { Hammer, Store, User } from 'lucide-react';
+import { Hammer, MailCheck, Store, User } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
 import PageMeta from '@/components/common/PageMeta';
 import { ImageUploadField } from '@/components/common/ImageUploadField';
 import { Button } from '@/components/ui/button';
@@ -36,6 +35,8 @@ const RegisterPage = () => {
   });
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [registeredEmail, setRegisteredEmail] = useState('');
 
   const isProvider = role === 'merchant' || role === 'designer';
 
@@ -62,16 +63,88 @@ const RegisterPage = () => {
     });
     setLoading(false);
     if (result.error) {
-      setError('تعذّر إنشاء الحساب. تحقق من البيانات وحاول مرة أخرى.');
+      setError(result.error.message || 'تعذّر إنشاء الحساب. تحقق من البيانات وحاول مرة أخرى.');
       return;
     }
-    toast.success('تم إنشاء الحساب بنجاح! تم تسجيل دخولك تلقائياً.');
-    if (isProvider) {
-      navigate('/provider', { replace: true });
-    } else {
-      navigate('/', { replace: true });
-    }
+    setRegisteredEmail(form.email);
+    setSuccess(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  if (success) {
+    return (
+      <>
+        <PageMeta
+          title="تم إنشاء الحساب بنجاح — إيوان"
+          description="تم إنشاء حسابك في منصة إيوان بنجاح. يرجى توثيق بريدك الإلكتروني."
+        />
+        <section className="mx-auto w-full max-w-2xl px-6 py-12 md:py-20">
+          <div className="rounded-3xl border border-[#E5DEC9] bg-[#F3EDE2]/80 p-8 sm:p-12 text-center shadow-xl backdrop-blur-sm">
+            {/* أيقونة البريد الكبيرة الأنيقة */}
+            <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full border border-[#DED4C6] bg-[#FAF7F2] text-[#9C6644] shadow-inner">
+              <MailCheck className="h-10 w-10 text-[#9C6644]" strokeWidth={1.6} />
+            </div>
+
+            {/* العنوان الرئيسي */}
+            <h1 className="font-display text-2xl font-bold text-[#231F1E] sm:text-3xl">
+              تم إنشاء حسابك بنجاح! 📩
+            </h1>
+
+            {/* نص التأكيد الصريح والمطلوب */}
+            <p className="mx-auto mt-4 max-w-lg text-base leading-relaxed text-[#5C534E]">
+              لقد أرسلنا رابط تفعيل إلى بريدك الإلكتروني{' '}
+              {registeredEmail && (
+                <span className="font-semibold text-[#231F1E] font-mono px-2 py-0.5 rounded-lg bg-[#FAF7F2] border border-[#E5DEC9]" dir="ltr">
+                  {registeredEmail}
+                </span>
+              )}
+              . يرجى فتح بريدك والضغط على الرابط لتوثيق حسابك ثم تسجيل الدخول.
+            </p>
+
+            {/* بطاقة إرشادية بألوان إيوان الدافئة */}
+            <div className="mt-8 rounded-2xl border border-[#DED4C6] bg-[#FAF7F2]/90 p-4 text-xs text-[#786C65] text-right">
+              <p className="font-bold text-[#231F1E] mb-1">💡 لم تجد رسالة التفعيل؟</p>
+              <p className="leading-relaxed">
+                يرجى تفقد مجلد الرسائل غير المرغوب فيها (Spam / Junk)؛ قد يستغرق وصول الرابط دقيقة أو دقيقتين.
+              </p>
+            </div>
+
+            {/* أزرار الإجراء */}
+            <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
+              <Button
+                onClick={() => navigate('/login')}
+                className="h-12 w-full sm:w-auto rounded-full bg-[#231F1E] px-8 text-white hover:bg-[#9C6644] text-sm font-semibold transition-all shadow-md"
+              >
+                الذهاب لصفحة تسجيل الدخول
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setSuccess(false);
+                  setForm({
+                    fullName: '',
+                    email: '',
+                    phone: '',
+                    password: '',
+                    businessName: '',
+                    specialty: '',
+                    address: '',
+                    whatsapp: '',
+                    years: '',
+                    bio: '',
+                    logo: '',
+                  });
+                }}
+                className="h-12 w-full sm:w-auto rounded-full border-[#DED4C6] bg-[#FAF7F2] px-6 text-[#5C534E] hover:bg-[#E5DEC9]/40 text-sm"
+              >
+                تسجيل حساب جديد آخر
+              </Button>
+            </div>
+          </div>
+        </section>
+      </>
+    );
+  }
 
   return (
     <>
