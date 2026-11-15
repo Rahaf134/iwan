@@ -278,7 +278,7 @@ ON CONFLICT (id) DO UPDATE SET
 
 -- منتجات الأثاث الحية (41 منتج)
 INSERT INTO public.products (id, legacy_id, slug, name, category, price, compare_at, rating, reviews, colors, materials, images, badge, featured, available, description, dimensions, care, store_id)
-VALUES ('e8b10031-0000-4000-8000-000000000031', NULL, 'travertine-table-lamp', 'أباجورة طاولة قاعدة ترافنتين وغطاء كتان', 'إضاءة', 55000, NULL, 4.8, 28, '[{"hex":"#DFD5C6","name":"ترافنتين طبيعي"},{"hex":"#EDE6DA","name":"غطاء كتان بيج"}]'::jsonb, '["حجر ترافنتين طبيعي","شيد قماش كتان بيج"]'::jsonb, '["https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?auto=format&fit=crop&w=1000&q=80"]'::jsonb, NULL, FALSE, TRUE, 'أباجورة جانبية مميزة بقاعدة حجرية صلبة وغطاء ينشر ضوءاً ذهبياً دافئاً في زوايا الغرف.', 'قطر 28 سم × ارتفاع 42 سم', 'تنظيف الغطاء برول إزالة الوبر.', 'e8a10001-0000-4000-8000-000000000001')
+VALUES ('e8b10031-0000-4000-8000-000000000031', NULL, 'travertine-table-lamp', 'أباجورة طاولة قاعدة ترافنتين وغطاء كتان', 'إضاءة', 55000, NULL, 4.8, 28, '[{"hex":"#DFD5C6","name":"ترافنتين طبيعي"},{"hex":"#EDE6DA","name":"غطاء كتان بيج"}]'::jsonb, '["حجر ترافنتين طبيعي","شيد قماش كتان بيج"]'::jsonb, '[\"/products/travertine-table-lamp.jpg\"]'::jsonb, NULL, FALSE, TRUE, 'أباجورة جانبية مميزة بقاعدة حجرية صلبة وغطاء ينشر ضوءاً ذهبياً دافئاً في زوايا الغرف.', 'قطر 28 سم × ارتفاع 42 سم', 'تنظيف الغطاء برول إزالة الوبر.', 'e8a10001-0000-4000-8000-000000000001')
 ON CONFLICT (slug) DO UPDATE SET
   name = EXCLUDED.name,
   category = EXCLUDED.category,
@@ -286,7 +286,7 @@ ON CONFLICT (slug) DO UPDATE SET
   images = EXCLUDED.images,
   description = EXCLUDED.description;
 INSERT INTO public.products (id, legacy_id, slug, name, category, price, compare_at, rating, reviews, colors, materials, images, badge, featured, available, description, dimensions, care, store_id)
-VALUES ('e8b10033-0000-4000-8000-000000000033', NULL, 'ceramic-ribbed-sconce', 'إضاءة جدارية سيراميك مضلع إنارة دافئة', 'إضاءة', 42000, NULL, 4.7, 16, '[{"hex":"#E2D9CC","name":"سيراميك ترابي مطفي"},{"hex":"#BA7C5B","name":"تراكوتا هادئ"}]'::jsonb, '["سيراميك طيني مطبوخ يدوياً"]'::jsonb, '["https://images.unsplash.com/photo-1540932239986-30128078f3c5?auto=format&fit=crop&w=1000&q=80"]'::jsonb, NULL, FALSE, TRUE, 'أبليك جداري يوجه الضوء للأعلى والأسفل بانسيابية ناعمة لإنارة الممرات وجدار السرير.', '18 × 12 × 24 سم', 'مسح بقطعة قماش ناعمة.', '3b3d9526-cd59-436d-802c-d7f1fd352d76')
+VALUES ('e8b10033-0000-4000-8000-000000000033', NULL, 'ceramic-ribbed-sconce', 'إضاءة جدارية سيراميك مضلع إنارة دافئة', 'إضاءة', 42000, NULL, 4.7, 16, '[{"hex":"#E2D9CC","name":"سيراميك ترابي مطفي"},{"hex":"#BA7C5B","name":"تراكوتا هادئ"}]'::jsonb, '["سيراميك طيني مطبوخ يدوياً"]'::jsonb, '[\"/products/ceramic-ribbed-sconce.jpg\"]'::jsonb, NULL, FALSE, TRUE, 'أبليك جداري يوجه الضوء للأعلى والأسفل بانسيابية ناعمة لإنارة الممرات وجدار السرير.', '18 × 12 × 24 سم', 'مسح بقطعة قماش ناعمة.', '3b3d9526-cd59-436d-802c-d7f1fd352d76')
 ON CONFLICT (slug) DO UPDATE SET
   name = EXCLUDED.name,
   category = EXCLUDED.category,
@@ -294,7 +294,7 @@ ON CONFLICT (slug) DO UPDATE SET
   images = EXCLUDED.images,
   description = EXCLUDED.description;
 INSERT INTO public.products (id, legacy_id, slug, name, category, price, compare_at, rating, reviews, colors, materials, images, badge, featured, available, description, dimensions, care, store_id)
-VALUES ('93c56b2a-f623-4b4c-bda9-72a368688a9d', 'p8', 'brass-pendant-light', 'إضاءة معلقة نحاسية دافئة لغرف الطعام والصالات', 'إضاءة', 48000, NULL, 4.7, 71, '[{"hex":"#B08D57","name":"نحاسي"},{"hex":"#2B2B2B","name":"أسود مطفي"}]'::jsonb, '["نحاس مصقول","زجاج أوبال","لمبات LED دافئة"]'::jsonb, '["https://miaoda-site-img.s3cdn.medo.dev/images/KLing_42b64abe-730c-47e8-a520-371f2bd26d43.jpg"]'::jsonb, NULL, FALSE, TRUE, 'إضاءة معلقة نحاسية بضوء دافئ يمنح غرف الطعام والصالات جواً حميمياً، بتصميم هندسي بسيط وسهل التركيب.', 'القطر 40 سم', 'تلميع النحاس بقطعة ناعمة جافة.', '3b3d9526-cd59-436d-802c-d7f1fd352d76')
+VALUES ('93c56b2a-f623-4b4c-bda9-72a368688a9d', 'p8', 'brass-pendant-light', 'إضاءة معلقة نحاسية دافئة لغرف الطعام والصالات', 'إضاءة', 48000, NULL, 4.7, 71, '[{"hex":"#B08D57","name":"نحاسي"},{"hex":"#2B2B2B","name":"أسود مطفي"}]'::jsonb, '["نحاس مصقول","زجاج أوبال","لمبات LED دافئة"]'::jsonb, '[\"/products/brass-pendant-light.jpg\"]'::jsonb, NULL, FALSE, TRUE, 'إضاءة معلقة نحاسية بضوء دافئ يمنح غرف الطعام والصالات جواً حميمياً، بتصميم هندسي بسيط وسهل التركيب.', 'القطر 40 سم', 'تلميع النحاس بقطعة ناعمة جافة.', '3b3d9526-cd59-436d-802c-d7f1fd352d76')
 ON CONFLICT (slug) DO UPDATE SET
   name = EXCLUDED.name,
   category = EXCLUDED.category,
@@ -302,7 +302,7 @@ ON CONFLICT (slug) DO UPDATE SET
   images = EXCLUDED.images,
   description = EXCLUDED.description;
 INSERT INTO public.products (id, legacy_id, slug, name, category, price, compare_at, rating, reviews, colors, materials, images, badge, featured, available, description, dimensions, care, store_id)
-VALUES ('e8b10020-0000-4000-8000-000000000020', NULL, 'boucle-bed-bench', 'بنش مقعد سرير بوكليه دافئ بقوائم خشب', 'غرف نوم', 95000, NULL, 4.7, 14, '[{"hex":"#FAF7F2","name":"كريمي"},{"hex":"#9C6644","name":"بني تراكوتا"}]'::jsonb, '["خشب سنديان","قماش بوكليه تيدي"]'::jsonb, '["https://images.unsplash.com/photo-1592078615290-033ee584e267?auto=format&fit=crop&w=1000&q=80"]'::jsonb, NULL, FALSE, TRUE, 'مقعد جانبي يوضع عند طرف السرير أو في المداخل يجمع بين العملية والشكل الديكوري الجذاب.', '120 × 40 × 45 سم', 'شفط الغبار بالمكنسة الكهربائية برأس مخصص.', 'e8a10002-0000-4000-8000-000000000002')
+VALUES ('e8b10020-0000-4000-8000-000000000020', NULL, 'boucle-bed-bench', 'بنش مقعد سرير بوكليه دافئ بقوائم خشب', 'غرف نوم', 95000, NULL, 4.7, 14, '[{"hex":"#FAF7F2","name":"كريمي"},{"hex":"#9C6644","name":"بني تراكوتا"}]'::jsonb, '["خشب سنديان","قماش بوكليه تيدي"]'::jsonb, '[\"/products/boucle-bed-bench.jpg\"]'::jsonb, NULL, FALSE, TRUE, 'مقعد جانبي يوضع عند طرف السرير أو في المداخل يجمع بين العملية والشكل الديكوري الجذاب.', '120 × 40 × 45 سم', 'شفط الغبار بالمكنسة الكهربائية برأس مخصص.', 'e8a10002-0000-4000-8000-000000000002')
 ON CONFLICT (slug) DO UPDATE SET
   name = EXCLUDED.name,
   category = EXCLUDED.category,
@@ -310,7 +310,7 @@ ON CONFLICT (slug) DO UPDATE SET
   images = EXCLUDED.images,
   description = EXCLUDED.description;
 INSERT INTO public.products (id, legacy_id, slug, name, category, price, compare_at, rating, reviews, colors, materials, images, badge, featured, available, description, dimensions, care, store_id)
-VALUES ('e8b10027-0000-4000-8000-000000000027', NULL, 'fluted-glass-sideboard', 'بوفيه كونسول سفرة زجاج مضلع وخشب سنديان', 'مطابخ', 380000, NULL, 4.8, 23, '[{"hex":"#C4A47C","name":"سنديان طبيعي"},{"hex":"#453327","name":"جوزي داكن"}]'::jsonb, '["خشب بلوط طبيعي","زجاج مضلع عاكس خفيف"]'::jsonb, '["https://images.unsplash.com/photo-1595515106969-1ce29566ff1c?auto=format&fit=crop&w=1000&q=80"]'::jsonb, NULL, FALSE, TRUE, 'وحدة تخزين سفرة أنيقة بأبواب زجاجية مضلعة تخفي محتويات الضيافة جزئياً وتضفي رقياً هندسياً.', '160 × 45 × 80 سم', 'تنظيف الزجاج بملمع معتاد والخشب بقطعة رطبة.', 'e8a10002-0000-4000-8000-000000000002')
+VALUES ('e8b10027-0000-4000-8000-000000000027', NULL, 'fluted-glass-sideboard', 'بوفيه كونسول سفرة زجاج مضلع وخشب سنديان', 'مطابخ', 380000, NULL, 4.8, 23, '[{"hex":"#C4A47C","name":"سنديان طبيعي"},{"hex":"#453327","name":"جوزي داكن"}]'::jsonb, '["خشب بلوط طبيعي","زجاج مضلع عاكس خفيف"]'::jsonb, '[\"/products/fluted-glass-sideboard.jpg\"]'::jsonb, NULL, FALSE, TRUE, 'وحدة تخزين سفرة أنيقة بأبواب زجاجية مضلعة تخفي محتويات الضيافة جزئياً وتضفي رقياً هندسياً.', '160 × 45 × 80 سم', 'تنظيف الزجاج بملمع معتاد والخشب بقطعة رطبة.', 'e8a10002-0000-4000-8000-000000000002')
 ON CONFLICT (slug) DO UPDATE SET
   name = EXCLUDED.name,
   category = EXCLUDED.category,
@@ -318,7 +318,7 @@ ON CONFLICT (slug) DO UPDATE SET
   images = EXCLUDED.images,
   description = EXCLUDED.description;
 INSERT INTO public.products (id, legacy_id, slug, name, category, price, compare_at, rating, reviews, colors, materials, images, badge, featured, available, description, dimensions, care, store_id)
-VALUES ('e8b10029-0000-4000-8000-000000000029', NULL, 'ceramic-kitchen-prep-table', 'جزيرة مطبخ متحركة بسطح سيراميك دافئ', 'مطابخ', 420000, NULL, 4.8, 12, '[{"hex":"#F0ECE4","name":"أبيض عاجي وسنديان"},{"hex":"#4A4644","name":"رمادي غامق"}]'::jsonb, '["سطح سيراميك حراري مقاوم للخدش","هيكل خشب زان بعجلات مخفية"]'::jsonb, '["https://images.unsplash.com/photo-1565538810643-b5bdb714032a?auto=format&fit=crop&w=1200&q=80"]'::jsonb, NULL, FALSE, TRUE, 'حل مثالي لزيادة مساحة العمل والتقطيع في المطابخ مع رفوف سفلية لترتيب الأواني وأدوات الطهي.', '130 × 75 × 90 سم', 'سطح السيراميك يتحمل الحرارة العالية وسهل التنظيف.', '3117f43e-d0ca-41e1-82a1-7dead277af20')
+VALUES ('e8b10029-0000-4000-8000-000000000029', NULL, 'ceramic-kitchen-prep-table', 'جزيرة مطبخ متحركة بسطح سيراميك دافئ', 'مطابخ', 420000, NULL, 4.8, 12, '[{"hex":"#F0ECE4","name":"أبيض عاجي وسنديان"},{"hex":"#4A4644","name":"رمادي غامق"}]'::jsonb, '["سطح سيراميك حراري مقاوم للخدش","هيكل خشب زان بعجلات مخفية"]'::jsonb, '[\"/products/ceramic-kitchen-prep-table.jpg\"]'::jsonb, NULL, FALSE, TRUE, 'حل مثالي لزيادة مساحة العمل والتقطيع في المطابخ مع رفوف سفلية لترتيب الأواني وأدوات الطهي.', '130 × 75 × 90 سم', 'سطح السيراميك يتحمل الحرارة العالية وسهل التنظيف.', '3117f43e-d0ca-41e1-82a1-7dead277af20')
 ON CONFLICT (slug) DO UPDATE SET
   name = EXCLUDED.name,
   category = EXCLUDED.category,
@@ -326,7 +326,7 @@ ON CONFLICT (slug) DO UPDATE SET
   images = EXCLUDED.images,
   description = EXCLUDED.description;
 INSERT INTO public.products (id, legacy_id, slug, name, category, price, compare_at, rating, reviews, colors, materials, images, badge, featured, available, description, dimensions, care, store_id)
-VALUES ('e8b10036-0000-4000-8000-000000000036', NULL, 'shoe-cabinet-rattan', 'خزانة أحذية ومدخل بواجهات راتان طبيعي', 'وحدات تخزين', 175000, NULL, 4.8, 27, '[{"hex":"#DFCEB4","name":"خشب طبيعي وراتان"},{"hex":"#2B2623","name":"أسود مطفي"}]'::jsonb, '["خشب زان","شبك راتان طبيعي للتهوية"]'::jsonb, '["https://images.unsplash.com/photo-1595428774223-ef52624120d2?auto=format&fit=crop&w=1000&q=80"]'::jsonb, NULL, FALSE, TRUE, 'خزانة أحذية رفيعة للمداخل تضمن تهوية ممتازة بفضل شبك الراتان وتتسع لأكثر من 18 زوجاً بأناقة.', '100 × 30 × 110 سم', 'تنظيف الواجهات برفق بفرشاة ناعمة.', '19a63b7b-9e48-47b4-9143-b8542f6fe9a8')
+VALUES ('e8b10036-0000-4000-8000-000000000036', NULL, 'shoe-cabinet-rattan', 'خزانة أحذية ومدخل بواجهات راتان طبيعي', 'وحدات تخزين', 175000, NULL, 4.8, 27, '[{"hex":"#DFCEB4","name":"خشب طبيعي وراتان"},{"hex":"#2B2623","name":"أسود مطفي"}]'::jsonb, '["خشب زان","شبك راتان طبيعي للتهوية"]'::jsonb, '[\"/products/shoe-cabinet-rattan.jpg\"]'::jsonb, NULL, FALSE, TRUE, 'خزانة أحذية رفيعة للمداخل تضمن تهوية ممتازة بفضل شبك الراتان وتتسع لأكثر من 18 زوجاً بأناقة.', '100 × 30 × 110 سم', 'تنظيف الواجهات برفق بفرشاة ناعمة.', '19a63b7b-9e48-47b4-9143-b8542f6fe9a8')
 ON CONFLICT (slug) DO UPDATE SET
   name = EXCLUDED.name,
   category = EXCLUDED.category,
@@ -342,7 +342,7 @@ ON CONFLICT (slug) DO UPDATE SET
   images = EXCLUDED.images,
   description = EXCLUDED.description;
 INSERT INTO public.products (id, legacy_id, slug, name, category, price, compare_at, rating, reviews, colors, materials, images, badge, featured, available, description, dimensions, care, store_id)
-VALUES ('e8b10019-0000-4000-8000-000000000019', NULL, 'minimalist-wardrobe-6door', 'خزانة ملابس 6 أبواب سنديان وأبيض هادئ', 'غرف نوم', 820000, NULL, 4.9, 26, '[{"hex":"#EAE5DD","name":"سنديان وأبيض"},{"hex":"#4E3629","name":"جوزي كامل"}]'::jsonb, '["خشب HDF ألماني مقاوم للرطوبة","مفصلات بلوم نمساوية"]'::jsonb, '["https://images.unsplash.com/photo-1595428774223-ef52624120d2?auto=format&fit=crop&w=1000&q=80"]'::jsonb, NULL, FALSE, TRUE, 'خزانة ملابس واسعة بتقسيم داخلي متوازن (تعليق فساتين وبشوت، أدراج إكسسوارات مبطنة مخمل، وأرفف علوية).', '270 × 220 × 60 سم', 'مسح الأبواب بقطعة مايكروفايبر معقمة.', '3117f43e-d0ca-41e1-82a1-7dead277af20')
+VALUES ('e8b10019-0000-4000-8000-000000000019', NULL, 'minimalist-wardrobe-6door', 'خزانة ملابس 6 أبواب سنديان وأبيض هادئ', 'غرف نوم', 820000, NULL, 4.9, 26, '[{"hex":"#EAE5DD","name":"سنديان وأبيض"},{"hex":"#4E3629","name":"جوزي كامل"}]'::jsonb, '["خشب HDF ألماني مقاوم للرطوبة","مفصلات بلوم نمساوية"]'::jsonb, '[\"/products/minimalist-wardrobe-6door.jpg\"]'::jsonb, NULL, FALSE, TRUE, 'خزانة ملابس واسعة بتقسيم داخلي متوازن (تعليق فساتين وبشوت، أدراج إكسسوارات مبطنة مخمل، وأرفف علوية).', '270 × 220 × 60 سم', 'مسح الأبواب بقطعة مايكروفايبر معقمة.', '3117f43e-d0ca-41e1-82a1-7dead277af20')
 ON CONFLICT (slug) DO UPDATE SET
   name = EXCLUDED.name,
   category = EXCLUDED.category,
@@ -350,7 +350,7 @@ ON CONFLICT (slug) DO UPDATE SET
   images = EXCLUDED.images,
   description = EXCLUDED.description;
 INSERT INTO public.products (id, legacy_id, slug, name, category, price, compare_at, rating, reviews, colors, materials, images, badge, featured, available, description, dimensions, care, store_id)
-VALUES ('e8b10038-0000-4000-8000-000000000038', NULL, 'organic-wool-rug', 'سجادة صوف طبيعي منسوجة يدوياً نقش هندسي', 'ديكور', 185000, NULL, 4.9, 31, '[{"hex":"#FAF6EE","name":"عاجي وخطوط بني"},{"hex":"#DBCBB5","name":"بيج رملي دافئ"}]'::jsonb, '["صوف نيوزيلندي طبيعي 100% غير مصبوغ"]'::jsonb, '["https://images.unsplash.com/photo-1600121848594-d8644e57abab?auto=format&fit=crop&w=1000&q=80"]'::jsonb, 'صوف طبيعي', FALSE, TRUE, 'سجادة صوفية وثيرة بملمس ناعم تحت الأقدام وألوان طبيعية بدون صبغات كيماوية لتنعم بمساحة هادئة.', '200 × 300 سم', 'مكنسة بدون رأس خشن والتدوير كل 6 أشهر.', 'e8a10002-0000-4000-8000-000000000002')
+VALUES ('e8b10038-0000-4000-8000-000000000038', NULL, 'organic-wool-rug', 'سجادة صوف طبيعي منسوجة يدوياً نقش هندسي', 'ديكور', 185000, NULL, 4.9, 31, '[{"hex":"#FAF6EE","name":"عاجي وخطوط بني"},{"hex":"#DBCBB5","name":"بيج رملي دافئ"}]'::jsonb, '["صوف نيوزيلندي طبيعي 100% غير مصبوغ"]'::jsonb, '[\"/products/organic-wool-rug.jpg\"]'::jsonb, 'صوف طبيعي', FALSE, TRUE, 'سجادة صوفية وثيرة بملمس ناعم تحت الأقدام وألوان طبيعية بدون صبغات كيماوية لتنعم بمساحة هادئة.', '200 × 300 سم', 'مكنسة بدون رأس خشن والتدوير كل 6 أشهر.', 'e8a10002-0000-4000-8000-000000000002')
 ON CONFLICT (slug) DO UPDATE SET
   name = EXCLUDED.name,
   category = EXCLUDED.category,
@@ -358,7 +358,7 @@ ON CONFLICT (slug) DO UPDATE SET
   images = EXCLUDED.images,
   description = EXCLUDED.description;
 INSERT INTO public.products (id, legacy_id, slug, name, category, price, compare_at, rating, reviews, colors, materials, images, badge, featured, available, description, dimensions, care, store_id)
-VALUES ('e8b10016-0000-4000-8000-000000000016', NULL, 'casa-platform-bed', 'سرير ماستر منخفض منجد كتان عاجي', 'غرف نوم', 540000, NULL, 4.9, 33, '[{"hex":"#EFE7DA","name":"كتان عاجي"},{"hex":"#C2B8AE","name":"رمادي دافئ"}]'::jsonb, '["خشب هندسي متين","قماش كتان مبطن"]'::jsonb, '["https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1000&q=80"]'::jsonb, 'طراز Casa', FALSE, TRUE, 'سرير ماستر بمنصة منخفضة وظهر مبطن بأناقة هادئة توفر ملاذاً مريحاً للنوم والاسترخاء.', '190 × 210 × 95 سم (مرتبة 180×200)', 'تنظيف بالفرشاة الجافة.', 'e8a10002-0000-4000-8000-000000000002')
+VALUES ('e8b10016-0000-4000-8000-000000000016', NULL, 'casa-platform-bed', 'سرير ماستر منخفض منجد كتان عاجي', 'غرف نوم', 540000, NULL, 4.9, 33, '[{"hex":"#EFE7DA","name":"كتان عاجي"},{"hex":"#C2B8AE","name":"رمادي دافئ"}]'::jsonb, '["خشب هندسي متين","قماش كتان مبطن"]'::jsonb, '[\"/products/casa-platform-bed.jpg\"]'::jsonb, 'طراز Casa', FALSE, TRUE, 'سرير ماستر بمنصة منخفضة وظهر مبطن بأناقة هادئة توفر ملاذاً مريحاً للنوم والاسترخاء.', '190 × 210 × 95 سم (مرتبة 180×200)', 'تنظيف بالفرشاة الجافة.', 'e8a10002-0000-4000-8000-000000000002')
 ON CONFLICT (slug) DO UPDATE SET
   name = EXCLUDED.name,
   category = EXCLUDED.category,
@@ -366,7 +366,7 @@ ON CONFLICT (slug) DO UPDATE SET
   images = EXCLUDED.images,
   description = EXCLUDED.description;
 INSERT INTO public.products (id, legacy_id, slug, name, category, price, compare_at, rating, reviews, colors, materials, images, badge, featured, available, description, dimensions, care, store_id)
-VALUES ('e8b10018-0000-4000-8000-000000000018', NULL, 'linen-arch-headboard-bed', 'سرير نوم مزدوج ظهر قوسي مبطن', 'غرف نوم', 490000, NULL, 4.8, 17, '[{"hex":"#D9CBB6","name":"بيج رملي"},{"hex":"#8F9E8B","name":"أخضر هادئ"}]'::jsonb, '["قاعدة خشبية صلبة","إسفنج فندقي","قماش بوكليه ناعم"]'::jsonb, '["https://images.unsplash.com/photo-1616594039964-ae9021a400a0?auto=format&fit=crop&w=1000&q=80"]'::jsonb, NULL, FALSE, TRUE, 'سرير عصري بتاج مقوس ناعم ولمسات خياطة يدوية بارزة تعزز الطابع الجمالي الدافئ لغرفتك.', '170 × 205 × 110 سم', 'تنظيف جاف للبقع.', 'e8a10003-0000-4000-8000-000000000003')
+VALUES ('e8b10018-0000-4000-8000-000000000018', NULL, 'linen-arch-headboard-bed', 'سرير نوم مزدوج ظهر قوسي مبطن', 'غرف نوم', 490000, NULL, 4.8, 17, '[{"hex":"#D9CBB6","name":"بيج رملي"},{"hex":"#8F9E8B","name":"أخضر هادئ"}]'::jsonb, '["قاعدة خشبية صلبة","إسفنج فندقي","قماش بوكليه ناعم"]'::jsonb, '[\"/products/linen-arch-headboard-bed.jpg\"]'::jsonb, NULL, FALSE, TRUE, 'سرير عصري بتاج مقوس ناعم ولمسات خياطة يدوية بارزة تعزز الطابع الجمالي الدافئ لغرفتك.', '170 × 205 × 110 سم', 'تنظيف جاف للبقع.', 'e8a10003-0000-4000-8000-000000000003')
 ON CONFLICT (slug) DO UPDATE SET
   name = EXCLUDED.name,
   category = EXCLUDED.category,
@@ -374,7 +374,7 @@ ON CONFLICT (slug) DO UPDATE SET
   images = EXCLUDED.images,
   description = EXCLUDED.description;
 INSERT INTO public.products (id, legacy_id, slug, name, category, price, compare_at, rating, reviews, colors, materials, images, badge, featured, available, description, dimensions, care, store_id)
-VALUES ('e8b10024-0000-4000-8000-000000000024', NULL, 'sculptural-side-table', 'طاولة جانبية منحوتة خشب جوز طبيعي', 'طاولات وكراسي', 85000, NULL, 4.7, 16, '[{"hex":"#5E3E2B","name":"جوز طبيعي"},{"hex":"#EBE4D8","name":"سنديان مبيض"}]'::jsonb, '["كتلة خشب جوز منحوتة"]'::jsonb, '["https://images.unsplash.com/photo-1538688525198-9b88f6f53126?auto=format&fit=crop&w=1000&q=80"]'::jsonb, NULL, FALSE, TRUE, 'طاولة جانبية مدمجة بتصميم نحتي مميز تصلح بجانب الكنب أو كحامل للمصابيح والقطع الديكورية.', 'قطر 38 سم × ارتفاع 48 سم', 'مسح دوري بقماش جاف.', '7e6b4eaf-0b9f-48ce-9b9b-b27fd2d6f87c')
+VALUES ('e8b10024-0000-4000-8000-000000000024', NULL, 'sculptural-side-table', 'طاولة جانبية منحوتة خشب جوز طبيعي', 'طاولات وكراسي', 85000, NULL, 4.7, 16, '[{"hex":"#5E3E2B","name":"جوز طبيعي"},{"hex":"#EBE4D8","name":"سنديان مبيض"}]'::jsonb, '["كتلة خشب جوز منحوتة"]'::jsonb, '[\"/products/sculptural-side-table.jpg\"]'::jsonb, NULL, FALSE, TRUE, 'طاولة جانبية مدمجة بتصميم نحتي مميز تصلح بجانب الكنب أو كحامل للمصابيح والقطع الديكورية.', 'قطر 38 سم × ارتفاع 48 سم', 'مسح دوري بقماش جاف.', '7e6b4eaf-0b9f-48ce-9b9b-b27fd2d6f87c')
 ON CONFLICT (slug) DO UPDATE SET
   name = EXCLUDED.name,
   category = EXCLUDED.category,
@@ -382,7 +382,7 @@ ON CONFLICT (slug) DO UPDATE SET
   images = EXCLUDED.images,
   description = EXCLUDED.description;
 INSERT INTO public.products (id, legacy_id, slug, name, category, price, compare_at, rating, reviews, colors, materials, images, badge, featured, available, description, dimensions, care, store_id)
-VALUES ('e8b10021-0000-4000-8000-000000000021', NULL, 'solid-oak-dining-table', 'طاولة طعام خشب بلوط مصمت 8 أشخاص', 'طاولات وكراسي', 620000, NULL, 4.9, 31, '[{"hex":"#D6BE96","name":"بلوط طبيعي فاتح"},{"hex":"#7A5A42","name":"بلوط مدخن"}]'::jsonb, '["خشب بلوط أوروبي مصمت 100%"]'::jsonb, '["https://images.unsplash.com/photo-1617806118233-18e1de247200?auto=format&fit=crop&w=1000&q=80"]'::jsonb, 'خشب طبيعي 100%', FALSE, TRUE, 'طاولة طعام استثنائية من الخشب الطبيعي المعالج بزيت شمعي نباتي يحافظ على عروق الخشب الطبيعية لسنوات.', '220 × 100 × 76 سم', 'استخدام قواعد للأكواب الساخنة وتجديد الزيت سنوياً.', 'e8a10001-0000-4000-8000-000000000001')
+VALUES ('e8b10021-0000-4000-8000-000000000021', NULL, 'solid-oak-dining-table', 'طاولة طعام خشب بلوط مصمت 8 أشخاص', 'طاولات وكراسي', 620000, NULL, 4.9, 31, '[{"hex":"#D6BE96","name":"بلوط طبيعي فاتح"},{"hex":"#7A5A42","name":"بلوط مدخن"}]'::jsonb, '["خشب بلوط أوروبي مصمت 100%"]'::jsonb, '[\"/products/solid-oak-dining-table.jpg\"]'::jsonb, 'خشب طبيعي 100%', FALSE, TRUE, 'طاولة طعام استثنائية من الخشب الطبيعي المعالج بزيت شمعي نباتي يحافظ على عروق الخشب الطبيعية لسنوات.', '220 × 100 × 76 سم', 'استخدام قواعد للأكواب الساخنة وتجديد الزيت سنوياً.', 'e8a10001-0000-4000-8000-000000000001')
 ON CONFLICT (slug) DO UPDATE SET
   name = EXCLUDED.name,
   category = EXCLUDED.category,
@@ -398,7 +398,7 @@ ON CONFLICT (slug) DO UPDATE SET
   images = EXCLUDED.images,
   description = EXCLUDED.description;
 INSERT INTO public.products (id, legacy_id, slug, name, category, price, compare_at, rating, reviews, colors, materials, images, badge, featured, available, description, dimensions, care, store_id)
-VALUES ('e8b10022-0000-4000-8000-000000000022', NULL, 'travertine-round-coffee', 'طاولة قهوة دائرية حجر ترافنتين بيج', 'طاولات وكراسي', 280000, NULL, 4.9, 24, '[{"hex":"#E2D7C5","name":"ترافنتين كلاسيك بيج"},{"hex":"#B8B0A5","name":"رخام رمادي دافئ"}]'::jsonb, '["حجر ترافنتين طبيعي مصقول"]'::jsonb, '["https://images.unsplash.com/photo-1615066390971-03e4e1c36ddf?auto=format&fit=crop&w=1000&q=80"]'::jsonb, 'طراز Casa', FALSE, TRUE, 'قطعة فنية من حجر الترافنتين الطبيعي بمساماته الطبيعية وقاعدته الأسطوانية المتينة، ترفع مستوى أي صالون.', 'قطر 90 سم × ارتفاع 36 سم', 'تنظيف بقطعة قماش رطبة دون مواد حمضية.', 'e8a10002-0000-4000-8000-000000000002')
+VALUES ('e8b10022-0000-4000-8000-000000000022', NULL, 'travertine-round-coffee', 'طاولة قهوة دائرية حجر ترافنتين بيج', 'طاولات وكراسي', 280000, NULL, 4.9, 24, '[{"hex":"#E2D7C5","name":"ترافنتين كلاسيك بيج"},{"hex":"#B8B0A5","name":"رخام رمادي دافئ"}]'::jsonb, '["حجر ترافنتين طبيعي مصقول"]'::jsonb, '[\"/products/travertine-round-coffee.jpg\"]'::jsonb, 'طراز Casa', FALSE, TRUE, 'قطعة فنية من حجر الترافنتين الطبيعي بمساماته الطبيعية وقاعدته الأسطوانية المتينة، ترفع مستوى أي صالون.', 'قطر 90 سم × ارتفاع 36 سم', 'تنظيف بقطعة قماش رطبة دون مواد حمضية.', 'e8a10002-0000-4000-8000-000000000002')
 ON CONFLICT (slug) DO UPDATE SET
   name = EXCLUDED.name,
   category = EXCLUDED.category,
@@ -406,7 +406,7 @@ ON CONFLICT (slug) DO UPDATE SET
   images = EXCLUDED.images,
   description = EXCLUDED.description;
 INSERT INTO public.products (id, legacy_id, slug, name, category, price, compare_at, rating, reviews, colors, materials, images, badge, featured, available, description, dimensions, care, store_id)
-VALUES ('e8b10017-0000-4000-8000-000000000017', NULL, 'fluted-oak-nightstand', 'طاولتا سرير خشب سنديان مضلع مع درج مخفي', 'غرف نوم', 135000, NULL, 4.8, 21, '[{"hex":"#C9A87C","name":"سنديان طبيعي"},{"hex":"#5C3D2E","name":"جوزي داكن"}]'::jsonb, '["خشب سنديان طبيعي","سكك هيدروليك إيطالية"]'::jsonb, '["https://images.unsplash.com/photo-1532372320572-cda25653a26d?auto=format&fit=crop&w=1000&q=80"]'::jsonb, NULL, FALSE, TRUE, 'طقم طاولتي سرير بتفاصيل تضليع عمودية مميزة ومقابض مدمجة تضفي لمسة فندقية راقية.', '50 × 42 × 48 سم (قطعتين)', 'تلميع بزيت الخشب الطبيعي مرتين سنوياً.', 'e8a10001-0000-4000-8000-000000000001')
+VALUES ('e8b10017-0000-4000-8000-000000000017', NULL, 'fluted-oak-nightstand', 'طاولتا سرير خشب سنديان مضلع مع درج مخفي', 'غرف نوم', 135000, NULL, 4.8, 21, '[{"hex":"#C9A87C","name":"سنديان طبيعي"},{"hex":"#5C3D2E","name":"جوزي داكن"}]'::jsonb, '["خشب سنديان طبيعي","سكك هيدروليك إيطالية"]'::jsonb, '[\"/products/fluted-oak-nightstand.jpg\"]'::jsonb, NULL, FALSE, TRUE, 'طقم طاولتي سرير بتفاصيل تضليع عمودية مميزة ومقابض مدمجة تضفي لمسة فندقية راقية.', '50 × 42 × 48 سم (قطعتين)', 'تلميع بزيت الخشب الطبيعي مرتين سنوياً.', 'e8a10001-0000-4000-8000-000000000001')
 ON CONFLICT (slug) DO UPDATE SET
   name = EXCLUDED.name,
   category = EXCLUDED.category,
@@ -414,7 +414,7 @@ ON CONFLICT (slug) DO UPDATE SET
   images = EXCLUDED.images,
   description = EXCLUDED.description;
 INSERT INTO public.products (id, legacy_id, slug, name, category, price, compare_at, rating, reviews, colors, materials, images, badge, featured, available, description, dimensions, care, store_id)
-VALUES ('e8b10023-0000-4000-8000-000000000023', NULL, 'cane-dining-chairs-set', 'طقم 6 كراسي سفرة خيزران راتان وسنديان', 'طاولات وكراسي', 310000, NULL, 4.8, 19, '[{"hex":"#D8C39E","name":"خيزران طبيعي"},{"hex":"#2A2421","name":"أسود مطفي وسنديان"}]'::jsonb, '["خشب سنديان","شبك خيزران طبيعي منسوج يدوياً"]'::jsonb, '["https://images.unsplash.com/photo-1503602642458-232111445657?auto=format&fit=crop&w=1000&q=80"]'::jsonb, NULL, FALSE, TRUE, 'طقم كراسي سفرة متناغم يجمع بين الدفء الخشبي والخفة البصرية لشبك الخيزران الطبيعي.', 'العرض 48 × العمق 52 × الارتفاع 82 سم (6 كراسي)', 'تنظيف الخيزران بفرشاة ناعمة جافة.', '19a63b7b-9e48-47b4-9143-b8542f6fe9a8')
+VALUES ('e8b10023-0000-4000-8000-000000000023', NULL, 'cane-dining-chairs-set', 'طقم 6 كراسي سفرة خيزران راتان وسنديان', 'طاولات وكراسي', 310000, NULL, 4.8, 19, '[{"hex":"#D8C39E","name":"خيزران طبيعي"},{"hex":"#2A2421","name":"أسود مطفي وسنديان"}]'::jsonb, '["خشب سنديان","شبك خيزران طبيعي منسوج يدوياً"]'::jsonb, '[\"/products/cane-dining-chairs-set.jpg\"]'::jsonb, NULL, FALSE, TRUE, 'طقم كراسي سفرة متناغم يجمع بين الدفء الخشبي والخفة البصرية لشبك الخيزران الطبيعي.', 'العرض 48 × العمق 52 × الارتفاع 82 سم (6 كراسي)', 'تنظيف الخيزران بفرشاة ناعمة جافة.', '19a63b7b-9e48-47b4-9143-b8542f6fe9a8')
 ON CONFLICT (slug) DO UPDATE SET
   name = EXCLUDED.name,
   category = EXCLUDED.category,
@@ -422,7 +422,7 @@ ON CONFLICT (slug) DO UPDATE SET
   images = EXCLUDED.images,
   description = EXCLUDED.description;
 INSERT INTO public.products (id, legacy_id, slug, name, category, price, compare_at, rating, reviews, colors, materials, images, badge, featured, available, description, dimensions, care, store_id)
-VALUES ('e8b10025-0000-4000-8000-000000000025', NULL, 'nesting-oak-tables', 'طقم طاولات خدمة متداخلة خشب بلوط (3 قطع)', 'طاولات وكراسي', 115000, NULL, 4.8, 42, '[{"hex":"#C9A87C","name":"بلوط دافئ"},{"hex":"#F0E9DF","name":"بيج عاجي"}]'::jsonb, '["خشب بلوط","قواعد حديد مطفي برونزي"]'::jsonb, '["https://images.unsplash.com/photo-1538688525198-9b88f6f53126?auto=format&fit=crop&w=1000&q=80"]'::jsonb, NULL, FALSE, TRUE, 'طقم عملي للغاية من 3 طاولات خدمة متداخلة توفر المساحة عند عدم الاستخدام وتلبي متطلبات الضيافة.', 'أقطار: 55 سم / 45 سم / 35 سم', 'تجنب ترك السوائل على الخشب لفترات طويلة.', 'e8a10001-0000-4000-8000-000000000001')
+VALUES ('e8b10025-0000-4000-8000-000000000025', NULL, 'nesting-oak-tables', 'طقم طاولات خدمة متداخلة خشب بلوط (3 قطع)', 'طاولات وكراسي', 115000, NULL, 4.8, 42, '[{"hex":"#C9A87C","name":"بلوط دافئ"},{"hex":"#F0E9DF","name":"بيج عاجي"}]'::jsonb, '["خشب بلوط","قواعد حديد مطفي برونزي"]'::jsonb, '[\"/products/nesting-oak-tables.jpg\"]'::jsonb, NULL, FALSE, TRUE, 'طقم عملي للغاية من 3 طاولات خدمة متداخلة توفر المساحة عند عدم الاستخدام وتلبي متطلبات الضيافة.', 'أقطار: 55 سم / 45 سم / 35 سم', 'تجنب ترك السوائل على الخشب لفترات طويلة.', 'e8a10001-0000-4000-8000-000000000001')
 ON CONFLICT (slug) DO UPDATE SET
   name = EXCLUDED.name,
   category = EXCLUDED.category,
@@ -446,7 +446,7 @@ ON CONFLICT (slug) DO UPDATE SET
   images = EXCLUDED.images,
   description = EXCLUDED.description;
 INSERT INTO public.products (id, legacy_id, slug, name, category, price, compare_at, rating, reviews, colors, materials, images, badge, featured, available, description, dimensions, care, store_id)
-VALUES ('e8b10028-0000-4000-8000-000000000028', NULL, 'oak-barstools-set', 'طقم كراسي كاونتر جزيرة خشب مريح (قطعتين)', 'مطابخ', 95000, NULL, 4.7, 18, '[{"hex":"#EBE2D5","name":"خشب طبيعي وكتان"},{"hex":"#3B2D24","name":"خشب بني محروق"}]'::jsonb, '["خشب زان مصمت","تنجيد مقعد كتان مضغوط"]'::jsonb, '["https://images.unsplash.com/photo-1503602642458-232111445657?auto=format&fit=crop&w=1000&q=80"]'::jsonb, NULL, FALSE, TRUE, 'كرسيا بار مجهزان بمسند قدم فولاذي مطفي ومقعد محشو مريح لجلسات الإفطار السريعة في المطبخ.', 'ارتفاع المقعد 65 سم (يناسب كاونتر 90 سم)', 'مسح الإطار بقطعة جافة.', 'e8a10001-0000-4000-8000-000000000001')
+VALUES ('e8b10028-0000-4000-8000-000000000028', NULL, 'oak-barstools-set', 'طقم كراسي كاونتر جزيرة خشب مريح (قطعتين)', 'مطابخ', 95000, NULL, 4.7, 18, '[{"hex":"#EBE2D5","name":"خشب طبيعي وكتان"},{"hex":"#3B2D24","name":"خشب بني محروق"}]'::jsonb, '["خشب زان مصمت","تنجيد مقعد كتان مضغوط"]'::jsonb, '[\"/products/oak-barstools-set.jpg\"]'::jsonb, NULL, FALSE, TRUE, 'كرسيا بار مجهزان بمسند قدم فولاذي مطفي ومقعد محشو مريح لجلسات الإفطار السريعة في المطبخ.', 'ارتفاع المقعد 65 سم (يناسب كاونتر 90 سم)', 'مسح الإطار بقطعة جافة.', 'e8a10001-0000-4000-8000-000000000001')
 ON CONFLICT (slug) DO UPDATE SET
   name = EXCLUDED.name,
   category = EXCLUDED.category,
@@ -462,7 +462,7 @@ ON CONFLICT (slug) DO UPDATE SET
   images = EXCLUDED.images,
   description = EXCLUDED.description;
 INSERT INTO public.products (id, legacy_id, slug, name, category, price, compare_at, rating, reviews, colors, materials, images, badge, featured, available, description, dimensions, care, store_id)
-VALUES ('e8b10014-0000-4000-8000-000000000014', NULL, 'hadhrami-modern-majlis', 'طقم مجلس حضرمي عصري بلمسة تراكوتا دافئة', 'كنب ومجالس', 950000, NULL, 4.9, 57, '[{"hex":"#B87A5A","name":"تراكوتا حضرمي"},{"hex":"#EFE7DA","name":"بيج عاجي"},{"hex":"#7C8B76","name":"أخضر زيتوني"}]'::jsonb, '["خشب زان مبطن","قماش جاكار حضرمي مطور"]'::jsonb, '["https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1000&q=80"]'::jsonb, 'طابع حضرمي', FALSE, TRUE, 'تصميم يدمج أصالة الجلسة الحضرمية بارتفاع مريح وألوان ترابية دافئة تناسب بيوت المكلا الراقية.', '4 × 3 متر متصل', 'تنظيف بالبخار الخفيف والمكنسة الكهربائية.', '3117f43e-d0ca-41e1-82a1-7dead277af20')
+VALUES ('e8b10014-0000-4000-8000-000000000014', NULL, 'hadhrami-modern-majlis', 'طقم مجلس حضرمي عصري بلمسة تراكوتا دافئة', 'كنب ومجالس', 950000, NULL, 4.9, 57, '[{"hex":"#B87A5A","name":"تراكوتا حضرمي"},{"hex":"#EFE7DA","name":"بيج عاجي"},{"hex":"#7C8B76","name":"أخضر زيتوني"}]'::jsonb, '["خشب زان مبطن","قماش جاكار حضرمي مطور"]'::jsonb, '[\"/products/hadhrami-modern-majlis.jpg\"]'::jsonb, 'طابع حضرمي', FALSE, TRUE, 'تصميم يدمج أصالة الجلسة الحضرمية بارتفاع مريح وألوان ترابية دافئة تناسب بيوت المكلا الراقية.', '4 × 3 متر متصل', 'تنظيف بالبخار الخفيف والمكنسة الكهربائية.', '3117f43e-d0ca-41e1-82a1-7dead277af20')
 ON CONFLICT (slug) DO UPDATE SET
   name = EXCLUDED.name,
   category = EXCLUDED.category,
@@ -470,7 +470,7 @@ ON CONFLICT (slug) DO UPDATE SET
   images = EXCLUDED.images,
   description = EXCLUDED.description;
 INSERT INTO public.products (id, legacy_id, slug, name, category, price, compare_at, rating, reviews, colors, materials, images, badge, featured, available, description, dimensions, care, store_id)
-VALUES ('e8b10039-0000-4000-8000-000000000039', NULL, 'wabi-sabi-ceramic-vases', 'طقم مزهريات سيراميك وابي سابي رملي (3 قطع)', 'ديكور', 48000, NULL, 4.8, 46, '[{"hex":"#DED3C4","name":"رملي خشن"},{"hex":"#B87858","name":"تراكوتا ترابي"}]'::jsonb, '["سيراميك خزفي بطبقة رملية يدوية"]'::jsonb, '["https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?auto=format&fit=crop&w=1000&q=80"]'::jsonb, NULL, FALSE, TRUE, 'ثلاث مزهريات بارتفاعات متفاوتة وملمس رملي عضوي تجسد فلسفة البساطة وتكتمل بأغصان الزيتون الجافة.', 'ارتفاعات: 28 سم / 20 سم / 14 سم', 'مسح جاف فقط.', 'e8a10001-0000-4000-8000-000000000001')
+VALUES ('e8b10039-0000-4000-8000-000000000039', NULL, 'wabi-sabi-ceramic-vases', 'طقم مزهريات سيراميك وابي سابي رملي (3 قطع)', 'ديكور', 48000, NULL, 4.8, 46, '[{"hex":"#DED3C4","name":"رملي خشن"},{"hex":"#B87858","name":"تراكوتا ترابي"}]'::jsonb, '["سيراميك خزفي بطبقة رملية يدوية"]'::jsonb, '[\"/products/wabi-sabi-ceramic-vases.jpg\"]'::jsonb, NULL, FALSE, TRUE, 'ثلاث مزهريات بارتفاعات متفاوتة وملمس رملي عضوي تجسد فلسفة البساطة وتكتمل بأغصان الزيتون الجافة.', 'ارتفاعات: 28 سم / 20 سم / 14 سم', 'مسح جاف فقط.', 'e8a10001-0000-4000-8000-000000000001')
 ON CONFLICT (slug) DO UPDATE SET
   name = EXCLUDED.name,
   category = EXCLUDED.category,
@@ -494,7 +494,7 @@ ON CONFLICT (slug) DO UPDATE SET
   images = EXCLUDED.images,
   description = EXCLUDED.description;
 INSERT INTO public.products (id, legacy_id, slug, name, category, price, compare_at, rating, reviews, colors, materials, images, badge, featured, available, description, dimensions, care, store_id)
-VALUES ('e8b10012-0000-4000-8000-000000000012', NULL, 'oak-accent-armchair', 'كرسي مفرد خشب بلوط وقماش كتان طبيعي', 'كنب ومجالس', 195000, NULL, 4.8, 29, '[{"hex":"#E5DEC9","name":"كتان طبيعي"},{"hex":"#C9A87C","name":"سنديان دافئ"},{"hex":"#D4CFC7","name":"رمادي عاجي"}]'::jsonb, '["خشب بلوط مصمت","قماش كتان معالج"]'::jsonb, '["https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=1000&q=80"]'::jsonb, 'الأكثر طلباً', FALSE, TRUE, 'كرسي مفرد بذراعين منحنِيتين من خشب البلوط الطبيعي وتنجيد كتان مريح لجلسات القراءة والاسترخاء.', '78 × 82 × 76 سم', 'مسح الخشب بقطعة جافة وتجنب المنظفات الكيماوية.', 'e8a10002-0000-4000-8000-000000000002')
+VALUES ('e8b10012-0000-4000-8000-000000000012', NULL, 'oak-accent-armchair', 'كرسي مفرد خشب بلوط وقماش كتان طبيعي', 'كنب ومجالس', 195000, NULL, 4.8, 29, '[{"hex":"#E5DEC9","name":"كتان طبيعي"},{"hex":"#C9A87C","name":"سنديان دافئ"},{"hex":"#D4CFC7","name":"رمادي عاجي"}]'::jsonb, '["خشب بلوط مصمت","قماش كتان معالج"]'::jsonb, '[\"/products/oak-accent-armchair.jpg\"]'::jsonb, 'الأكثر طلباً', FALSE, TRUE, 'كرسي مفرد بذراعين منحنِيتين من خشب البلوط الطبيعي وتنجيد كتان مريح لجلسات القراءة والاسترخاء.', '78 × 82 × 76 سم', 'مسح الخشب بقطعة جافة وتجنب المنظفات الكيماوية.', 'e8a10002-0000-4000-8000-000000000002')
 ON CONFLICT (slug) DO UPDATE SET
   name = EXCLUDED.name,
   category = EXCLUDED.category,
@@ -502,7 +502,7 @@ ON CONFLICT (slug) DO UPDATE SET
   images = EXCLUDED.images,
   description = EXCLUDED.description;
 INSERT INTO public.products (id, legacy_id, slug, name, category, price, compare_at, rating, reviews, colors, materials, images, badge, featured, available, description, dimensions, care, store_id)
-VALUES ('e8b10013-0000-4000-8000-000000000013', NULL, 'cloud-modular-sofa', 'كنب سحابي وحدات موديولار بيج رملي', 'كنب ومجالس', 890000, NULL, 4.9, 44, '[{"hex":"#D6C4AC","name":"بيج رملي"},{"hex":"#FAF7F2","name":"كريمي دافئ"},{"hex":"#B3AAA0","name":"رمادي حجري"}]'::jsonb, '["هيكل خشب سويدي","ريش معالج وإسفنج طبقات"]'::jsonb, '["https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?auto=format&fit=crop&w=1000&q=80"]'::jsonb, NULL, FALSE, TRUE, 'كنب سحابي وحدات منفصلة يمكن إعادة تشكيلها بحرية لتناسب أبعاد مجلسك أو غرفة المعيشة.', '300 × 180 سم', 'تقليب الوسائد دورياً وتنظيف البقع فوراً.', 'e8a10001-0000-4000-8000-000000000001')
+VALUES ('e8b10013-0000-4000-8000-000000000013', NULL, 'cloud-modular-sofa', 'كنب سحابي وحدات موديولار بيج رملي', 'كنب ومجالس', 890000, NULL, 4.9, 44, '[{"hex":"#D6C4AC","name":"بيج رملي"},{"hex":"#FAF7F2","name":"كريمي دافئ"},{"hex":"#B3AAA0","name":"رمادي حجري"}]'::jsonb, '["هيكل خشب سويدي","ريش معالج وإسفنج طبقات"]'::jsonb, '[\"/products/cloud-modular-sofa.jpg\"]'::jsonb, NULL, FALSE, TRUE, 'كنب سحابي وحدات منفصلة يمكن إعادة تشكيلها بحرية لتناسب أبعاد مجلسك أو غرفة المعيشة.', '300 × 180 سم', 'تقليب الوسائد دورياً وتنظيف البقع فوراً.', 'e8a10001-0000-4000-8000-000000000001')
 ON CONFLICT (slug) DO UPDATE SET
   name = EXCLUDED.name,
   category = EXCLUDED.category,
@@ -510,7 +510,7 @@ ON CONFLICT (slug) DO UPDATE SET
   images = EXCLUDED.images,
   description = EXCLUDED.description;
 INSERT INTO public.products (id, legacy_id, slug, name, category, price, compare_at, rating, reviews, colors, materials, images, badge, featured, available, description, dimensions, care, store_id)
-VALUES ('e8b10011-0000-4000-8000-000000000011', NULL, 'aria-curved-boucle-sofa', 'كنب منحنٍ فاخر قماش بوكليه عاجي دافئ', 'كنب ومجالس', 780000, NULL, 4.9, 38, '[{"hex":"#FAF7F2","name":"عاجي بوكليه"},{"hex":"#D9CBB6","name":"بيج رملي"},{"hex":"#B87A5A","name":"تراكوتا دافئ"}]'::jsonb, '["خشب زان طبيعي","قماش بوكليه أوروبي","إسفنج ميموري فوم"]'::jsonb, '["https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=1000&q=80"]'::jsonb, 'طراز Casa', FALSE, TRUE, 'كنب بتصميم منحنٍ انسيابي مستوحى من طراز كاسا الهادئ، يمنح غرفة المعيشة دفئاً معمارياً استثنائياً.', '260 × 105 × 75 سم', 'تنظيف جاف، واستخدام فرشاة ناعمة بانتظام.', 'e8a10001-0000-4000-8000-000000000001')
+VALUES ('e8b10011-0000-4000-8000-000000000011', NULL, 'aria-curved-boucle-sofa', 'كنب منحنٍ فاخر قماش بوكليه عاجي دافئ', 'كنب ومجالس', 780000, NULL, 4.9, 38, '[{"hex":"#FAF7F2","name":"عاجي بوكليه"},{"hex":"#D9CBB6","name":"بيج رملي"},{"hex":"#B87A5A","name":"تراكوتا دافئ"}]'::jsonb, '["خشب زان طبيعي","قماش بوكليه أوروبي","إسفنج ميموري فوم"]'::jsonb, '[\"/products/aria-curved-boucle-sofa.jpg\"]'::jsonb, 'طراز Casa', FALSE, TRUE, 'كنب بتصميم منحنٍ انسيابي مستوحى من طراز كاسا الهادئ، يمنح غرفة المعيشة دفئاً معمارياً استثنائياً.', '260 × 105 × 75 سم', 'تنظيف جاف، واستخدام فرشاة ناعمة بانتظام.', 'e8a10001-0000-4000-8000-000000000001')
 ON CONFLICT (slug) DO UPDATE SET
   name = EXCLUDED.name,
   category = EXCLUDED.category,
@@ -518,7 +518,7 @@ ON CONFLICT (slug) DO UPDATE SET
   images = EXCLUDED.images,
   description = EXCLUDED.description;
 INSERT INTO public.products (id, legacy_id, slug, name, category, price, compare_at, rating, reviews, colors, materials, images, badge, featured, available, description, dimensions, care, store_id)
-VALUES ('e8b10037-0000-4000-8000-000000000037', NULL, 'entryway-console-mirror', 'كونسول مدخل رفيع مع مرآة قوسية', 'وحدات تخزين', 210000, NULL, 4.9, 18, '[{"hex":"#EAE1D3","name":"سنديان ورخام بيج"},{"hex":"#583D2A","name":"خشب جوز ونحاس"}]'::jsonb, '["خشب سنديان","سطح حجر رخامي","مرآة بلجيكية نقية"]'::jsonb, '["https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=1000&q=80"]'::jsonb, NULL, FALSE, TRUE, 'طقم كونسول متناسق بعمق ضحل مثالي لمداخل المنازل والشقق في المكلا لترتيب المفاتيح والعطور.', 'الكونسول: 110 × 32 × 85 سم، المرآة: 60 × 90 سم', 'تنظيف المرآة بملمع زجاج.', 'e7100a86-752b-48d5-8482-13a09c9a9401')
+VALUES ('e8b10037-0000-4000-8000-000000000037', NULL, 'entryway-console-mirror', 'كونسول مدخل رفيع مع مرآة قوسية', 'وحدات تخزين', 210000, NULL, 4.9, 18, '[{"hex":"#EAE1D3","name":"سنديان ورخام بيج"},{"hex":"#583D2A","name":"خشب جوز ونحاس"}]'::jsonb, '["خشب سنديان","سطح حجر رخامي","مرآة بلجيكية نقية"]'::jsonb, '[\"/products/entryway-console-mirror.jpg\"]'::jsonb, NULL, FALSE, TRUE, 'طقم كونسول متناسق بعمق ضحل مثالي لمداخل المنازل والشقق في المكلا لترتيب المفاتيح والعطور.', 'الكونسول: 110 × 32 × 85 سم، المرآة: 60 × 90 سم', 'تنظيف المرآة بملمع زجاج.', 'e7100a86-752b-48d5-8482-13a09c9a9401')
 ON CONFLICT (slug) DO UPDATE SET
   name = EXCLUDED.name,
   category = EXCLUDED.category,
@@ -534,7 +534,7 @@ ON CONFLICT (slug) DO UPDATE SET
   images = EXCLUDED.images,
   description = EXCLUDED.description;
 INSERT INTO public.products (id, legacy_id, slug, name, category, price, compare_at, rating, reviews, colors, materials, images, badge, featured, available, description, dimensions, care, store_id)
-VALUES ('e8b10040-0000-4000-8000-000000000040', NULL, 'arch-brass-full-mirror', 'مرآة جدارية طويلة إطار نحاسي مقوس', 'ديكور', 130000, NULL, 4.9, 39, '[{"hex":"#CBA063","name":"نحاس دافئ"},{"hex":"#262220","name":"أسود كربوني"}]'::jsonb, '["إطار ألمنيوم معالج بلون نحاسي مطفي","مرآة فضية فائقة الوضوح"]'::jsonb, '["https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1000&q=80"]'::jsonb, 'طراز Casa', FALSE, TRUE, 'مرآة بطول كامل تضاعف الضوء في الغرفة وتمنح عمقاً بصرياً فخماً، يمكن تعليقها أو إسنادها على الجدار.', '70 × 175 سم', 'تنظيف الزجاج بقماش قطني مخصص.', 'e8a10001-0000-4000-8000-000000000001')
+VALUES ('e8b10040-0000-4000-8000-000000000040', NULL, 'arch-brass-full-mirror', 'مرآة جدارية طويلة إطار نحاسي مقوس', 'ديكور', 130000, NULL, 4.9, 39, '[{"hex":"#CBA063","name":"نحاس دافئ"},{"hex":"#262220","name":"أسود كربوني"}]'::jsonb, '["إطار ألمنيوم معالج بلون نحاسي مطفي","مرآة فضية فائقة الوضوح"]'::jsonb, '[\"/products/arch-brass-full-mirror.jpg\"]'::jsonb, 'طراز Casa', FALSE, TRUE, 'مرآة بطول كامل تضاعف الضوء في الغرفة وتمنح عمقاً بصرياً فخماً، يمكن تعليقها أو إسنادها على الجدار.', '70 × 175 سم', 'تنظيف الزجاج بقماش قطني مخصص.', 'e8a10001-0000-4000-8000-000000000001')
 ON CONFLICT (slug) DO UPDATE SET
   name = EXCLUDED.name,
   category = EXCLUDED.category,
@@ -542,7 +542,7 @@ ON CONFLICT (slug) DO UPDATE SET
   images = EXCLUDED.images,
   description = EXCLUDED.description;
 INSERT INTO public.products (id, legacy_id, slug, name, category, price, compare_at, rating, reviews, colors, materials, images, badge, featured, available, description, dimensions, care, store_id)
-VALUES ('e8b10032-0000-4000-8000-000000000032', NULL, 'linen-pleated-floor-lamp', 'مصباح أرضي غطاء قماش بليسيه وعمود خشب جوز', 'إضاءة', 98000, NULL, 4.9, 22, '[{"hex":"#FAF6EE","name":"بليسيه كريمي"},{"hex":"#5A3D2A","name":"جوز طبيعي"}]'::jsonb, '["خشب جوز طبيعي","شيد قماش بليسيه مطوي يدوي"]'::jsonb, '["https://images.unsplash.com/photo-1540932239986-30128078f3c5?auto=format&fit=crop&w=1000&q=80"]'::jsonb, NULL, FALSE, TRUE, 'مصباح أرضي بطول متناسق يضفي هيبة بصرية وإضاءة محيطية ساحرة لزوايا الصالونات وغرف النوم.', 'قطر 45 سم × ارتفاع 155 سم', 'نفض الغبار بريشة ناعمة.', '7e6b4eaf-0b9f-48ce-9b9b-b27fd2d6f87c')
+VALUES ('e8b10032-0000-4000-8000-000000000032', NULL, 'linen-pleated-floor-lamp', 'مصباح أرضي غطاء قماش بليسيه وعمود خشب جوز', 'إضاءة', 98000, NULL, 4.9, 22, '[{"hex":"#FAF6EE","name":"بليسيه كريمي"},{"hex":"#5A3D2A","name":"جوز طبيعي"}]'::jsonb, '["خشب جوز طبيعي","شيد قماش بليسيه مطوي يدوي"]'::jsonb, '[\"/products/linen-pleated-floor-lamp.jpg\"]'::jsonb, NULL, FALSE, TRUE, 'مصباح أرضي بطول متناسق يضفي هيبة بصرية وإضاءة محيطية ساحرة لزوايا الصالونات وغرف النوم.', 'قطر 45 سم × ارتفاع 155 سم', 'نفض الغبار بريشة ناعمة.', '7e6b4eaf-0b9f-48ce-9b9b-b27fd2d6f87c')
 ON CONFLICT (slug) DO UPDATE SET
   name = EXCLUDED.name,
   category = EXCLUDED.category,
@@ -550,7 +550,7 @@ ON CONFLICT (slug) DO UPDATE SET
   images = EXCLUDED.images,
   description = EXCLUDED.description;
 INSERT INTO public.products (id, legacy_id, slug, name, category, price, compare_at, rating, reviews, colors, materials, images, badge, featured, available, description, dimensions, care, store_id)
-VALUES ('e8b10026-0000-4000-8000-000000000026', NULL, 'nordic-island-kitchen', 'مطبخ إسكندنافي سنديان ورخام كلكتا متكامل', 'مطابخ', 1650000, NULL, 4.9, 15, '[{"hex":"#F4EFEB","name":"سنديان ورخام أبيض"},{"hex":"#8C827A","name":"رمادي حجري دافئ"}]'::jsonb, '["خشب مقاوم للرطوبة والحرارة","أسطح كوارتز كلكتا إسباني"]'::jsonb, '["https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=1200&q=80"]'::jsonb, 'تصميم فاخر', FALSE, TRUE, 'مطبخ متكامل بجزيرة طهي مركزية، خزائن علوية مخفية المقابض، وإضاءة ليد دافئة مدمجة تحت الرفوف.', 'تفصيل حسب مساحة مطبخك (3.5 × 4.2 م افتراضي)', 'تنظيف أسطح الكوارتز بالماء والصابون المعتدل.', '3117f43e-d0ca-41e1-82a1-7dead277af20')
+VALUES ('e8b10026-0000-4000-8000-000000000026', NULL, 'nordic-island-kitchen', 'مطبخ إسكندنافي سنديان ورخام كلكتا متكامل', 'مطابخ', 1650000, NULL, 4.9, 15, '[{"hex":"#F4EFEB","name":"سنديان ورخام أبيض"},{"hex":"#8C827A","name":"رمادي حجري دافئ"}]'::jsonb, '["خشب مقاوم للرطوبة والحرارة","أسطح كوارتز كلكتا إسباني"]'::jsonb, '[\"/products/nordic-island-kitchen.jpg\"]'::jsonb, 'تصميم فاخر', FALSE, TRUE, 'مطبخ متكامل بجزيرة طهي مركزية، خزائن علوية مخفية المقابض، وإضاءة ليد دافئة مدمجة تحت الرفوف.', 'تفصيل حسب مساحة مطبخك (3.5 × 4.2 م افتراضي)', 'تنظيف أسطح الكوارتز بالماء والصابون المعتدل.', '3117f43e-d0ca-41e1-82a1-7dead277af20')
 ON CONFLICT (slug) DO UPDATE SET
   name = EXCLUDED.name,
   category = EXCLUDED.category,
@@ -574,7 +574,7 @@ ON CONFLICT (slug) DO UPDATE SET
   images = EXCLUDED.images,
   description = EXCLUDED.description;
 INSERT INTO public.products (id, legacy_id, slug, name, category, price, compare_at, rating, reviews, colors, materials, images, badge, featured, available, description, dimensions, care, store_id)
-VALUES ('e8b10015-0000-4000-8000-000000000015', NULL, 'lounge-linen-chair', 'مقعد استرخاء كتان وهيكل سنديان عريض', 'كنب ومجالس', 220000, NULL, 4.7, 19, '[{"hex":"#FAF7F2","name":"كتان عاجي"},{"hex":"#4A3728","name":"بني شوكولا"}]'::jsonb, '["خشب سنديان أمريكي","كتان نقي"]'::jsonb, '["https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?auto=format&fit=crop&w=1000&q=80"]'::jsonb, NULL, FALSE, TRUE, 'مقعد استرخاء واسع بزاوية ميلان مدروسة هندسياً لراحة أسفل الظهر مع وسادة دعم إضافية.', '85 × 90 × 72 سم', 'مسح القماش بقطعة مبللة بالماء الفاتر.', '19a63b7b-9e48-47b4-9143-b8542f6fe9a8')
+VALUES ('e8b10015-0000-4000-8000-000000000015', NULL, 'lounge-linen-chair', 'مقعد استرخاء كتان وهيكل سنديان عريض', 'كنب ومجالس', 220000, NULL, 4.7, 19, '[{"hex":"#FAF7F2","name":"كتان عاجي"},{"hex":"#4A3728","name":"بني شوكولا"}]'::jsonb, '["خشب سنديان أمريكي","كتان نقي"]'::jsonb, '[\"/products/lounge-linen-chair.jpg\"]'::jsonb, NULL, FALSE, TRUE, 'مقعد استرخاء واسع بزاوية ميلان مدروسة هندسياً لراحة أسفل الظهر مع وسادة دعم إضافية.', '85 × 90 × 72 سم', 'مسح القماش بقطعة مبللة بالماء الفاتر.', '19a63b7b-9e48-47b4-9143-b8542f6fe9a8')
 ON CONFLICT (slug) DO UPDATE SET
   name = EXCLUDED.name,
   category = EXCLUDED.category,
@@ -582,7 +582,7 @@ ON CONFLICT (slug) DO UPDATE SET
   images = EXCLUDED.images,
   description = EXCLUDED.description;
 INSERT INTO public.products (id, legacy_id, slug, name, category, price, compare_at, rating, reviews, colors, materials, images, badge, featured, available, description, dimensions, care, store_id)
-VALUES ('e8b10034-0000-4000-8000-000000000034', NULL, 'minimal-oak-bookcase', 'مكتبة جدارية رفوف خشب بلوط مفتوحة', 'وحدات تخزين', 260000, NULL, 4.8, 20, '[{"hex":"#CBAF88","name":"بلوط طبيعي"},{"hex":"#F2EDE4","name":"أبيض عاجي"}]'::jsonb, '["خشب بلوط هندسي متين","دعامات فولاذية مخفية"]'::jsonb, '["https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?auto=format&fit=crop&w=1000&q=80"]'::jsonb, NULL, FALSE, TRUE, 'مكتبة بتصميم مفتوح بدون ظهر تمنح إحساساً بالاتساع والرحابة لعرض الكتب والتحف والمقتنيات الفنية.', '120 × 35 × 190 سم', 'تنظيف الرفوف بقطعة قطنية جافة.', 'e8a10002-0000-4000-8000-000000000002')
+VALUES ('e8b10034-0000-4000-8000-000000000034', NULL, 'minimal-oak-bookcase', 'مكتبة جدارية رفوف خشب بلوط مفتوحة', 'وحدات تخزين', 260000, NULL, 4.8, 20, '[{"hex":"#CBAF88","name":"بلوط طبيعي"},{"hex":"#F2EDE4","name":"أبيض عاجي"}]'::jsonb, '["خشب بلوط هندسي متين","دعامات فولاذية مخفية"]'::jsonb, '[\"/products/minimal-oak-bookcase.jpg\"]'::jsonb, NULL, FALSE, TRUE, 'مكتبة بتصميم مفتوح بدون ظهر تمنح إحساساً بالاتساع والرحابة لعرض الكتب والتحف والمقتنيات الفنية.', '120 × 35 × 190 سم', 'تنظيف الرفوف بقطعة قطنية جافة.', 'e8a10002-0000-4000-8000-000000000002')
 ON CONFLICT (slug) DO UPDATE SET
   name = EXCLUDED.name,
   category = EXCLUDED.category,
@@ -598,7 +598,7 @@ ON CONFLICT (slug) DO UPDATE SET
   images = EXCLUDED.images,
   description = EXCLUDED.description;
 INSERT INTO public.products (id, legacy_id, slug, name, category, price, compare_at, rating, reviews, colors, materials, images, badge, featured, available, description, dimensions, care, store_id)
-VALUES ('e8b10035-0000-4000-8000-000000000035', NULL, 'fluted-tv-credenza', 'وحدة تلفزيون معلقة خشب سنديان بيج مضلع', 'وحدات تخزين', 310000, NULL, 4.9, 35, '[{"hex":"#D6C5AD","name":"بيج سنديان طبيعي"},{"hex":"#523A2A","name":"بني جوزي دافئ"}]'::jsonb, '["خشب سنديان طبيعي مع واجهات مضلعة"]'::jsonb, '["https://miaoda-site-img.s3cdn.medo.dev/images/KLing_135df80f-2725-4447-ab1d-6e6da5322a8c.jpg"]'::jsonb, 'طراز Casa', FALSE, TRUE, 'طاولة تلفزيون معلقة على الجدار تمنح الصالة مظهراً عصرياً واسعاً وسهولة تامة في تنظيف الأرضية تحتها.', '220 × 40 × 38 سم', 'مسح الخشب بزيت مخصص كل فترة.', 'e8a10001-0000-4000-8000-000000000001')
+VALUES ('e8b10035-0000-4000-8000-000000000035', NULL, 'fluted-tv-credenza', 'وحدة تلفزيون معلقة خشب سنديان بيج مضلع', 'وحدات تخزين', 310000, NULL, 4.9, 35, '[{"hex":"#D6C5AD","name":"بيج سنديان طبيعي"},{"hex":"#523A2A","name":"بني جوزي دافئ"}]'::jsonb, '["خشب سنديان طبيعي مع واجهات مضلعة"]'::jsonb, '[\"/products/fluted-tv-credenza.png\"]'::jsonb, 'طراز Casa', FALSE, TRUE, 'طاولة تلفزيون معلقة على الجدار تمنح الصالة مظهراً عصرياً واسعاً وسهولة تامة في تنظيف الأرضية تحتها.', '220 × 40 × 38 سم', 'مسح الخشب بزيت مخصص كل فترة.', 'e8a10001-0000-4000-8000-000000000001')
 ON CONFLICT (slug) DO UPDATE SET
   name = EXCLUDED.name,
   category = EXCLUDED.category,

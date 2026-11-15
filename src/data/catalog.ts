@@ -464,7 +464,7 @@ export const products: Product[] = [
       { name: 'أسود مطفي', hex: '#2B2B2B' },
     ],
     materials: ['نحاس مصقول', 'زجاج أوبال', 'لمبات LED دافئة'],
-    images: [IMG.lighting],
+    images: ['/products/brass-pendant-light.jpg'],
     featured: false,
     description:
       'إضاءة معلقة نحاسية بضوء دافئ يمنح غرف الطعام والصالات جواً حميمياً، بتصميم هندسي بسيط وسهل التركيب.',
@@ -535,7 +535,7 @@ export const products: Product[] = [
       { name: 'تراكوتا دافئ', hex: '#B87A5A' }
     ],
     materials: ['خشب زان طبيعي', 'قماش بوكليه أوروبي', 'إسفنج ميموري فوم'],
-    images: ['https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=1000&q=80'],
+    images: ['/products/aria-curved-boucle-sofa.jpg'],
     badge: 'طراز Casa',
     featured: false,
     description: 'كنب بتصميم منحنٍ انسيابي مستوحى من طراز كاسا الهادئ، يمنح غرفة المعيشة دفئاً معمارياً استثنائياً.',
@@ -559,7 +559,7 @@ export const products: Product[] = [
       { name: 'رمادي عاجي', hex: '#D4CFC7' }
     ],
     materials: ['خشب بلوط مصمت', 'قماش كتان معالج'],
-    images: ['https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=1000&q=80'],
+    images: ['/products/oak-accent-armchair.jpg'],
     badge: 'الأكثر طلباً',
     featured: false,
     description: 'كرسي مفرد بذراعين منحنِيتين من خشب البلوط الطبيعي وتنجيد كتان مريح لجلسات القراءة والاسترخاء.',
@@ -583,7 +583,7 @@ export const products: Product[] = [
       { name: 'رمادي حجري', hex: '#B3AAA0' }
     ],
     materials: ['هيكل خشب سويدي', 'ريش معالج وإسفنج طبقات'],
-    images: ['https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?auto=format&fit=crop&w=1000&q=80'],
+    images: ['/products/cloud-modular-sofa.jpg'],
     featured: false,
     description: 'كنب سحابي وحدات منفصلة يمكن إعادة تشكيلها بحرية لتناسب أبعاد مجلسك أو غرفة المعيشة.',
     dimensions: '300 × 180 سم',
@@ -606,7 +606,7 @@ export const products: Product[] = [
       { name: 'أخضر زيتوني', hex: '#7C8B76' }
     ],
     materials: ['خشب زان مبطن', 'قماش جاكار حضرمي مطور'],
-    images: ['https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1000&q=80'],
+    images: ['/products/hadhrami-modern-majlis.jpg'],
     badge: 'طابع حضرمي',
     featured: false,
     description: 'تصميم يدمج أصالة الجلسة الحضرمية بارتفاع مريح وألوان ترابية دافئة تناسب بيوت المكلا الراقية.',
@@ -629,7 +629,7 @@ export const products: Product[] = [
       { name: 'بني شوكولا', hex: '#4A3728' }
     ],
     materials: ['خشب سنديان أمريكي', 'كتان نقي'],
-    images: ['https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?auto=format&fit=crop&w=1000&q=80'],
+    images: ['/products/lounge-linen-chair.jpg'],
     description: 'مقعد استرخاء واسع بزاوية ميلان مدروسة هندسياً لراحة أسفل الظهر مع وسادة دعم إضافية.',
     dimensions: '85 × 90 × 72 سم',
     care: 'مسح القماش بقطعة مبللة بالماء الفاتر.',
@@ -650,7 +650,7 @@ export const products: Product[] = [
       { name: 'رمادي دافئ', hex: '#C2B8AE' }
     ],
     materials: ['خشب هندسي متين', 'قماش كتان مبطن'],
-    images: ['https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1000&q=80'],
+    images: ['/products/casa-platform-bed.jpg'],
     badge: 'طراز Casa',
     featured: false,
     description: 'سرير ماستر بمنصة منخفضة وظهر مبطن بأناقة هادئة توفر ملاذاً مريحاً للنوم والاسترخاء.',
@@ -673,7 +673,7 @@ export const products: Product[] = [
       { name: 'جوزي داكن', hex: '#5C3D2E' }
     ],
     materials: ['خشب سنديان طبيعي', 'سكك هيدروليك إيطالية'],
-    images: ['https://images.unsplash.com/photo-1532372320572-cda25653a26d?auto=format&fit=crop&w=1000&q=80'],
+    images: ['/products/fluted-oak-nightstand.jpg'],
     description: 'طقم طاولتي سرير بتفاصيل تضليع عمودية مميزة ومقابض مدمجة تضفي لمسة فندقية راقية.',
     dimensions: '50 × 42 × 48 سم (قطعتين)',
     care: 'تلميع بزيت الخشب الطبيعي مرتين سنوياً.',
@@ -694,7 +694,7 @@ export const products: Product[] = [
       { name: 'أخضر هادئ', hex: '#8F9E8B' }
     ],
     materials: ['قاعدة خشبية صلبة', 'إسفنج فندقي', 'قماش بوكليه ناعم'],
-    images: ['https://images.unsplash.com/photo-1616594039964-ae9021a400a0?auto=format&fit=crop&w=1000&q=80'],
+    images: ['/products/linen-arch-headboard-bed.jpg'],
     description: 'سرير عصري بتاج مقوس ناعم ولمسات خياطة يدوية بارزة تعزز الطابع الجمالي الدافئ لغرفتك.',
     dimensions: '170 × 205 × 110 سم',
     care: 'تنظيف جاف للبقع.',
@@ -715,7 +715,7 @@ export const products: Product[] = [
       { name: 'جوزي كامل', hex: '#4E3629' }
     ],
     materials: ['خشب HDF ألماني مقاوم للرطوبة', 'مفصلات بلوم نمساوية'],
-    images: ['https://images.unsplash.com/photo-1595428774223-ef52624120d2?auto=format&fit=crop&w=1000&q=80'],
+    images: ['/products/minimalist-wardrobe-6door.jpg'],
     description: 'خزانة ملابس واسعة بتقسيم داخلي متوازن (تعليق فساتين وبشوت، أدراج إكسسوارات مبطنة مخمل، وأرفف علوية).',
     dimensions: '270 × 220 × 60 سم',
     care: 'مسح الأبواب بقطعة مايكروفايبر معقمة.',
@@ -736,7 +736,7 @@ export const products: Product[] = [
       { name: 'بني تراكوتا', hex: '#9C6644' }
     ],
     materials: ['خشب سنديان', 'قماش بوكليه تيدي'],
-    images: ['https://images.unsplash.com/photo-1592078615290-033ee584e267?auto=format&fit=crop&w=1000&q=80'],
+    images: ['/products/boucle-bed-bench.jpg'],
     featured: false,
     description: 'مقعد جانبي يوضع عند طرف السرير أو في المداخل يجمع بين العملية والشكل الديكوري الجذاب.',
     dimensions: '120 × 40 × 45 سم',
@@ -758,7 +758,7 @@ export const products: Product[] = [
       { name: 'بلوط مدخن', hex: '#7A5A42' }
     ],
     materials: ['خشب بلوط أوروبي مصمت 100%'],
-    images: ['https://images.unsplash.com/photo-1617806118233-18e1de247200?auto=format&fit=crop&w=1000&q=80'],
+    images: ['/products/solid-oak-dining-table.jpg'],
     badge: 'خشب طبيعي 100%',
     featured: false,
     description: 'طاولة طعام استثنائية من الخشب الطبيعي المعالج بزيت شمعي نباتي يحافظ على عروق الخشب الطبيعية لسنوات.',
@@ -781,7 +781,7 @@ export const products: Product[] = [
       { name: 'رخام رمادي دافئ', hex: '#B8B0A5' }
     ],
     materials: ['حجر ترافنتين طبيعي مصقول'],
-    images: ['https://images.unsplash.com/photo-1615066390971-03e4e1c36ddf?auto=format&fit=crop&w=1000&q=80'],
+    images: ['/products/travertine-round-coffee.jpg'],
     badge: 'طراز Casa',
     featured: false,
     description: 'قطعة فنية من حجر الترافنتين الطبيعي بمساماته الطبيعية وقاعدته الأسطوانية المتينة، ترفع مستوى أي صالون.',
@@ -804,7 +804,7 @@ export const products: Product[] = [
       { name: 'أسود مطفي وسنديان', hex: '#2A2421' }
     ],
     materials: ['خشب سنديان', 'شبك خيزران طبيعي منسوج يدوياً'],
-    images: ['https://images.unsplash.com/photo-1503602642458-232111445657?auto=format&fit=crop&w=1000&q=80'],
+    images: ['/products/cane-dining-chairs-set.jpg'],
     description: 'طقم كراسي سفرة متناغم يجمع بين الدفء الخشبي والخفة البصرية لشبك الخيزران الطبيعي.',
     dimensions: 'العرض 48 × العمق 52 × الارتفاع 82 سم (6 كراسي)',
     care: 'تنظيف الخيزران بفرشاة ناعمة جافة.',
@@ -825,7 +825,7 @@ export const products: Product[] = [
       { name: 'سنديان مبيض', hex: '#EBE4D8' }
     ],
     materials: ['كتلة خشب جوز منحوتة'],
-    images: ['https://images.unsplash.com/photo-1538688525198-9b88f6f53126?auto=format&fit=crop&w=1000&q=80'],
+    images: ['/products/sculptural-side-table.jpg'],
     description: 'طاولة جانبية مدمجة بتصميم نحتي مميز تصلح بجانب الكنب أو كحامل للمصابيح والقطع الديكورية.',
     dimensions: 'قطر 38 سم × ارتفاع 48 سم',
     care: 'مسح دوري بقماش جاف.',
@@ -846,7 +846,7 @@ export const products: Product[] = [
       { name: 'بيج عاجي', hex: '#F0E9DF' }
     ],
     materials: ['خشب بلوط', 'قواعد حديد مطفي برونزي'],
-    images: ['https://images.unsplash.com/photo-1538688525198-9b88f6f53126?auto=format&fit=crop&w=1000&q=80'],
+    images: ['/products/nesting-oak-tables.jpg'],
     description: 'طقم عملي للغاية من 3 طاولات خدمة متداخلة توفر المساحة عند عدم الاستخدام وتلبي متطلبات الضيافة.',
     dimensions: 'أقطار: 55 سم / 45 سم / 35 سم',
     care: 'تجنب ترك السوائل على الخشب لفترات طويلة.',
@@ -867,7 +867,7 @@ export const products: Product[] = [
       { name: 'رمادي حجري دافئ', hex: '#8C827A' }
     ],
     materials: ['خشب مقاوم للرطوبة والحرارة', 'أسطح كوارتز كلكتا إسباني'],
-    images: ['https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=1000&q=80'],
+    images: ['/products/nordic-island-kitchen.jpg'],
     badge: 'تصميم فاخر',
     featured: false,
     description: 'مطبخ متكامل بجزيرة طهي مركزية، خزائن علوية مخفية المقابض، وإضاءة ليد دافئة مدمجة تحت الرفوف.',
@@ -890,7 +890,7 @@ export const products: Product[] = [
       { name: 'جوزي داكن', hex: '#453327' }
     ],
     materials: ['خشب بلوط طبيعي', 'زجاج مضلع عاكس خفيف'],
-    images: ['https://images.unsplash.com/photo-1595515106969-1ce29566ff1c?auto=format&fit=crop&w=1000&q=80'],
+    images: ['/products/fluted-glass-sideboard.jpg'],
     description: 'وحدة تخزين سفرة أنيقة بأبواب زجاجية مضلعة تخفي محتويات الضيافة جزئياً وتضفي رقياً هندسياً.',
     dimensions: '160 × 45 × 80 سم',
     care: 'تنظيف الزجاج بملمع معتاد والخشب بقطعة رطبة.',
@@ -911,7 +911,7 @@ export const products: Product[] = [
       { name: 'خشب بني محروق', hex: '#3B2D24' }
     ],
     materials: ['خشب زان مصمت', 'تنجيد مقعد كتان مضغوط'],
-    images: ['https://images.unsplash.com/photo-1503602642458-232111445657?auto=format&fit=crop&w=1000&q=80'],
+    images: ['/products/oak-barstools-set.jpg'],
     description: 'كرسيا بار مجهزان بمسند قدم فولاذي مطفي ومقعد محشو مريح لجلسات الإفطار السريعة في المطبخ.',
     dimensions: 'ارتفاع المقعد 65 سم (يناسب كاونتر 90 سم)',
     care: 'مسح الإطار بقطعة جافة.',
@@ -932,7 +932,7 @@ export const products: Product[] = [
       { name: 'رمادي غامق', hex: '#4A4644' }
     ],
     materials: ['سطح سيراميك حراري مقاوم للخدش', 'هيكل خشب زان بعجلات مخفية'],
-    images: ['https://images.unsplash.com/photo-1565538810643-b5bdb714032a?auto=format&fit=crop&w=1000&q=80'],
+    images: ['/products/ceramic-kitchen-prep-table.jpg'],
     description: 'حل مثالي لزيادة مساحة العمل والتقطيع في المطابخ مع رفوف سفلية لترتيب الأواني وأدوات الطهي.',
     dimensions: '130 × 75 × 90 سم',
     care: 'سطح السيراميك يتحمل الحرارة العالية وسهل التنظيف.',
@@ -976,7 +976,7 @@ export const products: Product[] = [
       { name: 'غطاء كتان بيج', hex: '#EDE6DA' }
     ],
     materials: ['حجر ترافنتين طبيعي', 'شيد قماش كتان بيج'],
-    images: ['https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?auto=format&fit=crop&w=1000&q=80'],
+    images: ['/products/travertine-table-lamp.jpg'],
     description: 'أباجورة جانبية مميزة بقاعدة حجرية صلبة وغطاء ينشر ضوءاً ذهبياً دافئاً في زوايا الغرف.',
     dimensions: 'قطر 28 سم × ارتفاع 42 سم',
     care: 'تنظيف الغطاء برول إزالة الوبر.',
@@ -997,7 +997,7 @@ export const products: Product[] = [
       { name: 'جوز طبيعي', hex: '#5A3D2A' }
     ],
     materials: ['خشب جوز طبيعي', 'شيد قماش بليسيه مطوي يدوي'],
-    images: ['https://images.unsplash.com/photo-1540932239986-30128078f3c5?auto=format&fit=crop&w=1000&q=80'],
+    images: ['/products/linen-pleated-floor-lamp.jpg'],
     description: 'مصباح أرضي بطول متناسق يضفي هيبة بصرية وإضاءة محيطية ساحرة لزوايا الصالونات وغرف النوم.',
     dimensions: 'قطر 45 سم × ارتفاع 155 سم',
     care: 'نفض الغبار بريشة ناعمة.',
@@ -1018,7 +1018,7 @@ export const products: Product[] = [
       { name: 'تراكوتا هادئ', hex: '#BA7C5B' }
     ],
     materials: ['سيراميك طيني مطبوخ يدوياً'],
-    images: ['https://images.unsplash.com/photo-1540932239986-30128078f3c5?auto=format&fit=crop&w=1000&q=80'],
+    images: ['/products/ceramic-ribbed-sconce.jpg'],
     description: 'أبليك جداري يوجه الضوء للأعلى والأسفل بانسيابية ناعمة لإنارة الممرات وجدار السرير.',
     dimensions: '18 × 12 × 24 سم',
     care: 'مسح بقطعة قماش ناعمة.',
@@ -1039,7 +1039,7 @@ export const products: Product[] = [
       { name: 'أبيض عاجي', hex: '#F2EDE4' }
     ],
     materials: ['خشب بلوط هندسي متين', 'دعامات فولاذية مخفية'],
-    images: ['https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?auto=format&fit=crop&w=1000&q=80'],
+    images: ['/products/minimal-oak-bookcase.jpg'],
     description: 'مكتبة بتصميم مفتوح بدون ظهر تمنح إحساساً بالاتساع والرحابة لعرض الكتب والتحف والمقتنيات الفنية.',
     dimensions: '120 × 35 × 190 سم',
     care: 'تنظيف الرفوف بقطعة قطنية جافة.',
@@ -1060,7 +1060,7 @@ export const products: Product[] = [
       { name: 'بني جوزي دافئ', hex: '#523A2A' }
     ],
     materials: ['خشب سنديان طبيعي مع واجهات مضلعة'],
-    images: ['https://miaoda-site-img.s3cdn.medo.dev/images/KLing_135df80f-2725-4447-ab1d-6e6da5322a8c.jpg'],
+    images: ['/products/fluted-tv-credenza.png'],
     badge: 'طراز Casa',
     featured: false,
     description: 'طاولة تلفزيون معلقة على الجدار تمنح الصالة مظهراً عصرياً واسعاً وسهولة تامة في تنظيف الأرضية تحتها.',
@@ -1083,7 +1083,7 @@ export const products: Product[] = [
       { name: 'أسود مطفي', hex: '#2B2623' }
     ],
     materials: ['خشب زان', 'شبك راتان طبيعي للتهوية'],
-    images: ['https://images.unsplash.com/photo-1595428774223-ef52624120d2?auto=format&fit=crop&w=1000&q=80'],
+    images: ['/products/shoe-cabinet-rattan.jpg'],
     description: 'خزانة أحذية رفيعة للمداخل تضمن تهوية ممتازة بفضل شبك الراتان وتتسع لأكثر من 18 زوجاً بأناقة.',
     dimensions: '100 × 30 × 110 سم',
     care: 'تنظيف الواجهات برفق بفرشاة ناعمة.',
@@ -1104,7 +1104,7 @@ export const products: Product[] = [
       { name: 'خشب جوز ونحاس', hex: '#583D2A' }
     ],
     materials: ['خشب سنديان', 'سطح حجر رخامي', 'مرآة بلجيكية نقية'],
-    images: ['https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=1000&q=80'],
+    images: ['/products/entryway-console-mirror.jpg'],
     description: 'طقم كونسول متناسق بعمق ضحل مثالي لمداخل المنازل والشقق في المكلا لترتيب المفاتيح والعطور.',
     dimensions: 'الكونسول: 110 × 32 × 85 سم، المرآة: 60 × 90 سم',
     care: 'تنظيف المرآة بملمع زجاج.',
@@ -1125,7 +1125,7 @@ export const products: Product[] = [
       { name: 'بيج رملي دافئ', hex: '#DBCBB5' }
     ],
     materials: ['صوف نيوزيلندي طبيعي 100% غير مصبوغ'],
-    images: ['https://images.unsplash.com/photo-1600121848594-d8644e57abab?auto=format&fit=crop&w=1000&q=80'],
+    images: ['/products/organic-wool-rug.jpg'],
     badge: 'صوف طبيعي',
     featured: false,
     description: 'سجادة صوفية وثيرة بملمس ناعم تحت الأقدام وألوان طبيعية بدون صبغات كيماوية لتنعم بمساحة هادئة.',
@@ -1148,7 +1148,7 @@ export const products: Product[] = [
       { name: 'تراكوتا ترابي', hex: '#B87858' }
     ],
     materials: ['سيراميك خزفي بطبقة رملية يدوية'],
-    images: ['https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?auto=format&fit=crop&w=1000&q=80'],
+    images: ['/products/wabi-sabi-ceramic-vases.jpg'],
     description: 'ثلاث مزهريات بارتفاعات متفاوتة وملمس رملي عضوي تجسد فلسفة البساطة وتكتمل بأغصان الزيتون الجافة.',
     dimensions: 'ارتفاعات: 28 سم / 20 سم / 14 سم',
     care: 'مسح جاف فقط.',
@@ -1169,7 +1169,7 @@ export const products: Product[] = [
       { name: 'أسود كربوني', hex: '#262220' }
     ],
     materials: ['إطار ألمنيوم معالج بلون نحاسي مطفي', 'مرآة فضية فائقة الوضوح'],
-    images: ['https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1000&q=80'],
+    images: ['/products/arch-brass-full-mirror.jpg'],
     badge: 'طراز Casa',
     featured: false,
     description: 'مرآة بطول كامل تضاعف الضوء في الغرفة وتمنح عمقاً بصرياً فخماً، يمكن تعليقها أو إسنادها على الجدار.',
