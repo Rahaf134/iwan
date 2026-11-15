@@ -160,13 +160,6 @@ export const MyOrdersPage = () => {
     });
   }, [requests, profile, user]);
 
-  // تحديد أحدث طلب قيد التنفيذ لإبراز بطاقة تنبيه التتبع الحي
-  const activeOrder = useMemo(() => {
-    if (myOrders.length === 0) return null;
-    const inProgress = myOrders.find((o) => o.status !== 'done' && o.status !== 'delivered');
-    return inProgress || myOrders[0];
-  }, [myOrders]);
-
   const getStepIndex = (status: string): number => {
     switch (status) {
       case 'new':
@@ -246,68 +239,6 @@ export const MyOrdersPage = () => {
               تابع حالة شحناتك خطوة بخطوة من المعرض حتى التسليم، وقدم تقييمك الرسمي بعد استلام الطلب.
             </p>
           </div>
-
-          {/* بطاقة التنبيه المرئية لحالة الطلب الحالي */}
-          {activeOrder && (
-            <div className="mb-8 overflow-hidden rounded-3xl border border-[#E5DEC9] bg-gradient-to-br from-[#F5EFE6] via-[#FAF7F2] to-[#F5EFE6] p-5 sm:p-6 shadow-sm">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div className="flex items-start gap-3.5">
-                  <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#9C6644] text-[#FAF7F2] shadow-xs">
-                    {activeOrder.status === 'done' || activeOrder.status === 'delivered' ? (
-                      <CheckCircle2 className="h-6 w-6" />
-                    ) : activeOrder.status === 'shipping' || activeOrder.status === 'in_progress' ? (
-                      <Truck className="h-6 w-6" />
-                    ) : (
-                      <Clock className="h-6 w-6" />
-                    )}
-                    {activeOrder.status !== 'done' && activeOrder.status !== 'delivered' && (
-                      <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5">
-                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#9C6644] opacity-75"></span>
-                        <span className="relative inline-flex h-3.5 w-3.5 rounded-full bg-[#9C6644] border-2 border-[#FAF7F2]"></span>
-                      </span>
-                    )}
-                  </div>
-                  <div>
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="rounded-full bg-[#9C6644]/15 border border-[#9C6644]/30 px-2.5 py-0.5 text-[11px] font-bold text-[#9C6644]">
-                        {activeOrder.status === 'done' || activeOrder.status === 'delivered'
-                          ? 'آخر طلب مكتمل'
-                          : 'تنبيه حالة طلبك الحالي'}
-                      </span>
-                      <span className="text-xs font-semibold text-[#786C65]" dir="ltr">
-                        {formatOrderCode(parseOrderDetails(activeOrder.details).productCode, activeOrder.dbId)}
-                      </span>
-                    </div>
-                    <h2 className="mt-1 font-display text-base sm:text-lg font-bold text-[#231F1E]">
-                      {activeOrder.status === 'done' || activeOrder.status === 'delivered'
-                        ? 'تم تسليم طلبك بنجاح'
-                        : activeOrder.status === 'shipping' || activeOrder.status === 'in_progress'
-                        ? 'طلبك خرج للتوصيل مع مندوب إيوان بالمكلا'
-                        : activeOrder.status === 'processing' || activeOrder.status === 'contacted'
-                        ? 'طلبك قيد التجهيز والمراجعة في المعرض حالياً'
-                        : 'تم تأكيد الطلب وجاري إرساله للمعرض للتجهيز'}
-                    </h2>
-                    <p className="mt-0.5 text-xs text-[#786C65] leading-relaxed">
-                      {activeOrder.status === 'shipping' || activeOrder.status === 'in_progress'
-                        ? 'الشحنة في طريقها إليك الآن عبر مندوب التوصيل المعتمد، وسيتواصل معك للتسليم.'
-                        : activeOrder.status === 'processing' || activeOrder.status === 'contacted'
-                        ? 'فريق المعرض يقوم بفحص وتجهيز قطع الأثاث الخاصة بك بعناية فائقة قبل تسليمها للمندوب.'
-                        : activeOrder.status === 'done' || activeOrder.status === 'delivered'
-                        ? 'شكراً لتسوقك من معارض إيوان المكلا! نسعد باستقبال تقييمك لجودة القطع والتوصيل.'
-                        : 'طلبك مسجل ومعتمد في منصة إيوان، ويتم التواصل مع المعرض لتأكيد توفر القطع.'}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex sm:flex-col items-center sm:items-end justify-between border-t sm:border-t-0 border-[#E5DEC9] pt-3 sm:pt-0 shrink-0">
-                  <span className="text-[11px] text-[#786C65]">المعرض المسؤول:</span>
-                  <span className="text-xs font-bold text-[#231F1E] flex items-center gap-1 mt-0.5">
-                    <Store className="h-3.5 w-3.5 text-[#9C6644]" />
-                    {parseOrderDetails(activeOrder.details).storeName || 'معارض إيوان المكلا'}
-                  </span>
-                </div>
-              </div>
-            </div>
-          )}
 
           {/* قائمة الطلبات */}
           {myOrders.length === 0 ? (
