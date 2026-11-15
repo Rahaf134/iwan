@@ -9,10 +9,8 @@ import {
   Sparkles,
   Store,
   Users,
-  Wallet,
 } from 'lucide-react';
 import { Link, Navigate } from 'react-router-dom';
-import { AdminWalletManager } from '@/components/admin/AdminWalletManager';
 import { DesignerManager } from '@/components/admin/DesignerManager';
 import { FaqManager } from '@/components/admin/FaqManager';
 import { LookbookManager } from '@/components/admin/LookbookManager';
@@ -30,7 +28,6 @@ import { parseOrderDetails } from '@/lib/order';
 import { cn } from '@/lib/utils';
 
 const adminTabs = [
-  { id: 'wallet', label: 'المحفظة', icon: Wallet },
   { id: 'stores', label: 'المعارض', icon: Store },
   { id: 'products', label: 'المنتجات والمعروضات', icon: Package },
   { id: 'designers', label: 'المصممون', icon: Hammer },
@@ -129,9 +126,9 @@ const AdminPage = () => {
           {/* إحصائيات عامة */}
           <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
             {stats.map((stat) => (
-              <div key={stat.label} className="rounded-2xl border border-border bg-card px-4 py-3.5 shadow-2xs">
-                <p className="font-display text-2xl text-[#231F1E]">{stat.value}</p>
-                <p className="mt-0.5 text-xs text-muted-foreground">{stat.label}</p>
+              <div key={stat.label} className="rounded-2xl border border-[#E5DEC9] bg-[#FAF7F2] px-4 py-3.5 shadow-2xs">
+                <p className="text-xs font-semibold text-[#786C65]">{stat.label}</p>
+                <p className="mt-1 text-2xl font-bold text-[#2C221E]">{stat.value}</p>
               </div>
             ))}
           </div>
@@ -163,7 +160,6 @@ const AdminPage = () => {
 
         {/* محتوى التبويبات */}
         <div className="mt-8">
-          {currentTab === 'wallet' && <AdminWalletManager />}
           {currentTab === 'stores' && <StoreManager />}
           {currentTab === 'products' && <ProductManager />}
           {currentTab === 'designers' && <DesignerManager />}
