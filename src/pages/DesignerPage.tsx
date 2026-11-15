@@ -97,7 +97,7 @@ const roomImages: Record<
   },
 };
 
-// خيارات التصاميم البديلة لكل غرفة (3 خيارات فخمة ومتناسقة مع هوية إيوان الدافئة)
+// خيارات التصاميم البديلة لكل غرفة
 const roomVariations: Record<RoomId, string[]> = {
   living: [
     IMG.showroomLuxury || 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1200&q=85',
@@ -107,22 +107,17 @@ const roomVariations: Record<RoomId, string[]> = {
   bedroom: [
     IMG.bedroom || 'https://images.unsplash.com/photo-1616594039964-ae9021a400a0?auto=format&fit=crop&w=1200&q=85',
     'https://images.unsplash.com/photo-1595526114035-0d45ed16cfbf?auto=format&fit=crop&w=1200&q=85',
-    'https://images.unsplash.com/photo-1540518614846-7ede433c4ef4?auto=format&fit=crop&w=1200&q=85',
   ],
   majlis: [
     IMG.majlis || 'https://images.unsplash.com/photo-1540932239986-30128078f3c5?auto=format&fit=crop&w=1200&q=85',
     'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?auto=format&fit=crop&w=1200&q=85',
-    'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=85',
   ],
   dining: [
     IMG.dining || 'https://images.unsplash.com/photo-1617806118233-18e1de247200?auto=format&fit=crop&w=1200&q=85',
     'https://images.unsplash.com/photo-1615066390971-03e4e1c36ddf?auto=format&fit=crop&w=1200&q=85',
-    'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=85',
   ],
   coffee: [
     IMG.coffee || 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1200&q=85',
-    'https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=1200&q=85',
-    'https://images.unsplash.com/photo-1554995207-c18c203602cb?auto=format&fit=crop&w=1200&q=85',
   ],
 };
 
@@ -282,20 +277,24 @@ const DesignerPage = () => {
     }, 1800);
   };
 
+  // الصور المقترحة للغرفة الحالية
+  const activeVariations = roomVariations[selectedRoom] ?? roomVariations.living;
+  const totalVariations = activeVariations.length;
+
   // إعادة توليد اقتراح تصميم بديل
   const handleRegenerate = () => {
-    if (isRegenerating) return;
+    if (isRegenerating || totalVariations <= 1) return;
     setIsRegenerating(true);
     setActiveHotspotId(null);
     window.setTimeout(() => {
-      setVariationIndex((prev) => (prev + 1) % 3);
+      setVariationIndex((prev) => (prev + 1) % totalVariations);
       setIsRegenerating(false);
     }, 800);
   };
 
   // اختيار مقترح بديل مباشر من المصغرات
   const handleSelectVariation = (idx: number) => {
-    if (idx === variationIndex || isRegenerating) return;
+    if (idx === safeIndex || isRegenerating || idx >= totalVariations) return;
     setIsRegenerating(true);
     setActiveHotspotId(null);
     window.setTimeout(() => {
@@ -304,14 +303,14 @@ const DesignerPage = () => {
     }, 400);
   };
 
-  // الصور المقترحة للغرفة الحالية
-  const activeVariations = roomVariations[selectedRoom] ?? roomVariations.living;
+  // التأكد من أن المؤشر ضمن الحدود السليمة للغرفة المحددة
+  const safeIndex = variationIndex < totalVariations ? variationIndex : 0;
 
   // الصورة الحالية لـ (قبل وبعد)
   const currentBeforeImage = userPhoto ?? roomImages[selectedRoom].before;
   const currentAfterImage =
     phase === 'done'
-      ? activeVariations[variationIndex] || roomImages[selectedRoom].generated
+      ? activeVariations[safeIndex] || roomImages[selectedRoom].generated
       : roomImages[selectedRoom].after;
 
   // النقاط التفاعلية للغرفة المحددة
@@ -648,7 +647,7 @@ const DesignerPage = () => {
                   </div>
 
                   <div className="flex items-center gap-2.5">
-                    {phase === 'done' && (
+                    {phase === 'done' && totalVariations > 1 && (
                       <button
                         type="button"
                         onClick={handleRegenerate}
@@ -809,16 +808,16 @@ const DesignerPage = () => {
                   )}
                 </div>
 
-                {/* شريط المصغرات الأنيق للـ 3 مقترحات البديلة */}
-                {phase === 'done' && (
+                {/* شريط المصغرات الأنيق للمقترحات البديلة */}
+                {phase === 'done' && totalVariations > 1 && (
                   <div className="border-t border-[#E5DEC9] bg-[#FAF7F2] px-4 sm:px-5 py-3 flex flex-wrap items-center justify-between gap-3">
                     <div className="flex items-center gap-3">
                       <span className="text-xs font-medium text-[#786C65]">
-                        مقترحات بديلة ({variationIndex + 1}/3):
+                        مقترحات بديلة ({safeIndex + 1}/{totalVariations}):
                       </span>
                       <div className="flex items-center gap-2">
                         {activeVariations.map((imgUrl, idx) => {
-                          const isActive = idx === variationIndex;
+                          const isActive = idx === safeIndex;
                           return (
                             <button
                               key={idx}
