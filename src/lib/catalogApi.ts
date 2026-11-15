@@ -144,14 +144,62 @@ export interface RequestInput {
 
 const asArray = (value: unknown): string[] => (Array.isArray(value) ? (value as string[]) : []);
 
-export const slugify = (value: string) => {
-  const latin = value
+const arabicToLatinMap: Record<string, string> = {
+  مطبخ: 'kitchen',
+  كنب: 'sofa',
+  مجلس: 'majlis',
+  غرفة: 'room',
+  نوم: 'bedroom',
+  طاولة: 'table',
+  كرسي: 'chair',
+  دولاب: 'wardrobe',
+  خزانة: 'cabinet',
+  سرير: 'bed',
+  إضاءة: 'lighting',
+  ديكور: 'decor',
+  سجاد: 'rug',
+  تلفزيون: 'tv-unit',
+  مدخل: 'entryway',
+  بنش: 'bench',
+  مرآة: 'mirror',
+  طعام: 'dining',
+  صالون: 'salon',
+  رخام: 'marble',
+  خشب: 'wood',
+};
+
+export const slugify = (value: string, currentSlug?: string): string => {
+  if (currentSlug && currentSlug.trim() && currentSlug.trim() !== '-') {
+    return currentSlug.trim();
+  }
+
+  const rawName = (value || '').trim();
+
+  // 1. استخراج الحروف اللاتينية إن وجدت
+  let latin = rawName
     .toLowerCase()
-    .trim()
     .replace(/[^a-z0-9\s-]/g, '')
+    .trim()
     .replace(/\s+/g, '-')
-    .replace(/-+/g, '-');
-  return latin || `item-${Date.now().toString(36)}`;
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+
+  // 2. إذا كان الاسم عربياً بالكامل، استخراج الكلمات المفتاحية بالإنجليزية
+  if (!latin) {
+    const matchedWords: string[] = [];
+    for (const [ar, en] of Object.entries(arabicToLatinMap)) {
+      if (rawName.includes(ar)) {
+        matchedWords.push(en);
+      }
+    }
+    if (matchedWords.length > 0) {
+      latin = matchedWords.slice(0, 3).join('-');
+    }
+  }
+
+  const prefix = latin && latin.length >= 2 ? latin : 'piece';
+  const randomSuffix = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
+  return `${prefix}-${randomSuffix}`.replace(/-+/g, '-').toLowerCase();
 };
 
 // خريطة المعرّفات المسبقة للربط المباشر مع Supabase
@@ -498,23 +546,30 @@ export async function fetchRequests(): Promise<RequestRecordFull[]> {
   });
 }
 
-const productRow = (input: ProductInput) => ({
-  slug: input.slug,
-  name: input.name,
-  category: input.category,
-  price: input.price,
-  compare_at: input.compareAt,
-  description: input.description,
-  dimensions: input.dimensions,
-  care: input.care,
-  materials: input.materials,
-  colors: input.colors,
-  images: input.images,
-  badge: input.badge,
-  featured: input.featured,
-  available: input.available,
-  store_id: toValidStoreUuid(input.storeId),
-});
+const productRow = (input: ProductInput) => {
+  const safeSlug =
+    input.slug && input.slug.trim() && input.slug.trim() !== '-'
+      ? input.slug.trim()
+      : slugify(input.name);
+
+  return {
+    slug: safeSlug,
+    name: input.name,
+    category: input.category,
+    price: input.price,
+    compare_at: input.compareAt,
+    description: input.description,
+    dimensions: input.dimensions,
+    care: input.care,
+    materials: input.materials,
+    colors: input.colors,
+    images: input.images,
+    badge: input.badge,
+    featured: input.featured,
+    available: input.available,
+    store_id: toValidStoreUuid(input.storeId),
+  };
+};
 
 export async function insertProduct(input: ProductInput) {
   const row = {

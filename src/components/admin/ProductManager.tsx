@@ -106,7 +106,7 @@ export const ProductManager = () => {
     const finalStoreId = toValidStoreUuid(form.storeId);
     const input: ProductInput = {
       name: form.name.trim(),
-      slug: editing?.slug ?? slugify(form.name),
+      slug: editing?.slug && editing.slug !== '-' ? editing.slug : slugify(form.name),
       category: form.category,
       price: Number(form.price),
       compareAt: null,

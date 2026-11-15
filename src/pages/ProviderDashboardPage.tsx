@@ -404,7 +404,7 @@ export const ProviderDashboardPage = () => {
 
     const input: ProductInput = {
       name: prodName.trim(),
-      slug: editingProduct?.slug ?? slugify(prodName),
+      slug: editingProduct?.slug && editingProduct.slug !== '-' ? editingProduct.slug : slugify(prodName),
       category: prodCategory,
       price: Number(prodPrice),
       compareAt: null,
