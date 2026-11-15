@@ -332,6 +332,45 @@ export const CatalogProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     void refresh();
+
+    // 1. مزامنة أي تعديلات سابقة محفوظة في المتصفح تلقائياً ورفعها إلى Supabase
+    const syncLocalOverridesToSupabase = async () => {
+      try {
+        const storeOverrides = getStoredOverrides<StoreRecord>(STORE_OVERRIDES_KEY);
+        for (const [id, override] of Object.entries(storeOverrides)) {
+          if (override && override.name) {
+            await updateStoreRow(id, override as StoreInput).catch(() => undefined);
+          }
+        }
+        const designerOverrides = getStoredOverrides<DesignerRecord>(DESIGNER_OVERRIDES_KEY);
+        for (const [id, override] of Object.entries(designerOverrides)) {
+          if (override && override.name) {
+            await updateDesignerRow(id, override as DesignerInput).catch(() => undefined);
+          }
+        }
+      } catch (err) {
+        console.warn('Overrides sync warn:', err);
+      }
+    };
+    void syncLocalOverridesToSupabase();
+
+    // 2. الاستماع الفوري للتحديثات الحية من Supabase لتحديث الموقع مباشرة على الرابط المرفوع
+    const channel = supabase
+      .channel('catalog-realtime-live')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'stores' }, () => {
+        void refresh();
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, () => {
+        void refresh();
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'designers' }, () => {
+        void refresh();
+      })
+      .subscribe();
+
+    return () => {
+      void supabase.removeChannel(channel);
+    };
   }, [refresh]);
 
   const run = useCallback(
@@ -427,7 +466,10 @@ export const CatalogProvider = ({ children }: { children: ReactNode }) => {
           throw err;
         }
       },
-      createStore: (input) => run(() => insertStore(input)),
+      createStore: async (input) => {
+        await insertStore(input);
+        await refresh();
+      },
       updateStore: async (dbId, input) => {
         const approvalStatus = input.approvalStatus || (input.verified ? 'approved' : 'pending');
         const isVerified = approvalStatus === 'approved';
@@ -453,19 +495,29 @@ export const CatalogProvider = ({ children }: { children: ReactNode }) => {
           verified: isVerified,
         });
 
-        // 3. المزامنة مع Supabase في الخلفية بصمت وتجاهل أي خطأ دون إظهار Error
+        // 3. المزامنة المباشرة مع Supabase وإعادة التحديث الفوري
         try {
           await updateStoreRow(dbId, {
             ...input,
             approvalStatus,
             verified: isVerified,
           });
+          await refresh();
         } catch (cause) {
-          console.warn('Silent store update catch:', cause);
+          console.warn('Store update error:', cause);
+          await refresh();
+          throw cause;
         }
       },
-      removeStore: (dbId) => run(() => deleteStoreRow(dbId)),
-      createDesigner: (input) => run(() => insertDesigner(input)),
+      removeStore: async (dbId) => {
+        setStores((current) => current.filter((s) => s.dbId !== dbId && s.id !== dbId && s.legacyId !== dbId));
+        await deleteStoreRow(dbId);
+        await refresh();
+      },
+      createDesigner: async (input) => {
+        await insertDesigner(input);
+        await refresh();
+      },
       updateDesigner: async (dbId, input) => {
         const approvalStatus = input.approvalStatus || 'approved';
 
@@ -488,17 +540,24 @@ export const CatalogProvider = ({ children }: { children: ReactNode }) => {
           approvalStatus,
         });
 
-        // 3. المزامنة مع Supabase في الخلفية بصمت وتجاهل أي خطأ دون إظهار Error
+        // 3. المزامنة المباشرة مع Supabase وإعادة التحديث الفوري
         try {
           await updateDesignerRow(dbId, {
             ...input,
             approvalStatus,
           });
+          await refresh();
         } catch (cause) {
-          console.warn('Silent designer update catch:', cause);
+          console.warn('Designer update error:', cause);
+          await refresh();
+          throw cause;
         }
       },
-      removeDesigner: (dbId) => run(() => deleteDesignerRow(dbId)),
+      removeDesigner: async (dbId) => {
+        setDesigners((current) => current.filter((d) => d.dbId !== dbId && d.id !== dbId && d.legacyId !== dbId));
+        await deleteDesignerRow(dbId);
+        await refresh();
+      },
       createPartner: (input) => run(() => insertPartner(input)),
       updatePartner: (dbId, input) => run(() => updatePartnerRow(dbId, input)),
       removePartner: (dbId) => run(() => deletePartnerRow(dbId)),

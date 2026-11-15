@@ -5,6 +5,7 @@ import {
   Inbox,
   LayoutDashboard,
   MessageSquareQuote,
+  Package,
   Sparkles,
   Store,
   Users,
@@ -14,6 +15,7 @@ import { DesignerManager } from '@/components/admin/DesignerManager';
 import { FaqManager } from '@/components/admin/FaqManager';
 import { LookbookManager } from '@/components/admin/LookbookManager';
 import { PartnerManager } from '@/components/admin/PartnerManager';
+import { ProductManager } from '@/components/admin/ProductManager';
 import { RequestManager } from '@/components/admin/RequestManager';
 import { ReviewManager } from '@/components/admin/ReviewManager';
 import { StoreManager } from '@/components/admin/StoreManager';
@@ -25,6 +27,7 @@ import { cn } from '@/lib/utils';
 
 const adminTabs = [
   { id: 'stores', label: 'المعارض', icon: Store },
+  { id: 'products', label: 'المنتجات والمعروضات', icon: Package },
   { id: 'designers', label: 'المصممون', icon: Hammer },
   { id: 'lookbook', label: 'كتالوج الإلهام', icon: Sparkles },
   { id: 'partners', label: 'الشركاء', icon: Users },
@@ -143,6 +146,7 @@ const AdminPage = () => {
         {/* محتوى التبويبات */}
         <div className="mt-8">
           {currentTab === 'stores' && <StoreManager />}
+          {currentTab === 'products' && <ProductManager />}
           {currentTab === 'designers' && <DesignerManager />}
           {currentTab === 'lookbook' && <LookbookManager />}
           {currentTab === 'partners' && <PartnerManager />}

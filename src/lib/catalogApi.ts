@@ -850,89 +850,139 @@ export async function insertProduct(input: ProductInput) {
 
 export async function updateProductRow(dbId: string, input: ProductInput) {
   const row = productRow(input);
+
+  // 1. التحديث المباشر بواسطة id إذا كان UUID صالحاً
   if (isValidUuid(dbId)) {
-    const { error } = await supabase.from('products').update(row).eq('id', dbId);
-    if (error) throw new Error(error.message);
-  } else {
-    const { error } = await supabase.from('products').update(row).eq('legacy_id', dbId);
-    if (error) {
-      const validUuid = toValidUuid(dbId);
-      const { error: retryError } = await supabase.from('products').update(row).eq('id', validUuid);
-      if (retryError) throw new Error(retryError.message);
-    }
+    const { data, error } = await supabase.from('products').update(row).eq('id', dbId).select('id');
+    if (!error && data && data.length > 0) return;
   }
+
+  // 2. محاولة المطابقة عبر legacy_id
+  if (dbId) {
+    const { data: legData, error: legErr } = await supabase.from('products').update(row).eq('legacy_id', dbId).select('id');
+    if (!legErr && legData && legData.length > 0) return;
+  }
+
+  // 3. محاولة المطابقة عبر الـ slug
+  if (input.slug && input.slug.trim() && input.slug.trim() !== '-') {
+    const { data: slugData, error: slugErr } = await supabase.from('products').update(row).eq('slug', input.slug.trim()).select('id');
+    if (!slugErr && slugData && slugData.length > 0) return;
+  }
+
+  // 4. محاولة المطابقة عبر الاسم الدقيق للقطعة
+  if (input.name && input.name.trim()) {
+    const { data: nameData, error: nameErr } = await supabase.from('products').update(row).eq('name', input.name.trim()).select('id');
+    if (!nameErr && nameData && nameData.length > 0) return;
+  }
+
+  // 5. محاولة المطابقة عبر معرف محول
+  const validUuid = toValidUuid(dbId);
+  if (validUuid && validUuid !== dbId) {
+    const { data: validData, error: validErr } = await supabase.from('products').update(row).eq('id', validUuid).select('id');
+    if (!validErr && validData && validData.length > 0) return;
+  }
+
+  // 6. إذا لم يتم العثور على القطعة في Supabase، نقوم بإدراجها فوراً
+  await insertProduct(input);
 }
 
 export async function deleteProductRow(dbId: string) {
+  // 1. محاولة الحذف بالـ id المباشر
   if (isValidUuid(dbId)) {
-    const { error } = await supabase.from('products').delete().eq('id', dbId);
-    if (error) throw new Error(error.message);
-  } else {
-    const { error } = await supabase.from('products').delete().eq('legacy_id', dbId);
-    if (error) {
-      const validUuid = toValidUuid(dbId);
-      const { error: retryError } = await supabase.from('products').delete().eq('id', validUuid);
-      if (retryError) throw new Error(retryError.message);
-    }
+    const { data, error } = await supabase.from('products').delete().eq('id', dbId).select('id');
+    if (!error && data && data.length > 0) return;
+  }
+
+  // 2. محاولة الحذف بالـ legacy_id
+  if (dbId) {
+    const { data: legData, error: legErr } = await supabase.from('products').delete().eq('legacy_id', dbId).select('id');
+    if (!legErr && legData && legData.length > 0) return;
+  }
+
+  // 3. محاولة الحذف بالمعرف المعياري المحول
+  const validUuid = toValidUuid(dbId);
+  if (validUuid && validUuid !== dbId) {
+    await supabase.from('products').delete().eq('id', validUuid);
   }
 }
 
-const storeRow = (input: StoreInput) => ({
-  name: input.name,
-  city: input.city,
-  area: input.area,
-  address: input.address,
-  specialty: input.specialty,
-  phone: input.phone,
-  rating: input.rating,
-  verified:
-    input.approvalStatus === 'approved'
-      ? true
-      : input.approvalStatus === 'rejected' || input.approvalStatus === 'pending'
-      ? false
-      : Boolean(input.verified),
-  description: input.description,
-  image_url: input.imageUrl,
-});
+const storeRow = (input: StoreInput) => {
+  const approvalStatus =
+    input.approvalStatus ||
+    (input.verified ? 'approved' : 'pending');
+  return {
+    name: input.name,
+    city: input.city || 'المكلا',
+    area: input.area,
+    address: input.address || `المكلا — ${input.area}`,
+    specialty: input.specialty,
+    phone: input.phone,
+    rating: Number(input.rating) || 5,
+    verified: approvalStatus === 'approved',
+    approval_status: approvalStatus,
+    description: input.description,
+    image_url: input.imageUrl,
+  };
+};
 
 export async function insertStore(input: StoreInput) {
-  const row = {
-    ...storeRow(input),
-    id: toValidUuid(),
-  };
+  const row = storeRow(input);
   const { error } = await supabase.from('stores').insert(row);
-  if (error) throw new Error(error.message);
+  if (error) {
+    const { error: retryError } = await supabase.from('stores').insert({ ...row, id: generateUuid() });
+    if (retryError) throw new Error(retryError.message);
+  }
 }
 
 export async function updateStoreRow(dbId: string, input: StoreInput) {
-  try {
-    const row = storeRow(input);
-    if (isValidUuid(dbId)) {
-      const { error } = await supabase.from('stores').update(row).eq('id', dbId);
-      if (error) console.warn('Supabase store update warn:', error.message);
-    } else {
-      const { error } = await supabase.from('stores').update(row).eq('legacy_id', dbId);
-      if (error) {
-        const validUuid = toValidUuid(dbId);
-        await supabase.from('stores').update(row).eq('id', validUuid);
-      }
-    }
-  } catch (err) {
-    console.warn('Silent catch updateStoreRow:', err);
+  const row = storeRow(input);
+
+  // 1. التحديث المباشر بواسطة id إذا كان UUID صالحاً
+  if (isValidUuid(dbId)) {
+    const { data, error } = await supabase.from('stores').update(row).eq('id', dbId).select('id');
+    if (!error && data && data.length > 0) return;
   }
+
+  // 2. محاولة المطابقة عبر المعرف المعياري Canonical Provider
+  const canonical = resolveCanonicalProvider({
+    id: dbId,
+    businessName: input.name,
+    fullName: input.name,
+    storeId: dbId,
+  });
+  if (canonical?.uuid) {
+    const { data: canData, error: canErr } = await supabase.from('stores').update(row).eq('id', canonical.uuid).select('id');
+    if (!canErr && canData && canData.length > 0) return;
+  }
+
+  // 3. محاولة المطابقة عبر legacy_id
+  if (dbId) {
+    const { data: legData, error: legErr } = await supabase.from('stores').update(row).eq('legacy_id', dbId).select('id');
+    if (!legErr && legData && legData.length > 0) return;
+  }
+
+  // 4. محاولة المطابقة عبر اسم المعرض الدقيق أو الجزئي
+  if (input.name && input.name.trim()) {
+    const { data: nameData, error: nameErr } = await supabase.from('stores').update(row).eq('name', input.name.trim()).select('id');
+    if (!nameErr && nameData && nameData.length > 0) return;
+  }
+
+  // 5. إذا لم يتم العثور عليه، نقوم بإدراجه في Supabase
+  await insertStore(input);
 }
 
 export async function deleteStoreRow(dbId: string) {
   if (isValidUuid(dbId)) {
-    const { error } = await supabase.from('stores').delete().eq('id', dbId);
-    if (error) throw new Error(error.message);
-  } else {
-    const { error } = await supabase.from('stores').delete().eq('legacy_id', dbId);
-    if (error) {
-      const validUuid = toValidUuid(dbId);
-      const { error: retryError } = await supabase.from('stores').delete().eq('id', validUuid);
-      if (retryError) throw new Error(retryError.message);
-    }
+    const { data, error } = await supabase.from('stores').delete().eq('id', dbId).select('id');
+    if (!error && data && data.length > 0) return;
+  }
+  const canonical = resolveCanonicalProvider({ id: dbId, storeId: dbId });
+  if (canonical?.uuid) {
+    const { data: canData } = await supabase.from('stores').delete().eq('id', canonical.uuid).select('id');
+    if (canData && canData.length > 0) return;
+  }
+  if (dbId) {
+    await supabase.from('stores').delete().eq('legacy_id', dbId);
   }
 }
 
@@ -949,43 +999,58 @@ const designerRow = (input: DesignerInput) => ({
 });
 
 export async function insertDesigner(input: DesignerInput) {
-  const row = {
-    ...designerRow(input),
-    id: toValidUuid(),
-  };
+  const row = designerRow(input);
   const { error } = await supabase.from('designers').insert(row);
-  if (error) throw new Error(error.message);
+  if (error) {
+    const { error: retryError } = await supabase.from('designers').insert({ ...row, id: generateUuid() });
+    if (retryError) throw new Error(retryError.message);
+  }
 }
 
 export async function updateDesignerRow(dbId: string, input: DesignerInput) {
-  try {
-    const row = designerRow(input);
-    if (isValidUuid(dbId)) {
-      const { error } = await supabase.from('designers').update(row).eq('id', dbId);
-      if (error) console.warn('Supabase designer update warn:', error.message);
-    } else {
-      const { error } = await supabase.from('designers').update(row).eq('legacy_id', dbId);
-      if (error) {
-        const validUuid = toValidUuid(dbId);
-        await supabase.from('designers').update(row).eq('id', validUuid);
-      }
-    }
-  } catch (err) {
-    console.warn('Silent catch updateDesignerRow:', err);
+  const row = designerRow(input);
+
+  if (isValidUuid(dbId)) {
+    const { data, error } = await supabase.from('designers').update(row).eq('id', dbId).select('id');
+    if (!error && data && data.length > 0) return;
   }
+
+  const canonical = resolveCanonicalProvider({
+    id: dbId,
+    businessName: input.name,
+    fullName: input.name,
+    designerId: dbId,
+  });
+  if (canonical?.uuid) {
+    const { data: canData, error: canErr } = await supabase.from('designers').update(row).eq('id', canonical.uuid).select('id');
+    if (!canErr && canData && canData.length > 0) return;
+  }
+
+  if (dbId) {
+    const { data: legData, error: legErr } = await supabase.from('designers').update(row).eq('legacy_id', dbId).select('id');
+    if (!legErr && legData && legData.length > 0) return;
+  }
+
+  if (input.name && input.name.trim()) {
+    const { data: nameData, error: nameErr } = await supabase.from('designers').update(row).eq('name', input.name.trim()).select('id');
+    if (!nameErr && nameData && nameData.length > 0) return;
+  }
+
+  await insertDesigner(input);
 }
 
 export async function deleteDesignerRow(dbId: string) {
   if (isValidUuid(dbId)) {
-    const { error } = await supabase.from('designers').delete().eq('id', dbId);
-    if (error) throw new Error(error.message);
-  } else {
-    const { error } = await supabase.from('designers').delete().eq('legacy_id', dbId);
-    if (error) {
-      const validUuid = toValidUuid(dbId);
-      const { error: retryError } = await supabase.from('designers').delete().eq('id', validUuid);
-      if (retryError) throw new Error(retryError.message);
-    }
+    const { data, error } = await supabase.from('designers').delete().eq('id', dbId).select('id');
+    if (!error && data && data.length > 0) return;
+  }
+  const canonical = resolveCanonicalProvider({ id: dbId, designerId: dbId });
+  if (canonical?.uuid) {
+    const { data: canData } = await supabase.from('designers').delete().eq('id', canonical.uuid).select('id');
+    if (canData && canData.length > 0) return;
+  }
+  if (dbId) {
+    await supabase.from('designers').delete().eq('legacy_id', dbId);
   }
 }
 

@@ -103,12 +103,22 @@ export const ProductManager = () => {
       toast.error('الاسم والسعر والمعرض مطلوبة');
       return;
     }
+    const rawPriceStr = String(form.price || '')
+      .replace(/,/g, '')
+      .replace(/\s+/g, '')
+      .replace(/[٠-٩]/g, (d) => String(d.charCodeAt(0) - 1632));
+    const parsedPrice = parseFloat(rawPriceStr);
+    if (isNaN(parsedPrice) || parsedPrice <= 0) {
+      toast.error('يرجى إدخال سعر صحيح للقطعة');
+      return;
+    }
+
     const finalStoreId = toValidStoreUuid(form.storeId);
     const input: ProductInput = {
       name: form.name.trim(),
       slug: editing?.slug && editing.slug !== '-' ? editing.slug : slugify(form.name),
       category: form.category,
-      price: Number(form.price),
+      price: parsedPrice,
       compareAt: null,
       description: form.description.trim(),
       dimensions: form.dimensions.trim(),
