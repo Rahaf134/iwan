@@ -94,7 +94,7 @@ const RegisterPage = () => {
             <p className="mx-auto mt-4 max-w-lg text-base leading-relaxed text-[#5C534E]">
               لقد أرسلنا رابط تفعيل إلى بريدك الإلكتروني{' '}
               {registeredEmail && (
-                <span className="font-semibold text-[#231F1E] font-mono px-2 py-0.5 rounded-lg bg-[#FAF7F2] border border-[#E5DEC9]" dir="ltr">
+                <span className="font-semibold text-[#231F1E] px-2 py-0.5 rounded-lg bg-[#FAF7F2] border border-[#E5DEC9]" dir="ltr">
                   {registeredEmail}
                 </span>
               )}

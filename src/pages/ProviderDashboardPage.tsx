@@ -795,7 +795,7 @@ export const ProviderDashboardPage = () => {
                   </span>
                 </div>
                 {profile?.email && (
-                  <p className="text-xs text-[#786C65] mt-0.5 font-mono">
+                  <p className="text-xs text-[#786C65] mt-0.5">
                     {profile.email}
                   </p>
                 )}
@@ -873,7 +873,7 @@ export const ProviderDashboardPage = () => {
                 )}
               </button>
 
-              {/* تبويب المحفظة والمستحقات المالية (عمولة 4%) */}
+              {/* تبويب المحفظة */}
               <button
                 type="button"
                 onClick={() => setActiveTab('wallet')}
@@ -885,10 +885,7 @@ export const ProviderDashboardPage = () => {
                 )}
               >
                 <Wallet className="h-3.5 w-3.5" />
-                <span>المحفظة والمستحقات</span>
-                <span className="rounded-full bg-[#FAF7F2]/30 px-1.5 py-0.2 text-[10px] font-bold">
-                  {formatPrice(walletStats.netTotal)}
-                </span>
+                <span>المحفظة</span>
               </button>
             </div>
           </div>
@@ -975,7 +972,7 @@ export const ProviderDashboardPage = () => {
                             {p.name}
                           </h3>
                           <div className="mt-1.5 flex items-center justify-between gap-2">
-                            <span className="text-sm font-bold text-[#9C6644] font-mono">
+                            <span className="text-sm font-bold text-[#9C6644]">
                               {formatPrice(p.price)}
                             </span>
                             {/* دوائر الألوان الصغيرة */}
@@ -1031,7 +1028,7 @@ export const ProviderDashboardPage = () => {
                             </div>
                             <div className="mt-1 flex items-center gap-2 text-xs text-[#786C65]">
                               <span className="text-[11px] text-[#786C65]">رقم الجوال:</span>
-                              <span dir="ltr" className="font-mono text-[#5C534E] font-medium">{req.phone || order.phone || '—'}</span>
+                              <span dir="ltr" className="text-[#5C534E] font-medium">{req.phone || order.phone || '—'}</span>
                             </div>
                           </div>
 
@@ -1071,37 +1068,30 @@ export const ProviderDashboardPage = () => {
                           </div>
                         </div>
 
-                        {/* تفاصيل القطعة والمبلغ */}
-                        <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-2 bg-[#FAF7F2] p-2.5 rounded-xl text-xs">
+                        {/* تفاصيل القطعة والمبلغ والصافي */}
+                        <div className="mt-3 grid grid-cols-2 sm:grid-cols-5 gap-2 bg-[#FAF7F2] p-2.5 rounded-xl text-xs">
                           <div>
-                            <span className="text-[#786C65] block text-[10px]">القطعة:</span>
-                            <span className="font-bold text-[#231F1E] line-clamp-1">{order.productName || req.details}</span>
+                            <span className="text-[#8C7355] block text-[10px]">القطعة:</span>
+                            <span className="font-semibold text-[#2C221E] line-clamp-1">{order.productName || req.details}</span>
                           </div>
                           <div>
-                            <span className="text-[#786C65] block text-[10px]">الكمية:</span>
-                            <span className="font-bold text-[#231F1E]">{order.quantity || 1} قطعة</span>
+                            <span className="text-[#8C7355] block text-[10px]">الكمية:</span>
+                            <span className="font-semibold text-[#2C221E]">{order.quantity || 1} قطعة</span>
                           </div>
                           <div>
-                            <span className="text-[#786C65] block text-[10px]">المبلغ:</span>
-                            <span className="font-bold text-[#9C6644] font-mono">{formatPrice(order.price || 0)}</span>
+                            <span className="text-[#8C7355] block text-[10px]">المبلغ:</span>
+                            <span className="font-semibold text-[#2C221E]">{formatPrice(order.price || 0)}</span>
                           </div>
                           <div>
-                            <span className="text-[#786C65] block text-[10px]">الدفع:</span>
-                            <span className="font-bold text-[#231F1E]">{order.paymentMethod || 'عند الاستلام'}</span>
-                          </div>
-                        </div>
-
-                        {/* حساب صافي المعرض بعد عمولة إيوان (4%) */}
-                        <div className="mt-2.5 flex flex-wrap items-center justify-between gap-2 border-t border-[#E5DEC9]/60 pt-2 text-xs">
-                          <div className="flex items-center gap-1.5">
-                            <span className="text-[#786C65]">صافي المعرض بعد عمولة إيوان (4%):</span>
-                            <span className="font-mono font-bold text-[#8C4A32]">
+                            <span className="text-[#8C7355] block text-[10px]">صافي المعرض:</span>
+                            <span className="font-semibold text-[#5C4938]">
                               {formatPrice(Math.round((order.price || 0) * (order.quantity || 1) * 0.96))}
                             </span>
                           </div>
-                          <span className="text-[10px] text-[#786C65] bg-[#FAF7F2] border border-[#E5DEC9] px-2 py-0.5 rounded-full font-mono">
-                            عمولة المنصة (4%): {formatPrice(Math.round((order.price || 0) * (order.quantity || 1) * 0.04))}
-                          </span>
+                          <div>
+                            <span className="text-[#8C7355] block text-[10px]">الدفع:</span>
+                            <span className="font-semibold text-[#2C221E]">{order.paymentMethod || 'عند الاستلام'}</span>
+                          </div>
                         </div>
                       </div>
                     );
@@ -1255,19 +1245,14 @@ export const ProviderDashboardPage = () => {
             </div>
           )}
 
-          {/* ==================== 5. تبويب المحفظة والمستحقات والعمولات (4%) ==================== */}
+          {/* ==================== 5. تبويب المحفظة ==================== */}
           {activeTab === 'wallet' && (
             <div className="space-y-6">
               {/* شريط رأس التبويب */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div>
-                  <h2 className="font-display text-lg font-bold text-[#231F1E]">
-                    المحفظة والمستحقات المالية
-                  </h2>
-                  <p className="text-xs text-[#786C65] mt-0.5">
-                    نظام التسوية المالية التلقائي لعمولة منصة إيوان (4%) وصافي مستحقات المعرض (96%).
-                  </p>
-                </div>
+                <h2 className="font-display text-lg font-bold text-[#2C221E]">
+                  المحفظة
+                </h2>
                 <div className="flex items-center gap-2">
                   <Button
                     onClick={() => {
@@ -1278,7 +1263,7 @@ export const ProviderDashboardPage = () => {
                       setPayoutName(providerEntityName);
                       setPayoutModalOpen(true);
                     }}
-                    className="h-10 rounded-full bg-[#231F1E] text-white px-5 text-xs font-bold hover:bg-[#9C6644] transition-colors shadow-xs"
+                    className="h-10 rounded-full bg-[#2C221E] text-white px-5 text-xs font-semibold hover:bg-[#5C4938] transition-colors shadow-xs"
                   >
                     <ArrowUpRight className="ml-1.5 h-4 w-4 text-[#E5DEC9]" />
                     طلب تحويل الرصيد للحساب البنكي
@@ -1286,78 +1271,58 @@ export const ProviderDashboardPage = () => {
                 </div>
               </div>
 
-              {/* البطاقات المالية الثلاث الكبرى */}
+              {/* البطاقات الثلاث النظيفة */}
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                {/* 1. إجمالي مبيعات المعرض */}
+                {/* 1. إجمالي المبيعات */}
                 <div className="rounded-3xl border border-[#E5DEC9] bg-[#FAF7F2] p-5 shadow-xs">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-[#786C65]">إجمالي مبيعات المعرض</span>
-                    <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-[#F3EDE2] text-[#9C6644]">
+                    <span className="text-xs font-semibold text-[#8C7355]">إجمالي المبيعات</span>
+                    <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-[#F3EDE2] text-[#5C4938]">
                       <TrendingUp className="h-4 w-4" strokeWidth={1.8} />
                     </span>
                   </div>
-                  <p className="mt-3 font-display text-2xl font-bold text-[#231F1E] font-mono">
+                  <p className="mt-2 text-2xl font-bold text-[#2C221E]">
                     {formatPrice(walletStats.grossTotal)}
-                  </p>
-                  <p className="mt-1.5 text-xs text-[#786C65]">
-                    مجموع قيمة {myOrders.length} طلب عبر المنصة
                   </p>
                 </div>
 
-                {/* 2. عمولة منصة إيوان (4%) */}
+                {/* 2. عمولة إيوان 4% */}
                 <div className="rounded-3xl border border-[#E5DEC9] bg-[#F3EDE2]/80 p-5 shadow-xs">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-[#8C4A32]">عمولة منصة إيوان (4%)</span>
-                    <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-[#FAF7F2] text-[#8C4A32]">
+                    <span className="text-xs font-semibold text-[#8C7355]">عمولة إيوان 4%</span>
+                    <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-[#FAF7F2] text-[#5C4938]">
                       <Percent className="h-4 w-4" strokeWidth={2} />
                     </span>
                   </div>
-                  <p className="mt-3 font-display text-2xl font-bold text-[#8C4A32] font-mono">
+                  <p className="mt-2 text-2xl font-bold text-[#5C4938]">
                     {formatPrice(walletStats.commissionTotal)}
-                  </p>
-                  <p className="mt-1.5 text-xs text-[#786C65]">
-                    المبلغ المخصوم تلقائياً كرسوم تشغيل وإدارة
                   </p>
                 </div>
 
-                {/* 3. الرصيد الصافي القابل للسحب (96%) */}
-                <div className="rounded-3xl border-2 border-[#9C6644]/40 bg-[#FAF7F2] p-5 shadow-sm relative overflow-hidden">
-                  <div className="absolute top-0 left-0 bg-[#9C6644] text-white px-3 py-0.5 rounded-br-2xl text-[10px] font-bold">
-                    جاهز للسحب
-                  </div>
+                {/* 3. صافي الرصيد */}
+                <div className="rounded-3xl border border-[#DED4C6] bg-[#FAF7F2] p-5 shadow-xs">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-[#231F1E]">الرصيد الصافي القابل للسحب (96%)</span>
-                    <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-[#F3EDE2] text-[#231F1E]">
+                    <span className="text-xs font-semibold text-[#8C7355]">صافي الرصيد</span>
+                    <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-[#F3EDE2] text-[#2C221E]">
                       <Wallet className="h-4 w-4" strokeWidth={1.8} />
                     </span>
                   </div>
-                  <p className="mt-3 font-display text-2xl font-bold text-[#231F1E] font-mono">
+                  <p className="mt-2 text-2xl font-bold text-[#2C221E]">
                     {formatPrice(walletStats.netTotal)}
-                  </p>
-                  <p className="mt-1.5 text-xs text-emerald-800 font-semibold">
-                    صافي أرباح المعرض المتبقية في المحفظة
                   </p>
                 </div>
               </div>
 
-              {/* كشف التسويات المالية لكل طلب */}
+              {/* جدول العمليات المنظف بـ 4 أعمدة فقط */}
               <div className="rounded-3xl border border-[#E5DEC9] bg-[#FAF7F2] p-6 shadow-xs">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <h3 className="font-display text-base font-bold text-[#231F1E]">
-                      كشف التسوية المالية لطلبات هذا المعرض
-                    </h3>
-                    <p className="text-xs text-[#786C65] mt-0.5">
-                      توضيح تفصيلي لعمولة الـ 4% وصافي المبلغ المودع في رصيد المعرض لكل طلب.
-                    </p>
-                  </div>
-                  <span className="rounded-full bg-[#F3EDE2] border border-[#E5DEC9] px-3 py-1 text-xs font-bold text-[#9C6644]">
-                    {walletStats.settlements.length} عملية تسوية
-                  </span>
+                <div className="mb-4">
+                  <h3 className="font-display text-base font-bold text-[#2C221E]">
+                    كشف العمليات
+                  </h3>
                 </div>
 
                 {walletStats.settlements.length === 0 ? (
-                  <div className="py-12 text-center text-xs text-[#786C65]">
+                  <div className="py-12 text-center text-xs text-[#8C7355]">
                     لا توجد عمليات بيع أو طلبات مسجلة لهذا المعرض حتى الآن.
                   </div>
                 ) : (
@@ -1365,45 +1330,30 @@ export const ProviderDashboardPage = () => {
                     <div className="overflow-x-auto">
                       <table className="w-full text-right text-xs table-auto">
                         <thead>
-                          <tr className="border-b border-[#E5DEC9] bg-[#F3EDE2] text-[#231F1E]">
-                            <th className="px-3.5 py-3 font-bold whitespace-nowrap">رقم الطلب</th>
-                            <th className="px-3.5 py-3 font-bold whitespace-nowrap">القطعة والعميل</th>
-                            <th className="px-3.5 py-3 font-bold whitespace-nowrap">تاريخ الطلب</th>
-                            <th className="px-3.5 py-3 font-bold whitespace-nowrap">المبلغ الإجمالي</th>
-                            <th className="px-3.5 py-3 font-bold whitespace-nowrap text-[#8C4A32]">عمولة إيوان (4%-)</th>
-                            <th className="px-3.5 py-3 font-bold whitespace-nowrap text-emerald-900">صافي المودع (96%)</th>
-                            <th className="px-3.5 py-3 font-bold whitespace-nowrap">حالة التسوية</th>
+                          <tr className="border-b border-[#E5DEC9] bg-[#F3EDE2] text-[#2C221E]">
+                            <th className="px-4 py-3 font-semibold whitespace-nowrap">القطعة والعميل</th>
+                            <th className="px-4 py-3 font-semibold whitespace-nowrap">المبلغ</th>
+                            <th className="px-4 py-3 font-semibold whitespace-nowrap">عمولة إيوان (4%)</th>
+                            <th className="px-4 py-3 font-semibold whitespace-nowrap">صافي المعرض</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-[#E5DEC9]/60 text-[#231F1E]">
+                        <tbody className="divide-y divide-[#E5DEC9]/60 text-[#2C221E]">
                           {walletStats.settlements.map((st) => (
                             <tr key={st.dbId} className="hover:bg-[#F3EDE2]/40 transition-colors">
-                              <td className="px-3.5 py-3 font-mono font-bold text-[#9C6644] whitespace-nowrap">
-                                #{st.orderCode}
-                              </td>
-                              <td className="px-3.5 py-3 whitespace-nowrap">
-                                <div className="font-bold text-[#231F1E] line-clamp-1">{st.productName}</div>
-                                <div className="text-[11px] text-[#786C65]">
-                                  {st.customerName} — <span dir="ltr" className="font-mono">{st.phone}</span>
+                              <td className="px-4 py-3.5">
+                                <div className="font-semibold text-xs sm:text-sm text-[#2C221E] line-clamp-1">{st.productName}</div>
+                                <div className="text-[11px] text-[#8C7355] mt-0.5">
+                                  {st.customerName} {st.phone ? `• ${st.phone}` : ''}
                                 </div>
                               </td>
-                              <td className="px-3.5 py-3 text-[#786C65] text-[11px] whitespace-nowrap">
-                                {new Date(st.date).toLocaleDateString('ar-YE')}
-                              </td>
-                              <td className="px-3.5 py-3 font-mono font-bold text-[#231F1E] whitespace-nowrap">
+                              <td className="px-4 py-3.5 font-semibold text-xs sm:text-sm text-[#2C221E] whitespace-nowrap">
                                 {formatPrice(st.amount)}
                               </td>
-                              <td className="px-3.5 py-3 font-mono font-bold text-[#8C4A32] whitespace-nowrap bg-[#F3EDE2]/30">
+                              <td className="px-4 py-3.5 font-semibold text-xs sm:text-sm text-[#5C4938] whitespace-nowrap">
                                 -{formatPrice(st.commission)}
                               </td>
-                              <td className="px-3.5 py-3 font-mono font-bold text-emerald-800 whitespace-nowrap">
+                              <td className="px-4 py-3.5 font-semibold text-xs sm:text-sm text-[#2C221E] whitespace-nowrap">
                                 {formatPrice(st.netStoreAmount)}
-                              </td>
-                              <td className="px-3.5 py-3 whitespace-nowrap">
-                                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 text-[10px] font-bold text-emerald-800">
-                                  <CheckCircle2 className="h-3 w-3" />
-                                  مودعة في المحفظة
-                                </span>
                               </td>
                             </tr>
                           ))}
@@ -1468,7 +1418,7 @@ export const ProviderDashboardPage = () => {
                   value={prodPrice}
                   onChange={(e) => setProdPrice(e.target.value)}
                   placeholder="350000"
-                  className="w-full bg-[#F3EDE2]/60 border border-[#DED4C6] rounded-xl px-4 py-2 text-sm focus:border-[#9C6644] outline-none text-[#231F1E] font-mono"
+                  className="w-full bg-[#F3EDE2]/60 border border-[#DED4C6] rounded-xl px-4 py-2 text-sm focus:border-[#9C6644] outline-none text-[#231F1E]"
                   dir="ltr"
                 />
               </div>
@@ -1625,11 +1575,11 @@ export const ProviderDashboardPage = () => {
           <div className="space-y-4 py-3 text-xs">
             {/* بطاقة المبلغ */}
             <div className="rounded-2xl border border-[#E5DEC9] bg-[#F3EDE2] p-4 text-center">
-              <span className="text-[11px] text-[#786C65] block">الرصيد الصافي المتاح للتحويل</span>
-              <span className="font-mono font-bold text-2xl text-[#231F1E] block mt-1">
+              <span className="text-[11px] text-[#8C7355] block">الرصيد الصافي المتاح للتحويل</span>
+              <span className="font-bold text-2xl text-[#2C221E] block mt-1">
                 {formatPrice(walletStats.netTotal)}
               </span>
-              <span className="text-[10px] text-[#8C4A32] block mt-0.5">
+              <span className="text-[10px] text-[#5C4938] block mt-0.5">
                 صافي مستحقات المعرض بعد خصم عمولة المنصة (4%)
               </span>
             </div>
@@ -1682,7 +1632,7 @@ export const ProviderDashboardPage = () => {
                 value={payoutAccount}
                 onChange={(e) => setPayoutAccount(e.target.value)}
                 placeholder="مثال: 201012345678"
-                className="w-full bg-[#F3EDE2]/60 border border-[#DED4C6] rounded-xl px-3 py-2 text-xs font-mono focus:border-[#9C6644] outline-none text-[#231F1E]"
+                className="w-full bg-[#F3EDE2]/60 border border-[#DED4C6] rounded-xl px-3 py-2 text-xs focus:border-[#9C6644] outline-none text-[#231F1E]"
               />
             </div>
           </div>
@@ -1691,7 +1641,7 @@ export const ProviderDashboardPage = () => {
             <Button
               variant="outline"
               onClick={() => setPayoutModalOpen(false)}
-              className="h-10 rounded-full border-[#DED4C6] text-xs font-bold"
+              className="h-10 rounded-full border-[#DED4C6] text-xs font-semibold text-[#5C4938]"
             >
               إلغاء
             </Button>
@@ -1712,7 +1662,7 @@ export const ProviderDashboardPage = () => {
                 }, 700);
               }}
               disabled={payoutSubmitting}
-              className="h-10 rounded-full bg-[#231F1E] text-white hover:bg-[#9C6644] text-xs font-bold px-6 shadow-xs"
+              className="h-10 rounded-full bg-[#2C221E] text-white hover:bg-[#5C4938] text-xs font-semibold px-6 shadow-xs"
             >
               {payoutSubmitting ? 'جارٍ الإرسال…' : 'تأكيد طلب التحويل'}
             </Button>

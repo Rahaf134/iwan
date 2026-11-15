@@ -1,8 +1,5 @@
 import { useState, useMemo } from 'react';
 import {
-  ArrowUpRight,
-  CheckCircle2,
-  Coins,
   Download,
   Filter,
   Percent,
@@ -27,7 +24,7 @@ import { parseOrderDetails } from '@/lib/order';
 import { cn } from '@/lib/utils';
 
 export const AdminWalletManager = () => {
-  const { requests, stores } = useCatalog();
+  const { requests } = useCatalog();
   const [selectedStoreFilter, setSelectedStoreFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -133,90 +130,68 @@ export const AdminWalletManager = () => {
     });
   }, [validOrderTransactions, selectedStoreFilter, searchQuery]);
 
-  // تصدير أو طباعة كشف الحساب المالي للمناقشة
+  // تصدير أو طباعة كشف الحساب المالي
   const handleExportStatement = () => {
-    toast.success('تم إنشاء وتجهيز كشف التسوية المالية (عمولة 4%) بصيغة جاهزة للطباعة.');
+    toast.success('تم تجهيز كشف التسوية المالية (عمولة 4%) بصيغة جاهزة للطباعة.');
     window.print();
   };
 
   return (
     <div className="space-y-8">
-      {/* ==================== 1. البطاقات المالية الثلاث الكبرى ==================== */}
+      {/* ==================== 1. البطاقات المالية الثلاث ==================== */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        {/* بطاقة 1: إجمالي حجم المبيعات عبر المنصة */}
-        <div className="rounded-3xl border border-[#E5DEC9] bg-[#FAF7F2] p-5 shadow-xs transition-all hover:border-[#9C6644]/40">
+        {/* بطاقة 1: إجمالي المبيعات */}
+        <div className="rounded-2xl border border-[#E5DEC9] bg-[#FAF7F2] p-5 shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-[#786C65]">إجمالي حجم المبيعات عبر المنصة</span>
-            <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#F3EDE2] text-[#9C6644]">
-              <TrendingUp className="h-5 w-5" strokeWidth={1.8} />
+            <span className="text-xs font-semibold text-[#5C4938]">إجمالي المبيعات</span>
+            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#F3EDE2] text-[#8C7355]">
+              <TrendingUp className="h-4 w-4" strokeWidth={1.8} />
             </span>
           </div>
-          <p className="mt-3 font-display text-2xl sm:text-3xl font-bold text-[#231F1E] font-mono">
+          <p className="mt-3 text-2xl font-bold text-[#2C221E]">
             {formatPrice(financialSummary.totalGrossSales)}
           </p>
-          <div className="mt-2 flex items-center justify-between text-xs text-[#786C65]">
-            <span>مجموع قيمة كافة الطلبات المعتمدة</span>
-            <span className="rounded-full bg-[#F3EDE2] px-2 py-0.5 font-bold text-[#231F1E]">
-              {financialSummary.ordersCount} طلب
-            </span>
-          </div>
         </div>
 
-        {/* بطاقة 2: صافي أرباح محفظة إيوان (عمولة 4%) */}
-        <div className="rounded-3xl border-2 border-[#9C6644]/30 bg-[#F3EDE2] p-5 shadow-sm relative overflow-hidden">
-          <div className="absolute top-0 left-0 bg-[#9C6644] text-white px-3 py-0.5 rounded-br-2xl text-[10px] font-bold">
-            دخل المنصة الآلي
-          </div>
+        {/* بطاقة 2: عمولة إيوان (4%) */}
+        <div className="rounded-2xl border border-[#E5DEC9] bg-[#FAF7F2] p-5 shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-[#8C4A32]">صافي أرباح محفظة إيوان (عمولة 4%)</span>
-            <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#FAF7F2] text-[#8C4A32] shadow-xs">
-              <Percent className="h-5 w-5" strokeWidth={2} />
+            <span className="text-xs font-semibold text-[#5C4938]">عمولة إيوان (4%)</span>
+            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#F3EDE2] text-[#8C7355]">
+              <Percent className="h-4 w-4" strokeWidth={1.8} />
             </span>
           </div>
-          <p className="mt-3 font-display text-2xl sm:text-3xl font-bold text-[#8C4A32] font-mono">
+          <p className="mt-3 text-2xl font-bold text-[#8C7355]">
             {formatPrice(financialSummary.totalPlatformCommission)}
           </p>
-          <div className="mt-2 flex items-center justify-between text-xs text-[#786C65]">
-            <span>تودع آلياً في حساب الإدارة مع كل طلب</span>
-            <span className="font-bold text-[#8C4A32]">نسبة ثابتة 4%</span>
-          </div>
         </div>
 
-        {/* بطاقة 3: إجمالي مستحقات المعارض المحولة (96%) */}
-        <div className="rounded-3xl border border-[#E5DEC9] bg-[#FAF7F2] p-5 shadow-xs transition-all hover:border-[#9C6644]/40">
+        {/* بطاقة 3: صافي مستحقات المعارض */}
+        <div className="rounded-2xl border border-[#E5DEC9] bg-[#FAF7F2] p-5 shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-[#786C65]">إجمالي مستحقات المعارض (96%)</span>
-            <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#F3EDE2] text-[#231F1E]">
-              <Wallet className="h-5 w-5" strokeWidth={1.8} />
+            <span className="text-xs font-semibold text-[#5C4938]">صافي مستحقات المعارض</span>
+            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#F3EDE2] text-[#8C7355]">
+              <Wallet className="h-4 w-4" strokeWidth={1.8} />
             </span>
           </div>
-          <p className="mt-3 font-display text-2xl sm:text-3xl font-bold text-[#231F1E] font-mono">
+          <p className="mt-3 text-2xl font-bold text-[#2C221E]">
             {formatPrice(financialSummary.totalNetStores)}
           </p>
-          <div className="mt-2 flex items-center justify-between text-xs text-[#786C65]">
-            <span>صافي أرباح معارض الأثاث والمصممين</span>
-            <span className="text-[11px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full">
-              محمية ومسواة
-            </span>
-          </div>
         </div>
       </div>
 
       {/* ==================== 2. توزيع العمولات بحسب المعارض ==================== */}
-      <div className="rounded-3xl border border-[#E5DEC9] bg-[#FAF7F2] p-6 shadow-xs">
+      <div className="rounded-2xl border border-[#E5DEC9] bg-[#FAF7F2] p-5 shadow-xs">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h3 className="font-display text-base font-bold text-[#231F1E]">
-              ملخص محافظ المعارض والعمولات المستحقة
+            <h3 className="text-sm font-bold text-[#2C221E]">
+              ملخص محافظ المعارض والعمولات
             </h3>
-            <p className="text-xs text-[#786C65] mt-0.5">
-              متابعة حجم مبيعات كل معرض ومجموع عمولة الـ 4% المحتسبة لصالحه
-            </p>
           </div>
           <Button
             variant="outline"
             onClick={handleExportStatement}
-            className="h-9 rounded-full border-[#DED4C6] bg-[#F3EDE2] text-xs font-bold text-[#231F1E] hover:bg-[#E5DEC9]"
+            className="h-8 rounded-full border-[#DED4C6] bg-[#F3EDE2] text-xs font-semibold text-[#2C221E] hover:bg-[#E5DEC9]"
           >
             <Download className="ml-1.5 h-3.5 w-3.5" />
             طباعة كشف الحساب
@@ -227,26 +202,26 @@ export const AdminWalletManager = () => {
           {storeSummaries.map((s) => (
             <div
               key={s.storeName}
-              className="rounded-2xl border border-[#E5DEC9] bg-[#F3EDE2]/60 p-4 transition-all hover:bg-[#F3EDE2]"
+              className="rounded-xl border border-[#E5DEC9] bg-[#F3EDE2]/50 p-4 transition-all"
             >
               <div className="flex items-center justify-between">
-                <span className="font-bold text-xs text-[#231F1E] line-clamp-1">{s.storeName}</span>
-                <span className="rounded-full bg-[#FAF7F2] border border-[#E5DEC9] px-2 py-0.5 text-[10px] font-bold text-[#9C6644]">
+                <span className="font-bold text-xs text-[#2C221E] line-clamp-1">{s.storeName}</span>
+                <span className="rounded-full bg-[#FAF7F2] border border-[#E5DEC9] px-2 py-0.5 text-[10px] font-semibold text-[#8C7355]">
                   {s.count} طلب
                 </span>
               </div>
               <div className="mt-3 space-y-1.5 text-xs">
-                <div className="flex justify-between text-[#786C65]">
-                  <span>إجمالي المبيعات:</span>
-                  <span className="font-mono font-bold text-[#231F1E]">{formatPrice(s.totalSales)}</span>
+                <div className="flex justify-between text-[#5C4938]">
+                  <span>المبيعات:</span>
+                  <span className="font-bold text-[#2C221E]">{formatPrice(s.totalSales)}</span>
                 </div>
-                <div className="flex justify-between text-[#8C4A32]">
+                <div className="flex justify-between text-[#8C7355]">
                   <span>عمولة إيوان (4%):</span>
-                  <span className="font-mono font-bold">+{formatPrice(s.commission)}</span>
+                  <span className="font-bold">+{formatPrice(s.commission)}</span>
                 </div>
-                <div className="flex justify-between text-[#5C534E] border-t border-[#E5DEC9]/80 pt-1.5">
-                  <span className="font-semibold">صافي المعرض (96%):</span>
-                  <span className="font-mono font-bold text-[#231F1E]">{formatPrice(s.netAmount)}</span>
+                <div className="flex justify-between text-[#5C4938] border-t border-[#E5DEC9]/80 pt-1.5">
+                  <span>صافي المعرض:</span>
+                  <span className="font-bold text-[#2C221E]">{formatPrice(s.netAmount)}</span>
                 </div>
               </div>
             </div>
@@ -256,8 +231,8 @@ export const AdminWalletManager = () => {
 
       {/* ==================== 3. سجل الحركات والطلبات التفصيلي ==================== */}
       <AdminSection
-        title="كشف العمليات والتسويات المالية لكل طلب"
-        description="سجل تفصيلي يوضح كل طلب شراء، وقيمته الإجمالية، ونسبة الـ 4% التي دخلت محفظة المنصة وصافي مستحق المعرض."
+        title="كشف العمليات والتسويات المالية"
+        description="سجل تفصيلي يوضح كل طلب شراء، وقيمته الإجمالية، وعمولة المنصة وصافي مستحق المعرض."
       >
         {/* شريط الفلترة والبحث */}
         <div className="mb-4 flex flex-col sm:flex-row items-center gap-3">
@@ -268,18 +243,18 @@ export const AdminWalletManager = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="بحث برقم الطلب، العميل، المعرض…"
-              className="h-9 w-full rounded-full border border-[#DED4C6] bg-[#FAF7F2] pr-9 pl-3 text-xs text-[#231F1E] placeholder:text-[#786C65] focus:outline-none focus:border-[#9C6644]"
+              className="h-9 w-full rounded-full border border-[#DED4C6] bg-[#FAF7F2] pr-9 pl-3 text-xs text-[#2C221E] placeholder:text-[#786C65] focus:outline-none focus:border-[#8C7355]"
             />
           </div>
 
           <div className="flex items-center gap-2 w-full sm:w-auto">
             <Filter className="h-3.5 w-3.5 text-[#786C65]" />
             <Select value={selectedStoreFilter} onValueChange={setSelectedStoreFilter}>
-              <SelectTrigger className="h-9 w-full sm:w-60 rounded-full border-[#DED4C6] bg-[#FAF7F2] text-xs font-bold text-[#231F1E]">
+              <SelectTrigger className="h-9 w-full sm:w-60 rounded-full border-[#DED4C6] bg-[#FAF7F2] text-xs font-semibold text-[#2C221E]">
                 <SelectValue placeholder="تصفية حسب المعرض" />
               </SelectTrigger>
-              <SelectContent className="rounded-2xl border-[#E5DEC9] bg-[#FAF7F2]">
-                <SelectItem value="all" className="text-xs font-bold">جميع المعارض والمصممين</SelectItem>
+              <SelectContent className="rounded-xl border-[#E5DEC9] bg-[#FAF7F2]">
+                <SelectItem value="all" className="text-xs font-semibold">جميع المعارض والمصممين</SelectItem>
                 {storeSummaries.map((s) => (
                   <SelectItem key={s.storeName} value={s.storeName} className="text-xs">
                     {s.storeName}
@@ -293,57 +268,50 @@ export const AdminWalletManager = () => {
         {filteredTransactions.length === 0 ? (
           <AdminEmpty message="لا توجد حركات مالية مطابقة للبحث." />
         ) : (
-          <div className="w-full overflow-hidden rounded-2xl border border-[#E5DEC9] bg-[#FAF7F2] shadow-xs">
+          <div className="w-full overflow-hidden rounded-xl border border-[#E5DEC9] bg-[#FAF7F2] shadow-xs">
             <div className="overflow-x-auto">
               <table className="w-full text-right text-xs table-auto">
                 <thead>
-                  <tr className="border-b border-[#E5DEC9] bg-[#F3EDE2] text-[#231F1E]">
-                    <th className="px-3.5 py-3 font-bold whitespace-nowrap">رقم الطلب</th>
-                    <th className="px-3.5 py-3 font-bold whitespace-nowrap">المعرض</th>
-                    <th className="px-3.5 py-3 font-bold whitespace-nowrap">العميل</th>
-                    <th className="px-3.5 py-3 font-bold whitespace-nowrap">القطعة</th>
-                    <th className="px-3.5 py-3 font-bold whitespace-nowrap">قيمة الطلب</th>
-                    <th className="px-3.5 py-3 font-bold whitespace-nowrap text-[#8C4A32]">عمولة إيوان (4%)</th>
-                    <th className="px-3.5 py-3 font-bold whitespace-nowrap">صافي المعرض (96%)</th>
-                    <th className="px-3.5 py-3 font-bold whitespace-nowrap">التاريخ</th>
-                    <th className="px-3.5 py-3 font-bold whitespace-nowrap">حالة التسوية</th>
+                  <tr className="border-b border-[#E5DEC9] bg-[#F3EDE2] text-[#2C221E]">
+                    <th className="px-3.5 py-3 font-semibold whitespace-nowrap">الطلب</th>
+                    <th className="px-3.5 py-3 font-semibold whitespace-nowrap">المعرض</th>
+                    <th className="px-3.5 py-3 font-semibold whitespace-nowrap">العميل</th>
+                    <th className="px-3.5 py-3 font-semibold whitespace-nowrap">القطعة</th>
+                    <th className="px-3.5 py-3 font-semibold whitespace-nowrap">المبلغ</th>
+                    <th className="px-3.5 py-3 font-semibold whitespace-nowrap text-[#8C7355]">عمولة إيوان (4%)</th>
+                    <th className="px-3.5 py-3 font-semibold whitespace-nowrap">صافي المعرض</th>
+                    <th className="px-3.5 py-3 font-semibold whitespace-nowrap">التاريخ</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#E5DEC9]/60 text-[#231F1E]">
+                <tbody className="divide-y divide-[#E5DEC9]/60 text-[#2C221E]">
                   {filteredTransactions.map((tx) => (
                     <tr key={tx.dbId} className="hover:bg-[#F3EDE2]/40 transition-colors">
-                      <td className="px-3.5 py-3 font-mono font-bold text-[#9C6644] whitespace-nowrap">
+                      <td className="px-3.5 py-3 font-semibold text-[#8C7355] whitespace-nowrap">
                         #{tx.orderCode}
                       </td>
-                      <td className="px-3.5 py-3 font-bold whitespace-nowrap">
-                        <span className="rounded-lg bg-[#F3EDE2] px-2 py-0.5 text-[11px] text-[#231F1E]">
+                      <td className="px-3.5 py-3 font-medium whitespace-nowrap">
+                        <span className="rounded-md bg-[#F3EDE2] px-2 py-0.5 text-[11px] text-[#2C221E]">
                           {tx.storeName}
                         </span>
                       </td>
                       <td className="px-3.5 py-3 whitespace-nowrap">
-                        <div className="font-bold text-[#231F1E]">{tx.customerName}</div>
-                        <div className="font-mono text-[10px] text-[#786C65]" dir="ltr">{tx.phone}</div>
+                        <div className="font-semibold text-[#2C221E]">{tx.customerName}</div>
+                        <div className="text-[10px] text-[#786C65]" dir="ltr">{tx.phone}</div>
                       </td>
                       <td className="px-3.5 py-3 max-w-[180px] truncate" title={tx.productName}>
                         {tx.productName}
                       </td>
-                      <td className="px-3.5 py-3 font-mono font-bold text-[#231F1E] whitespace-nowrap">
+                      <td className="px-3.5 py-3 font-semibold text-[#2C221E] whitespace-nowrap">
                         {formatPrice(tx.totalAmount)}
                       </td>
-                      <td className="px-3.5 py-3 font-mono font-bold text-[#8C4A32] whitespace-nowrap bg-[#F3EDE2]/30">
+                      <td className="px-3.5 py-3 font-semibold text-[#8C7355] whitespace-nowrap bg-[#F3EDE2]/30">
                         +{formatPrice(tx.commission)}
                       </td>
-                      <td className="px-3.5 py-3 font-mono font-bold text-emerald-800 whitespace-nowrap">
+                      <td className="px-3.5 py-3 font-semibold text-[#2C221E] whitespace-nowrap">
                         {formatPrice(tx.netStoreAmount)}
                       </td>
                       <td className="px-3.5 py-3 text-[#786C65] text-[11px] whitespace-nowrap">
                         {new Date(tx.date).toLocaleDateString('ar-YE')}
-                      </td>
-                      <td className="px-3.5 py-3 whitespace-nowrap">
-                        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 text-[10px] font-bold text-emerald-800">
-                          <CheckCircle2 className="h-3 w-3" />
-                          مودعة في المحفظة
-                        </span>
                       </td>
                     </tr>
                   ))}

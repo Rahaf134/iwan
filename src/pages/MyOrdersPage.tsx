@@ -266,7 +266,7 @@ export const MyOrdersPage = () => {
                         </div>
                         <div>
                           <p className="text-xs font-bold text-[#231F1E]">
-                            طلب: <span className="font-mono text-[#9C6644] mr-1" dir="ltr">{formattedCode}</span>
+                            طلب: <span className="text-[#9C6644] mr-1 font-semibold" dir="ltr">{formattedCode}</span>
                           </p>
                           <p className="text-[11px] text-[#786C65] mt-0.5">
                             {new Date(order?.date || req.createdAt).toLocaleDateString('ar-YE', { dateStyle: 'long' })}

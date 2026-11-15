@@ -30,7 +30,7 @@ import { parseOrderDetails } from '@/lib/order';
 import { cn } from '@/lib/utils';
 
 const adminTabs = [
-  { id: 'wallet', label: 'محفظة المنصة والعمولات (4%)', icon: Wallet },
+  { id: 'wallet', label: 'المحفظة', icon: Wallet },
   { id: 'stores', label: 'المعارض', icon: Store },
   { id: 'products', label: 'المنتجات والمعروضات', icon: Package },
   { id: 'designers', label: 'المصممون', icon: Hammer },
