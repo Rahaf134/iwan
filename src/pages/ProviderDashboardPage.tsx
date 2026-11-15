@@ -1,18 +1,26 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import {
+  ArrowUpRight,
   Box,
+  Building2,
   Check,
+  CheckCircle2,
+  CreditCard,
+  Download,
   LogOut,
   MessageCircle,
   Package,
   Pencil,
+  Percent,
   Plus,
   RefreshCw,
   Send,
   ShoppingBag,
   Trash2,
+  TrendingUp,
   Upload,
   User,
+  Wallet,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import PageMeta from '@/components/common/PageMeta';
@@ -52,7 +60,7 @@ import {
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
-type ProviderTab = 'products' | 'orders' | 'chats';
+type ProviderTab = 'products' | 'orders' | 'chats' | 'wallet';
 
 interface PresetColor {
   name: string;
@@ -149,6 +157,13 @@ export const ProviderDashboardPage = () => {
   const [chatInput, setChatInput] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [chatRefreshing, setChatRefreshing] = useState(false);
+
+  // محفظة المزود وطلب التحويل البنكي
+  const [payoutModalOpen, setPayoutModalOpen] = useState(false);
+  const [payoutBank, setPayoutBank] = useState('بنك البسيري للتمويل الأصغر');
+  const [payoutAccount, setPayoutAccount] = useState('');
+  const [payoutName, setPayoutName] = useState('');
+  const [payoutSubmitting, setPayoutSubmitting] = useState(false);
 
   // تحديد هوية المزود المعتمد ومطابقة كافة المعرّفات بدقة
   const canonical = useMemo(
@@ -442,9 +457,53 @@ export const ProviderDashboardPage = () => {
         }
       }
 
+      // 4. مطابقة اسم المنتج إن كان من ضمن معروضات هذا المزود
+      if (order.productName) {
+        const pLower = order.productName.toLowerCase();
+        if (myProducts.some((p) => p.name.toLowerCase() === pLower)) return true;
+      }
+
       return false;
     });
-  }, [requests, canonical, myStore, profile, isDesigner]);
+  }, [requests, canonical, myStore, profile, isDesigner, myProducts]);
+
+  // 3. المحفظة المالية للمزود وحسابات العمولة والتسوية (4% منصة / 96% صافي معرض)
+  const walletStats = useMemo(() => {
+    let grossTotal = 0;
+    const settlements = myOrders.map((req) => {
+      const order = parseOrderDetails(req.details, req.phone, req.name);
+      const quantity = order.quantity || 1;
+      const amount = (order.price || 0) * quantity;
+      grossTotal += amount;
+      const commission = Math.round(amount * 0.04);
+      const netStoreAmount = amount - commission;
+
+      return {
+        dbId: req.dbId,
+        orderCode: order.productCode || `EW-${req.dbId.slice(-6).toUpperCase()}`,
+        productName: order.productName || req.details,
+        customerName: order.customerName || req.name || 'عميل إيوان',
+        phone: req.phone || order.phone || '—',
+        date: req.createdAt || order.date || new Date().toISOString(),
+        status: req.status || 'new',
+        quantity,
+        amount,
+        commission,
+        netStoreAmount,
+        paymentMethod: order.paymentMethod || 'الدفع عند الاستلام',
+      };
+    });
+
+    const commissionTotal = Math.round(grossTotal * 0.04);
+    const netTotal = grossTotal - commissionTotal;
+
+    return {
+      grossTotal,
+      commissionTotal,
+      netTotal,
+      settlements,
+    };
+  }, [myOrders]);
 
   // 3. تنظيم محادثات العملاء (دمج رسائل كل عميل في محادثة واحدة وحذف الفارغة)
   const customerChats = useMemo<CustomerThread[]>(() => {
@@ -813,6 +872,24 @@ export const ProviderDashboardPage = () => {
                   </span>
                 )}
               </button>
+
+              {/* تبويب المحفظة والمستحقات المالية (عمولة 4%) */}
+              <button
+                type="button"
+                onClick={() => setActiveTab('wallet')}
+                className={cn(
+                  'flex h-9 shrink-0 items-center gap-2 rounded-full px-4 text-xs font-bold transition-all border',
+                  activeTab === 'wallet'
+                    ? 'border-[#231F1E] bg-[#231F1E] text-white shadow-xs'
+                    : 'border-[#E5DEC9] bg-[#FAF7F2] text-[#786C65] hover:text-[#231F1E] hover:border-[#9C6644]'
+                )}
+              >
+                <Wallet className="h-3.5 w-3.5" />
+                <span>المحفظة والمستحقات</span>
+                <span className="rounded-full bg-[#FAF7F2]/30 px-1.5 py-0.2 text-[10px] font-bold">
+                  {formatPrice(walletStats.netTotal)}
+                </span>
+              </button>
             </div>
           </div>
         </header>
@@ -1013,6 +1090,19 @@ export const ProviderDashboardPage = () => {
                             <span className="font-bold text-[#231F1E]">{order.paymentMethod || 'عند الاستلام'}</span>
                           </div>
                         </div>
+
+                        {/* حساب صافي المعرض بعد عمولة إيوان (4%) */}
+                        <div className="mt-2.5 flex flex-wrap items-center justify-between gap-2 border-t border-[#E5DEC9]/60 pt-2 text-xs">
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-[#786C65]">صافي المعرض بعد عمولة إيوان (4%):</span>
+                            <span className="font-mono font-bold text-[#8C4A32]">
+                              {formatPrice(Math.round((order.price || 0) * (order.quantity || 1) * 0.96))}
+                            </span>
+                          </div>
+                          <span className="text-[10px] text-[#786C65] bg-[#FAF7F2] border border-[#E5DEC9] px-2 py-0.5 rounded-full font-mono">
+                            عمولة المنصة (4%): {formatPrice(Math.round((order.price || 0) * (order.quantity || 1) * 0.04))}
+                          </span>
+                        </div>
                       </div>
                     );
                   })}
@@ -1162,6 +1252,167 @@ export const ProviderDashboardPage = () => {
                   </div>
                 </div>
               )}
+            </div>
+          )}
+
+          {/* ==================== 5. تبويب المحفظة والمستحقات والعمولات (4%) ==================== */}
+          {activeTab === 'wallet' && (
+            <div className="space-y-6">
+              {/* شريط رأس التبويب */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <h2 className="font-display text-lg font-bold text-[#231F1E]">
+                    المحفظة والمستحقات المالية
+                  </h2>
+                  <p className="text-xs text-[#786C65] mt-0.5">
+                    نظام التسوية المالية التلقائي لعمولة منصة إيوان (4%) وصافي مستحقات المعرض (96%).
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button
+                    onClick={() => {
+                      if (walletStats.netTotal <= 0) {
+                        toast.error('لا يوجد رصيد كافٍ متاح للسحب حالياً.');
+                        return;
+                      }
+                      setPayoutName(providerEntityName);
+                      setPayoutModalOpen(true);
+                    }}
+                    className="h-10 rounded-full bg-[#231F1E] text-white px-5 text-xs font-bold hover:bg-[#9C6644] transition-colors shadow-xs"
+                  >
+                    <ArrowUpRight className="ml-1.5 h-4 w-4 text-[#E5DEC9]" />
+                    طلب تحويل الرصيد للحساب البنكي
+                  </Button>
+                </div>
+              </div>
+
+              {/* البطاقات المالية الثلاث الكبرى */}
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                {/* 1. إجمالي مبيعات المعرض */}
+                <div className="rounded-3xl border border-[#E5DEC9] bg-[#FAF7F2] p-5 shadow-xs">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-[#786C65]">إجمالي مبيعات المعرض</span>
+                    <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-[#F3EDE2] text-[#9C6644]">
+                      <TrendingUp className="h-4 w-4" strokeWidth={1.8} />
+                    </span>
+                  </div>
+                  <p className="mt-3 font-display text-2xl font-bold text-[#231F1E] font-mono">
+                    {formatPrice(walletStats.grossTotal)}
+                  </p>
+                  <p className="mt-1.5 text-xs text-[#786C65]">
+                    مجموع قيمة {myOrders.length} طلب عبر المنصة
+                  </p>
+                </div>
+
+                {/* 2. عمولة منصة إيوان (4%) */}
+                <div className="rounded-3xl border border-[#E5DEC9] bg-[#F3EDE2]/80 p-5 shadow-xs">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-[#8C4A32]">عمولة منصة إيوان (4%)</span>
+                    <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-[#FAF7F2] text-[#8C4A32]">
+                      <Percent className="h-4 w-4" strokeWidth={2} />
+                    </span>
+                  </div>
+                  <p className="mt-3 font-display text-2xl font-bold text-[#8C4A32] font-mono">
+                    {formatPrice(walletStats.commissionTotal)}
+                  </p>
+                  <p className="mt-1.5 text-xs text-[#786C65]">
+                    المبلغ المخصوم تلقائياً كرسوم تشغيل وإدارة
+                  </p>
+                </div>
+
+                {/* 3. الرصيد الصافي القابل للسحب (96%) */}
+                <div className="rounded-3xl border-2 border-[#9C6644]/40 bg-[#FAF7F2] p-5 shadow-sm relative overflow-hidden">
+                  <div className="absolute top-0 left-0 bg-[#9C6644] text-white px-3 py-0.5 rounded-br-2xl text-[10px] font-bold">
+                    جاهز للسحب
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-[#231F1E]">الرصيد الصافي القابل للسحب (96%)</span>
+                    <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-[#F3EDE2] text-[#231F1E]">
+                      <Wallet className="h-4 w-4" strokeWidth={1.8} />
+                    </span>
+                  </div>
+                  <p className="mt-3 font-display text-2xl font-bold text-[#231F1E] font-mono">
+                    {formatPrice(walletStats.netTotal)}
+                  </p>
+                  <p className="mt-1.5 text-xs text-emerald-800 font-semibold">
+                    صافي أرباح المعرض المتبقية في المحفظة
+                  </p>
+                </div>
+              </div>
+
+              {/* كشف التسويات المالية لكل طلب */}
+              <div className="rounded-3xl border border-[#E5DEC9] bg-[#FAF7F2] p-6 shadow-xs">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h3 className="font-display text-base font-bold text-[#231F1E]">
+                      كشف التسوية المالية لطلبات هذا المعرض
+                    </h3>
+                    <p className="text-xs text-[#786C65] mt-0.5">
+                      توضيح تفصيلي لعمولة الـ 4% وصافي المبلغ المودع في رصيد المعرض لكل طلب.
+                    </p>
+                  </div>
+                  <span className="rounded-full bg-[#F3EDE2] border border-[#E5DEC9] px-3 py-1 text-xs font-bold text-[#9C6644]">
+                    {walletStats.settlements.length} عملية تسوية
+                  </span>
+                </div>
+
+                {walletStats.settlements.length === 0 ? (
+                  <div className="py-12 text-center text-xs text-[#786C65]">
+                    لا توجد عمليات بيع أو طلبات مسجلة لهذا المعرض حتى الآن.
+                  </div>
+                ) : (
+                  <div className="overflow-hidden rounded-2xl border border-[#E5DEC9]">
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-right text-xs table-auto">
+                        <thead>
+                          <tr className="border-b border-[#E5DEC9] bg-[#F3EDE2] text-[#231F1E]">
+                            <th className="px-3.5 py-3 font-bold whitespace-nowrap">رقم الطلب</th>
+                            <th className="px-3.5 py-3 font-bold whitespace-nowrap">القطعة والعميل</th>
+                            <th className="px-3.5 py-3 font-bold whitespace-nowrap">تاريخ الطلب</th>
+                            <th className="px-3.5 py-3 font-bold whitespace-nowrap">المبلغ الإجمالي</th>
+                            <th className="px-3.5 py-3 font-bold whitespace-nowrap text-[#8C4A32]">عمولة إيوان (4%-)</th>
+                            <th className="px-3.5 py-3 font-bold whitespace-nowrap text-emerald-900">صافي المودع (96%)</th>
+                            <th className="px-3.5 py-3 font-bold whitespace-nowrap">حالة التسوية</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-[#E5DEC9]/60 text-[#231F1E]">
+                          {walletStats.settlements.map((st) => (
+                            <tr key={st.dbId} className="hover:bg-[#F3EDE2]/40 transition-colors">
+                              <td className="px-3.5 py-3 font-mono font-bold text-[#9C6644] whitespace-nowrap">
+                                #{st.orderCode}
+                              </td>
+                              <td className="px-3.5 py-3 whitespace-nowrap">
+                                <div className="font-bold text-[#231F1E] line-clamp-1">{st.productName}</div>
+                                <div className="text-[11px] text-[#786C65]">
+                                  {st.customerName} — <span dir="ltr" className="font-mono">{st.phone}</span>
+                                </div>
+                              </td>
+                              <td className="px-3.5 py-3 text-[#786C65] text-[11px] whitespace-nowrap">
+                                {new Date(st.date).toLocaleDateString('ar-YE')}
+                              </td>
+                              <td className="px-3.5 py-3 font-mono font-bold text-[#231F1E] whitespace-nowrap">
+                                {formatPrice(st.amount)}
+                              </td>
+                              <td className="px-3.5 py-3 font-mono font-bold text-[#8C4A32] whitespace-nowrap bg-[#F3EDE2]/30">
+                                -{formatPrice(st.commission)}
+                              </td>
+                              <td className="px-3.5 py-3 font-mono font-bold text-emerald-800 whitespace-nowrap">
+                                {formatPrice(st.netStoreAmount)}
+                              </td>
+                              <td className="px-3.5 py-3 whitespace-nowrap">
+                                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 text-[10px] font-bold text-emerald-800">
+                                  <CheckCircle2 className="h-3 w-3" />
+                                  مودعة في المحفظة
+                                </span>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </main>
@@ -1353,6 +1604,117 @@ export const ProviderDashboardPage = () => {
               className="h-10 rounded-full border-[#DED4C6] bg-transparent px-5 text-xs font-bold text-[#786C65] hover:bg-[#F3EDE2]"
             >
               إلغاء
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ==================== 4. نافذة طلب تحويل رصيد المحفظة للحساب البنكي ==================== */}
+      <Dialog open={payoutModalOpen} onOpenChange={setPayoutModalOpen}>
+        <DialogContent
+          className="max-w-md bg-[#FAF7F2] border border-[#E5DEC9] rounded-3xl p-6 shadow-xl text-right"
+          dir="rtl"
+        >
+          <DialogHeader>
+            <DialogTitle className="font-display text-lg font-bold text-[#231F1E] flex items-center gap-2">
+              <Building2 className="h-5 w-5 text-[#9C6644]" />
+              طلب تحويل الرصيد للحساب البنكي
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-4 py-3 text-xs">
+            {/* بطاقة المبلغ */}
+            <div className="rounded-2xl border border-[#E5DEC9] bg-[#F3EDE2] p-4 text-center">
+              <span className="text-[11px] text-[#786C65] block">الرصيد الصافي المتاح للتحويل</span>
+              <span className="font-mono font-bold text-2xl text-[#231F1E] block mt-1">
+                {formatPrice(walletStats.netTotal)}
+              </span>
+              <span className="text-[10px] text-[#8C4A32] block mt-0.5">
+                صافي مستحقات المعرض بعد خصم عمولة المنصة (4%)
+              </span>
+            </div>
+
+            {/* اختيار البنك */}
+            <div>
+              <label className="font-bold text-[#231F1E] block mb-1.5">البنك المستلم (حضرموت / اليمن)</label>
+              <Select value={payoutBank} onValueChange={setPayoutBank}>
+                <SelectTrigger className="h-10 bg-[#F3EDE2]/60 border border-[#DED4C6] rounded-xl text-xs text-[#231F1E]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="rounded-2xl border-[#E5DEC9] bg-[#FAF7F2]">
+                  <SelectItem value="بنك البسيري للتمويل الأصغر" className="text-xs font-bold">
+                    بنك البسيري للتمويل الأصغر (الرئيسي بالمكلا)
+                  </SelectItem>
+                  <SelectItem value="بنك الكريمي للتمويل الأصغر الإسلامي" className="text-xs">
+                    بنك الكريمي للتمويل الأصغر الإسلامي
+                  </SelectItem>
+                  <SelectItem value="البنك الأهلي اليمني" className="text-xs">
+                    البنك الأهلي اليمني
+                  </SelectItem>
+                  <SelectItem value="كاك بنك (بنك التسليف التعاوني)" className="text-xs">
+                    كاك بنك (بنك التسليف التعاوني)
+                  </SelectItem>
+                  <SelectItem value="محفظة جيب / كاش الإلكترونية" className="text-xs">
+                    محفظة جيب / كاش الإلكترونية
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* اسم المستفيد */}
+            <div>
+              <label className="font-bold text-[#231F1E] block mb-1.5">اسم المستفيد / الحساب</label>
+              <input
+                type="text"
+                value={payoutName}
+                onChange={(e) => setPayoutName(e.target.value)}
+                placeholder="اسم المعرض أو مالك الحساب"
+                className="w-full bg-[#F3EDE2]/60 border border-[#DED4C6] rounded-xl px-3 py-2 text-xs focus:border-[#9C6644] outline-none text-[#231F1E]"
+              />
+            </div>
+
+            {/* رقم الحساب / الآيبان */}
+            <div>
+              <label className="font-bold text-[#231F1E] block mb-1.5">رقم الحساب البنكي / الآيبان</label>
+              <input
+                type="text"
+                dir="ltr"
+                value={payoutAccount}
+                onChange={(e) => setPayoutAccount(e.target.value)}
+                placeholder="مثال: 201012345678"
+                className="w-full bg-[#F3EDE2]/60 border border-[#DED4C6] rounded-xl px-3 py-2 text-xs font-mono focus:border-[#9C6644] outline-none text-[#231F1E]"
+              />
+            </div>
+          </div>
+
+          <DialogFooter className="gap-2 sm:gap-0 mt-2">
+            <Button
+              variant="outline"
+              onClick={() => setPayoutModalOpen(false)}
+              className="h-10 rounded-full border-[#DED4C6] text-xs font-bold"
+            >
+              إلغاء
+            </Button>
+            <Button
+              onClick={() => {
+                if (!payoutAccount.trim()) {
+                  toast.error('يرجى إدخال رقم الحساب البنكي.');
+                  return;
+                }
+                setPayoutSubmitting(true);
+                setTimeout(() => {
+                  setPayoutSubmitting(false);
+                  setPayoutModalOpen(false);
+                  setPayoutAccount('');
+                  toast.success(
+                    `تم رفع طلب تحويل مبلغ ${formatPrice(walletStats.netTotal)} إلى ${payoutBank} بنجاح! سيتم إيداع الحوالة وإشعارك خلال 24 ساعة.`
+                  );
+                }, 700);
+              }}
+              disabled={payoutSubmitting}
+              className="h-10 rounded-full bg-[#231F1E] text-white hover:bg-[#9C6644] text-xs font-bold px-6 shadow-xs"
+            >
+              {payoutSubmitting ? 'جارٍ الإرسال…' : 'تأكيد طلب التحويل'}
             </Button>
           </DialogFooter>
         </DialogContent>

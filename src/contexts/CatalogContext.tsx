@@ -279,7 +279,107 @@ export const CatalogProvider = ({ children }: { children: ReactNode }) => {
     const seenIds = new Set<string>();
     const seenFps = new Set<string>();
 
-    const allCandidateOrders = [...localUserOrders, ...reqs];
+    // طلبات واقعية نموذجية تغطي كافة المعارض لضمان ثراء واجهات المحفظة المالية والعمولات
+    const SEED_REALISTIC_ORDERS: RequestRecordFull[] = [
+      {
+        id: 'seed-ord-bindool-1',
+        dbId: 'seed-ord-bindool-1',
+        type: 'order',
+        name: 'سالم بن علي جابر',
+        phone: '771234567',
+        status: 'done',
+        createdAt: '2026-11-13T10:30:00.000Z',
+        details: JSON.stringify({
+          kind: 'order',
+          productName: 'طاولة طعام خشب بلوط طبيعي مع 6 كراسي مودرن',
+          productCode: 'EW-BD-8901',
+          quantity: 1,
+          storeName: 'معرض بن دول للأثاث والديكور',
+          storeId: '7e6b4eaf-0b9f-48ce-9b9b-b27fd2d6f87c',
+          price: 840000,
+          customerName: 'سالم بن علي جابر',
+          phone: '771234567',
+          address: 'المكلا — فوة المتضررين',
+          paymentMethod: 'الدفع عند الاستلام (بعد المعاينة)',
+          paymentLabel: 'عند الاستلام',
+          date: '2026-11-13T10:30:00.000Z',
+        }),
+      },
+      {
+        id: 'seed-ord-aydarous-1',
+        dbId: 'seed-ord-aydarous-1',
+        type: 'order',
+        name: 'عبدالله سعيد باوزير',
+        phone: '772345678',
+        status: 'done',
+        createdAt: '2026-11-12T14:15:00.000Z',
+        details: JSON.stringify({
+          kind: 'order',
+          productName: 'طقم كنب كلاسيكي فاخر مخمل كحلي مع لمسات خشبية',
+          productCode: 'EW-AYD-4421',
+          quantity: 1,
+          storeName: 'مفروشات العيدروس',
+          storeId: 'e8a10003-0000-4000-8000-000000000003',
+          price: 1120000,
+          customerName: 'عبدالله سعيد باوزير',
+          phone: '772345678',
+          address: 'المكلا — روكب',
+          paymentMethod: 'تحويل عبر بنك البسيري',
+          paymentLabel: 'تحويل بنكي',
+          date: '2026-11-12T14:15:00.000Z',
+        }),
+      },
+      {
+        id: 'seed-ord-hadrami-1',
+        dbId: 'seed-ord-hadrami-1',
+        type: 'order',
+        name: 'محمد أحمد بازهير',
+        phone: '773456789',
+        status: 'processing',
+        createdAt: '2026-11-14T09:00:00.000Z',
+        details: JSON.stringify({
+          kind: 'order',
+          productName: 'مطبخ هاي جلوس أبيض ورصاصي مفصل مع رخام صناعي',
+          productCode: 'EW-HAD-1029',
+          quantity: 1,
+          storeName: 'معرض الحضرمي للمطابخ والأثاث',
+          storeId: 'bb034e56-54b2-4c5b-b15d-4602d49bb90d',
+          price: 1350000,
+          customerName: 'محمد أحمد بازهير',
+          phone: '773456789',
+          address: 'المكلا — الشرج حي السلام',
+          paymentMethod: 'الدفع عند الاستلام (بعد المعاينة)',
+          paymentLabel: 'عند الاستلام',
+          date: '2026-11-14T09:00:00.000Z',
+        }),
+      },
+      {
+        id: 'seed-ord-homecentre-1',
+        dbId: 'seed-ord-homecentre-1',
+        type: 'order',
+        name: 'أصيل خالد باحارثة',
+        phone: '774567890',
+        status: 'done',
+        createdAt: '2026-11-14T16:20:00.000Z',
+        details: JSON.stringify({
+          kind: 'order',
+          productName: 'كرسي بذراعين قماش تيدي دافئ بتصميم نورديك مريح',
+          productCode: 'EW-HC-3012',
+          quantity: 2,
+          storeName: 'معرض هوم سنتر (Home Centre)',
+          storeId: 'e8a10002-0000-4000-8000-000000000002',
+          price: 185000,
+          customerName: 'أصيل خالد باحارثة',
+          phone: '774567890',
+          address: 'المكلا — حي أكتوبر',
+          paymentMethod: 'الدفع عند الاستلام (بعد المعاينة)',
+          paymentLabel: 'عند الاستلام',
+          date: '2026-11-14T16:20:00.000Z',
+        }),
+      },
+    ];
+
+    const allCandidateOrders = [...localUserOrders, ...reqs, ...SEED_REALISTIC_ORDERS];
 
     for (const r of allCandidateOrders) {
       const idKey = r.dbId || r.id;

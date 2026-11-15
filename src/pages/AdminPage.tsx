@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import {
   Hammer,
   HelpCircle,
@@ -9,8 +9,10 @@ import {
   Sparkles,
   Store,
   Users,
+  Wallet,
 } from 'lucide-react';
 import { Link, Navigate } from 'react-router-dom';
+import { AdminWalletManager } from '@/components/admin/AdminWalletManager';
 import { DesignerManager } from '@/components/admin/DesignerManager';
 import { FaqManager } from '@/components/admin/FaqManager';
 import { LookbookManager } from '@/components/admin/LookbookManager';
@@ -23,9 +25,12 @@ import PageMeta from '@/components/common/PageMeta';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCatalog } from '@/contexts/CatalogContext';
+import { formatPrice } from '@/data/catalog';
+import { parseOrderDetails } from '@/lib/order';
 import { cn } from '@/lib/utils';
 
 const adminTabs = [
+  { id: 'wallet', label: 'محفظة المنصة والعمولات (4%)', icon: Wallet },
   { id: 'stores', label: 'المعارض', icon: Store },
   { id: 'products', label: 'المنتجات والمعروضات', icon: Package },
   { id: 'designers', label: 'المصممون', icon: Hammer },
@@ -50,12 +55,25 @@ const AdminPage = () => {
   const tabs = adminTabs;
   const currentTab = tabs.some((t) => t.id === tab) ? tab : tabs[0].id;
 
+  // احتساب إجمالي عمولة المنصة (4%) لكافة الطلبات
+  const totalPlatformCommission = useMemo(() => {
+    let sum = 0;
+    requests.forEach((r) => {
+      if (r.type === 'chat_message' || r.type === 'lookbook_item') return;
+      const order = parseOrderDetails(r.details, r.phone, r.name);
+      if (order && order.price && order.price > 0) {
+        sum += Math.round(order.price * (order.quantity || 1) * 0.04);
+      }
+    });
+    return sum;
+  }, [requests]);
+
   const stats = [
+    { label: 'أرباح المنصة (4%)', value: formatPrice(totalPlatformCommission) },
     { label: 'المنتجات', value: products.length },
     { label: 'المعارض', value: stores.length },
     { label: 'المصممون', value: designers.length },
     { label: 'الطلبات الجديدة', value: newRequestsCount },
-    { label: 'الآراء', value: reviews.length },
   ];
 
   return (
@@ -145,6 +163,7 @@ const AdminPage = () => {
 
         {/* محتوى التبويبات */}
         <div className="mt-8">
+          {currentTab === 'wallet' && <AdminWalletManager />}
           {currentTab === 'stores' && <StoreManager />}
           {currentTab === 'products' && <ProductManager />}
           {currentTab === 'designers' && <DesignerManager />}
