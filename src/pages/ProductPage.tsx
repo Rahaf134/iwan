@@ -108,7 +108,7 @@ const ProductPage = ({ slug: propSlug, isModal }: ProductPageProps = {}) => {
         className={cn(
           'transition-all',
           isModal
-            ? 'w-full max-h-[90vh] overflow-y-auto p-4 sm:p-6 [scrollbar-width:thin]'
+            ? 'w-full'
             : 'mx-auto w-full max-w-7xl px-6 pb-16 md:pb-24'
         )}
       >
@@ -124,21 +124,13 @@ const ProductPage = ({ slug: propSlug, isModal }: ProductPageProps = {}) => {
 
         <div className="grid gap-8 md:grid-cols-2 md:gap-14">
           <div className="space-y-3">
-            <div className="relative w-full h-[320px] md:h-[400px] max-h-[400px] overflow-hidden rounded-2xl bg-[#F5EFE6] flex items-center justify-center">
+            <div className="relative w-full h-[280px] sm:h-[320px] overflow-hidden rounded-2xl bg-[#F5EFE6] flex items-center justify-center">
               <img
                 key={activeImage}
                 src={activeImage}
                 alt={product.name}
-                className="w-full h-full max-h-[400px] object-cover object-center transition-all duration-300"
+                className="w-full h-full object-cover object-center rounded-2xl transition-all duration-300"
               />
-              <span
-                className={cn(
-                  'absolute right-4 top-4 rounded-full px-3 py-1 text-[11px] font-medium',
-                  status.className,
-                )}
-              >
-                {status.label}
-              </span>
             </div>
             {images.length > 1 && (
               <div className="grid grid-cols-4 gap-3">
@@ -165,6 +157,14 @@ const ProductPage = ({ slug: propSlug, isModal }: ProductPageProps = {}) => {
             <div className="flex flex-wrap items-center gap-2">
               <span className="inline-flex rounded-full bg-secondary px-3.5 py-1 text-xs font-medium text-foreground">
                 {product.category}
+              </span>
+              <span
+                className={cn(
+                  'inline-flex rounded-full px-3 py-1 text-[11px] font-medium',
+                  status.className,
+                )}
+              >
+                {status.label}
               </span>
             </div>
             <h1 className="mt-3 font-display text-2xl leading-tight text-balance md:text-4xl">
@@ -345,7 +345,7 @@ export const ProductModal = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
       <div
-        className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-3xl bg-[#FAF7F2] p-4 sm:p-6 shadow-2xl border border-[#E5DEC9] text-right [scrollbar-width:thin]"
+        className="max-w-2xl w-full mx-auto max-h-[85vh] overflow-y-auto rounded-3xl bg-[#FAF7F2] p-6 shadow-2xl relative text-right [scrollbar-width:thin]"
         dir="rtl"
       >
         <button
