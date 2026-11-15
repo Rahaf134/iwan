@@ -72,7 +72,8 @@ export const AdminWalletManager = () => {
           netStoreAmount,
           paymentMethod: order.paymentMethod || 'الدفع عند الاستلام',
         };
-      });
+      })
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   }, [requests]);
 
   // 2. حساب المؤشرات المالية العامة للمنصة

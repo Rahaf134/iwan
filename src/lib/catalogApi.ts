@@ -135,6 +135,7 @@ export interface FaqInput {
 }
 
 export interface RequestInput {
+  id?: string;
   type: string;
   name: string;
   phone: string;
@@ -1186,8 +1187,9 @@ export async function deleteFaqRow(dbId: string) {
 
 export async function insertRequest(input: RequestInput) {
   try {
+    const recordId = input.id ? toValidUuid(input.id) : toValidUuid();
     const { error } = await supabase.from('requests').insert({
-      id: toValidUuid(),
+      id: recordId,
       type: input.type,
       name: input.name,
       phone: input.phone,

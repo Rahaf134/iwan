@@ -403,26 +403,26 @@ export const ProviderDashboardPage = () => {
     return directMatches;
   }, [products, stores, designers, profile, canonical, myStore, myDesigner, isDesigner]);
 
-  // 2. تصفية الطلبات الواردة لهذا المزود فقط واستبعاد رسائل الشات والأسماء الوهمية
+  // 2. تصفية الطلبات الواردة لهذا المزود فقط وعزلها بدقة عن المتاجر الأخرى مع ترتيبها الأحدث أولاً
   const myOrders = useMemo(() => {
     const targetUuids = new Set<string>();
     const targetNames = new Set<string>();
     if (canonical) {
-      targetUuids.add(canonical.uuid.toLowerCase());
-      targetUuids.add(canonical.legacyId.toLowerCase());
-      canonical.aliases.forEach((a) => targetNames.add(a.toLowerCase()));
-      targetNames.add(canonical.name.toLowerCase());
+      if (canonical.uuid) targetUuids.add(canonical.uuid.toLowerCase().trim());
+      if (canonical.legacyId) targetUuids.add(canonical.legacyId.toLowerCase().trim());
+      canonical.aliases.forEach((a) => targetNames.add(a.toLowerCase().trim()));
+      targetNames.add(canonical.name.toLowerCase().trim());
     }
     if (myStore) {
-      if (myStore.id) targetUuids.add(myStore.id.toLowerCase());
-      if (myStore.dbId) targetUuids.add(myStore.dbId.toLowerCase());
-      if (myStore.legacyId) targetUuids.add(myStore.legacyId.toLowerCase());
-      if (myStore.name) targetNames.add(myStore.name.toLowerCase());
+      if (myStore.id) targetUuids.add(myStore.id.toLowerCase().trim());
+      if (myStore.dbId) targetUuids.add(myStore.dbId.toLowerCase().trim());
+      if (myStore.legacyId) targetUuids.add(myStore.legacyId.toLowerCase().trim());
+      if (myStore.name) targetNames.add(myStore.name.toLowerCase().trim());
     }
-    if (profile?.storeId) targetUuids.add(profile.storeId.toLowerCase());
-    if (profile?.businessName) targetNames.add(profile.businessName.toLowerCase());
+    if (profile?.storeId) targetUuids.add(profile.storeId.toLowerCase().trim());
+    if (profile?.businessName) targetNames.add(profile.businessName.toLowerCase().trim());
 
-    return requests.filter((r) => {
+    const filtered = requests.filter((r) => {
       // 1. استبعاد سجلات الشات واللوك بوك
       if (r.type === 'chat_message' || r.type === 'lookbook_item') return false;
       if (!r.status) return false;
@@ -443,30 +443,48 @@ export const ProviderDashboardPage = () => {
         return false;
       }
 
-      const oStoreId = (order.storeId || '').toLowerCase();
-      if (oStoreId && targetUuids.has(oStoreId)) return true;
-
-      const oStoreName = (order.storeName || '').toLowerCase();
-      if (oStoreName) {
-        for (const name of targetNames) {
-          if (oStoreName.includes(name) || name.includes(oStoreName)) return true;
-        }
+      // 4. مطابقة المعرف الدقيق للمتجر إن وُجد في الطلب
+      const oStoreId = (order.storeId || '').toLowerCase().trim();
+      if (oStoreId) {
+        return targetUuids.has(oStoreId);
       }
 
+      // 5. مطابقة اسم المعرض إن وُجد في الطلب وكان محدداً
+      const oStoreName = (order.storeName || '').toLowerCase().trim();
+      if (oStoreName && oStoreName !== 'معارض إيوان المكلا') {
+        for (const name of targetNames) {
+          if (name && (oStoreName.includes(name) || name.includes(oStoreName))) {
+            return true;
+          }
+        }
+        // إذا كان هناك اسم متجر محدد ولكنه لا يطابق هذا المزود، فهو يخص متجراً آخر حتماً
+        return false;
+      }
+
+      // 6. إذا كان مصمماً وطلباً خاصاً
       if (isDesigner && r.type === 'custom') {
         const detailsLower = (r.details || '').toLowerCase();
         for (const name of targetNames) {
-          if (detailsLower.includes(name)) return true;
+          if (name && detailsLower.includes(name)) return true;
         }
       }
 
-      // 4. مطابقة اسم المنتج إن كان من ضمن معروضات هذا المزود
+      // 7. مطابقة اسم المنتج إن كان من ضمن معروضات هذا المزود حصراً
       if (order.productName) {
-        const pLower = order.productName.toLowerCase();
-        if (myProducts.some((p) => p.name.toLowerCase() === pLower)) return true;
+        const pLower = order.productName.toLowerCase().trim();
+        if (myProducts.some((p) => p.name.toLowerCase().trim() === pLower)) return true;
       }
 
       return false;
+    });
+
+    // ترتيب الطلبات دائماً تنازلياً حسب الأحدث (Newest First)
+    return filtered.sort((a, b) => {
+      const orderA = parseOrderDetails(a.details, a.phone, a.name);
+      const orderB = parseOrderDetails(b.details, b.phone, b.name);
+      const dateA = new Date(orderA?.date || a.createdAt || a.created_at || 0).getTime();
+      const dateB = new Date(orderB?.date || b.createdAt || b.created_at || 0).getTime();
+      return dateB - dateA;
     });
   }, [requests, canonical, myStore, profile, isDesigner, myProducts]);
 

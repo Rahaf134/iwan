@@ -102,8 +102,8 @@ const CartPage = () => {
         paymentMethod: paymentLabel,
         paymentLabel: paymentMethod === 'bank' ? 'تحويل بنكي' : paymentMethod === 'wallet' ? 'محفظة' : 'عند الاستلام',
         remittanceNumber: remittanceNumber.trim() || undefined,
-        customerEmail: profile?.email ? profile.email.trim() : undefined,
-        userId: profile?.id ? profile.id : undefined,
+        customerEmail: (profile?.email || user?.email || '').trim() || undefined,
+        userId: profile?.id || user?.id || undefined,
         date: new Date().toISOString(),
       };
 

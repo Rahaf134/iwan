@@ -25,9 +25,9 @@ export const RequestManager = () => {
   const { requests, setRequestStatus, removeRequest } = useCatalog();
   const { profile, isProvider } = useAuth();
 
-  // فلترة وتنقية الطلبات واستبعاد رسائل الشات والأسماء الوهمية أو الأسعار الصفرية
+  // فلترة وتنقية الطلبات واستبعاد رسائل الشات مع ترتيبها الأحدث أولاً
   const validOrders = useMemo(() => {
-    return requests.filter((r) => {
+    const filtered = requests.filter((r) => {
       // 1. استبعاد سجلات الشات واللوك بوك
       if (r.type === 'chat_message' || r.type === 'lookbook_item') return false;
       if (!r.status) return false;
@@ -60,6 +60,15 @@ export const RequestManager = () => {
       }
 
       return true;
+    });
+
+    // ترتيب الطلبات دائماً تنازلياً حسب الأحدث (Newest First)
+    return filtered.sort((a, b) => {
+      const orderA = parseOrderDetails(a.details, a.phone, a.name);
+      const orderB = parseOrderDetails(b.details, b.phone, b.name);
+      const dateA = new Date(orderA?.date || a.createdAt || a.created_at || 0).getTime();
+      const dateB = new Date(orderB?.date || b.createdAt || b.created_at || 0).getTime();
+      return dateB - dateA;
     });
   }, [requests, isProvider, profile]);
 

@@ -680,9 +680,10 @@ export const CatalogProvider = ({ children }: { children: ReactNode }) => {
       updateFaq: (dbId, input) => run(() => updateFaqRow(dbId, input)),
       removeFaq: (dbId) => run(() => deleteFaqRow(dbId)),
       createRequest: async (input) => {
+        const generatedId = input.id ? toValidUuid(input.id) : toValidUuid();
         const newRecord: RequestRecordFull = {
-          id: toValidUuid(),
-          dbId: toValidUuid(),
+          id: generatedId,
+          dbId: generatedId,
           type: input.type,
           name: input.name,
           phone: input.phone,
@@ -703,8 +704,8 @@ export const CatalogProvider = ({ children }: { children: ReactNode }) => {
           // ignore
         }
 
-        // 3. المزامنة السحابية مع Supabase في الخلفية
-        void insertRequest(input);
+        // 3. المزامنة السحابية مع Supabase في الخلفية بنفس المعرف الدقيق
+        void insertRequest({ ...input, id: generatedId });
       },
       setRequestStatus: async (dbId: string, status: RequestRecordFull['status']) => {
         // 1. احفظ الحالة الجديدة فوراً في ewan_order_statuses

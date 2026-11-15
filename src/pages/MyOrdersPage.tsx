@@ -39,13 +39,13 @@ const formatOrderCode = (rawCode?: string, id?: string): string => {
 
 export const MyOrdersPage = () => {
   const { requests } = useCatalog();
-  const { profile } = useAuth();
+  const { profile, user } = useAuth();
   const [ratingModalOpen, setRatingModalOpen] = useState(false);
   const [selectedStoreForRating, setSelectedStoreForRating] = useState<string>('');
 
-  // استخراج طلبات العميل الخاص بالحساب المسجل حالياً فقط
+  // استخراج طلبات العميل الخاص بالحساب المسجل حالياً فقط مع ترتيبها الأحدث أولاً
   const myOrders = useMemo(() => {
-    if (!profile) return [];
+    if (!profile && !user) return [];
     
     // 1. تجميع كافة المصادر المتاحة للطلبات (سواء كانت من Supabase أو المخزنة محلياً)
     const localUserOrders: any[] = [];
@@ -109,27 +109,27 @@ export const MyOrdersPage = () => {
       });
     }
 
-    const userEmail = (profile.email || '').trim().toLowerCase();
-    const userId = profile.id;
-    const userPhoneClean = (profile.phone || '').replace(/\D/g, '');
-    const userName = (profile.fullName || '').trim().toLowerCase();
+    const userEmail = (profile?.email || user?.email || '').trim().toLowerCase();
+    const userId = profile?.id || user?.id;
+    const userPhoneClean = (profile?.phone || '').replace(/\D/g, '');
+    const userName = (profile?.fullName || '').trim().toLowerCase();
 
-    return deduplicatedSources.filter((r) => {
+    const filtered = deduplicatedSources.filter((r) => {
       const details = parseOrderDetails(r.details, r.phone, r.name);
 
-      // 1. مطابقة البريد الإلكتروني للعميل
-      if (details.customerEmail && details.customerEmail.trim().toLowerCase() === userEmail) {
+      // 1. مطابقة معرف العميل
+      if (userId && details.userId && details.userId === userId) {
         return true;
       }
-      // 2. مطابقة معرف العميل
-      if (userId && details.userId && details.userId === userId) {
+      // 2. مطابقة البريد الإلكتروني للعميل
+      if (userEmail && details.customerEmail && details.customerEmail.trim().toLowerCase() === userEmail) {
         return true;
       }
       // 3. مطابقة رقم الهاتف المسجل
       const orderPhoneClean = (details.phone || r.phone || '').replace(/\D/g, '');
       if (
-        userPhoneClean &&
-        orderPhoneClean &&
+        userPhoneClean.length >= 7 &&
+        orderPhoneClean.length >= 7 &&
         (orderPhoneClean === userPhoneClean ||
           orderPhoneClean.endsWith(userPhoneClean) ||
           userPhoneClean.endsWith(orderPhoneClean))
@@ -140,15 +140,32 @@ export const MyOrdersPage = () => {
       const orderCustomerName = (details.customerName || r.name || '').trim().toLowerCase();
       if (
         userName &&
+        userName.length >= 4 &&
         orderCustomerName &&
-        (orderCustomerName === userName || (userName.length > 3 && orderCustomerName.includes(userName)))
+        (orderCustomerName === userName || orderCustomerName.includes(userName))
       ) {
         return true;
       }
 
       return false;
     });
-  }, [requests, profile]);
+
+    // ترتيب الطلبات دائماً تنازلياً حسب الأحدث (Newest First)
+    return filtered.sort((a, b) => {
+      const detailsA = parseOrderDetails(a.details, a.phone, a.name);
+      const detailsB = parseOrderDetails(b.details, b.phone, b.name);
+      const timeA = new Date(detailsA.date || a.createdAt || a.created_at || 0).getTime();
+      const timeB = new Date(detailsB.date || b.createdAt || b.created_at || 0).getTime();
+      return timeB - timeA;
+    });
+  }, [requests, profile, user]);
+
+  // تحديد أحدث طلب قيد التنفيذ لإبراز بطاقة تنبيه التتبع الحي
+  const activeOrder = useMemo(() => {
+    if (myOrders.length === 0) return null;
+    const inProgress = myOrders.find((o) => o.status !== 'done' && o.status !== 'delivered');
+    return inProgress || myOrders[0];
+  }, [myOrders]);
 
   const getStepIndex = (status: string): number => {
     switch (status) {
@@ -175,7 +192,7 @@ export const MyOrdersPage = () => {
   };
 
   // إذا لم يكن المستخدم مسجلاً للدخول، عرض بطاقة أنيقة تطالبه بالدخول
-  if (!profile) {
+  if (!profile && !user) {
     return (
       <>
         <PageMeta
@@ -230,6 +247,68 @@ export const MyOrdersPage = () => {
             </p>
           </div>
 
+          {/* بطاقة التنبيه المرئية لحالة الطلب الحالي */}
+          {activeOrder && (
+            <div className="mb-8 overflow-hidden rounded-3xl border border-[#E5DEC9] bg-gradient-to-br from-[#F5EFE6] via-[#FAF7F2] to-[#F5EFE6] p-5 sm:p-6 shadow-sm">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex items-start gap-3.5">
+                  <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#9C6644] text-[#FAF7F2] shadow-xs">
+                    {activeOrder.status === 'done' || activeOrder.status === 'delivered' ? (
+                      <CheckCircle2 className="h-6 w-6" />
+                    ) : activeOrder.status === 'shipping' || activeOrder.status === 'in_progress' ? (
+                      <Truck className="h-6 w-6" />
+                    ) : (
+                      <Clock className="h-6 w-6" />
+                    )}
+                    {activeOrder.status !== 'done' && activeOrder.status !== 'delivered' && (
+                      <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5">
+                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#9C6644] opacity-75"></span>
+                        <span className="relative inline-flex h-3.5 w-3.5 rounded-full bg-[#9C6644] border-2 border-[#FAF7F2]"></span>
+                      </span>
+                    )}
+                  </div>
+                  <div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="rounded-full bg-[#9C6644]/15 border border-[#9C6644]/30 px-2.5 py-0.5 text-[11px] font-bold text-[#9C6644]">
+                        {activeOrder.status === 'done' || activeOrder.status === 'delivered'
+                          ? 'آخر طلب مكتمل'
+                          : 'تنبيه حالة طلبك الحالي'}
+                      </span>
+                      <span className="text-xs font-semibold text-[#786C65]" dir="ltr">
+                        {formatOrderCode(parseOrderDetails(activeOrder.details).productCode, activeOrder.dbId)}
+                      </span>
+                    </div>
+                    <h2 className="mt-1 font-display text-base sm:text-lg font-bold text-[#231F1E]">
+                      {activeOrder.status === 'done' || activeOrder.status === 'delivered'
+                        ? 'تم تسليم طلبك بنجاح'
+                        : activeOrder.status === 'shipping' || activeOrder.status === 'in_progress'
+                        ? 'طلبك خرج للتوصيل مع مندوب إيوان بالمكلا'
+                        : activeOrder.status === 'processing' || activeOrder.status === 'contacted'
+                        ? 'طلبك قيد التجهيز والمراجعة في المعرض حالياً'
+                        : 'تم تأكيد الطلب وجاري إرساله للمعرض للتجهيز'}
+                    </h2>
+                    <p className="mt-0.5 text-xs text-[#786C65] leading-relaxed">
+                      {activeOrder.status === 'shipping' || activeOrder.status === 'in_progress'
+                        ? 'الشحنة في طريقها إليك الآن عبر مندوب التوصيل المعتمد، وسيتواصل معك للتسليم.'
+                        : activeOrder.status === 'processing' || activeOrder.status === 'contacted'
+                        ? 'فريق المعرض يقوم بفحص وتجهيز قطع الأثاث الخاصة بك بعناية فائقة قبل تسليمها للمندوب.'
+                        : activeOrder.status === 'done' || activeOrder.status === 'delivered'
+                        ? 'شكراً لتسوقك من معارض إيوان المكلا! نسعد باستقبال تقييمك لجودة القطع والتوصيل.'
+                        : 'طلبك مسجل ومعتمد في منصة إيوان، ويتم التواصل مع المعرض لتأكيد توفر القطع.'}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex sm:flex-col items-center sm:items-end justify-between border-t sm:border-t-0 border-[#E5DEC9] pt-3 sm:pt-0 shrink-0">
+                  <span className="text-[11px] text-[#786C65]">المعرض المسؤول:</span>
+                  <span className="text-xs font-bold text-[#231F1E] flex items-center gap-1 mt-0.5">
+                    <Store className="h-3.5 w-3.5 text-[#9C6644]" />
+                    {parseOrderDetails(activeOrder.details).storeName || 'معارض إيوان المكلا'}
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* قائمة الطلبات */}
           {myOrders.length === 0 ? (
             <div className="rounded-2xl border border-[#E5DEC9] bg-[#F3EDE2]/60 p-12 text-center">
@@ -250,7 +329,7 @@ export const MyOrdersPage = () => {
               {myOrders.map((req) => {
                 const order = parseOrderDetails(req.details);
                 const currentStep = getStepIndex(req.status);
-                const isDelivered = req.status === 'done';
+                const isDelivered = req.status === 'done' || req.status === 'delivered';
                 const formattedCode = formatOrderCode(order?.productCode, req.dbId);
 
                 return (
@@ -275,22 +354,38 @@ export const MyOrdersPage = () => {
                       </div>
 
                       <div className="flex items-center gap-2">
-                        {/* شارة حالة الطلب الرسمية والهادئة */}
+                        {/* شارة حالة الطلب الرسمية مع مؤشر لوني واضح */}
                         <span
                           className={cn(
-                            'rounded-full px-3.5 py-1 text-xs font-semibold border',
+                            'rounded-full px-3.5 py-1 text-xs font-semibold border flex items-center gap-1.5',
                             isDelivered
                               ? 'bg-[#EFE7DA] text-[#231F1E] border-[#D8CBB8]'
                               : currentStep === 3
-                              ? 'bg-[#F3EDE2] text-[#9C6644] border-[#DED4C6]'
+                              ? 'bg-[#9C6644]/15 text-[#9C6644] border-[#9C6644]/30'
+                              : currentStep === 2
+                              ? 'bg-[#F5EFE6] text-[#9C6644] border-[#DED4C6]'
                               : 'bg-[#FAF7F2] text-[#786C65] border-[#E5DEC9]',
                           )}
                         >
+                          <span
+                            className={cn(
+                              'h-2 w-2 rounded-full',
+                              isDelivered
+                                ? 'bg-[#231F1E]'
+                                : currentStep === 3
+                                ? 'bg-[#9C6644] animate-pulse'
+                                : currentStep === 2
+                                ? 'bg-[#9C6644]'
+                                : 'bg-[#786C65]',
+                            )}
+                          />
                           {isDelivered
-                            ? 'تم التسليم بنجاح'
+                            ? 'تم التسليم'
                             : currentStep === 3
-                            ? 'طلبك في الطريق إليك مع مندوب التوصيل'
-                            : trackerSteps[currentStep - 1]?.label || 'قيد المتابعة'}
+                            ? 'خرج للتوصيل'
+                            : currentStep === 2
+                            ? 'قيد التجهيز بالمعرض'
+                            : 'تم تأكيد الطلب'}
                         </span>
                       </div>
                     </div>
