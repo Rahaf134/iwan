@@ -44,8 +44,33 @@ interface StoreContextValue {
 
 const StoreContext = createContext<StoreContextValue | null>(null);
 
-/** مفتاح تخزين جديد خاص بالنسخة العربية — لا يتعارض مع بيانات النسخة الإنجليزية القديمة */
-const STORAGE_KEY = 'ewan_v4_ar_data';
+/** تنظيف فوري وشامل لأي مفتاح موحد قديم لمنع توريث سلات سابقة للزوار */
+if (typeof window !== 'undefined') {
+  try {
+    window.localStorage.removeItem('ewan_v4_ar_data');
+    window.localStorage.removeItem('cart_items_guest');
+    window.localStorage.removeItem('cart_items_undefined');
+    window.localStorage.removeItem('cart_items_null');
+  } catch {
+    // تجاهل في بيئات الحماية
+  }
+}
+
+/** توليد مفتاح سلة معزول ومخصص للمستخدم الحالي */
+const getCartStorageKey = (uid: string | null | undefined): string => {
+  if (!uid || uid === 'undefined' || uid === 'null') {
+    return 'cart_items_guest';
+  }
+  return `cart_items_${uid}`;
+};
+
+/** توليد مفتاح مفضلة معزول */
+const getWishlistStorageKey = (uid: string | null | undefined): string => {
+  if (!uid || uid === 'undefined' || uid === 'null') {
+    return 'wishlist_guest';
+  }
+  return `wishlist_${uid}`;
+};
 
 interface PersistedState {
   cart: CartLine[];
@@ -67,37 +92,67 @@ const isCartLine = (value: unknown): value is CartLine => {
   );
 };
 
-const readPersisted = (): PersistedState => {
+const readPersisted = (uid: string | null | undefined): PersistedState => {
   if (typeof window === 'undefined') return EMPTY_STATE;
+  // الزائر غير المسجل: السلة تبدأ دائماً فارغة تماماً (0) لضمان الاستقلالية
+  if (!uid || uid === 'undefined' || uid === 'null') {
+    let wishlist: string[] = [];
+    try {
+      const raw = window.localStorage.getItem(getWishlistStorageKey(null));
+      if (raw) {
+        const parsed: unknown = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
+          wishlist = parsed.filter((id): id is string => typeof id === 'string');
+        }
+      }
+    } catch {}
+    return { cart: [], wishlist };
+  }
+
   try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) return EMPTY_STATE;
-    const parsed: unknown = JSON.parse(raw);
-    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return EMPTY_STATE;
-    const record = parsed as Record<string, unknown>;
-    const cart = Array.isArray(record.cart)
-      ? record.cart.filter(isCartLine).map((line) => ({
+    const rawCart = window.localStorage.getItem(getCartStorageKey(uid));
+    const rawWishlist = window.localStorage.getItem(getWishlistStorageKey(uid));
+
+    let cart: CartLine[] = [];
+    if (rawCart) {
+      const parsed: unknown = JSON.parse(rawCart);
+      if (Array.isArray(parsed)) {
+        cart = parsed.filter(isCartLine).map((line) => ({
           key: line.key,
           productId: line.productId,
           color: line.color,
           quantity: Math.max(1, Math.min(9, Math.round(line.quantity))),
-        }))
-      : [];
-    const wishlist = Array.isArray(record.wishlist)
-      ? record.wishlist.filter((id): id is string => typeof id === 'string')
-      : [];
+        }));
+      }
+    }
+
+    let wishlist: string[] = [];
+    if (rawWishlist) {
+      const parsed: unknown = JSON.parse(rawWishlist);
+      if (Array.isArray(parsed)) {
+        wishlist = parsed.filter((id): id is string => typeof id === 'string');
+      }
+    }
+
     return { cart, wishlist };
   } catch {
     return EMPTY_STATE;
   }
 };
 
-const writePersisted = (state: PersistedState) => {
+const writePersisted = (uid: string | null | undefined, state: PersistedState) => {
   if (typeof window === 'undefined') return;
   try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    // إذا كان زائر: لا نحفظ سلة مشتركة أبداً، السلة تبقى دائماً فارغة للزوار
+    if (!uid || uid === 'undefined' || uid === 'null') {
+      window.localStorage.removeItem('cart_items_guest');
+      window.localStorage.setItem(getWishlistStorageKey(null), JSON.stringify(state.wishlist));
+    } else {
+      window.localStorage.setItem(getCartStorageKey(uid), JSON.stringify(state.cart));
+      window.localStorage.setItem(getWishlistStorageKey(uid), JSON.stringify(state.wishlist));
+    }
   } catch {
-    // التخزين غير متاح (وضع التصفح الخاص) — نتابع بدون حفظ
+    // وضع التصفح الخاص
   }
 };
 
@@ -105,22 +160,46 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
   const { products } = useCatalog();
   const { user, profile } = useAuth();
   const navigate = useNavigate();
-  const [cart, setCart] = useState<CartLine[]>(() => readPersisted().cart);
-  const [wishlist, setWishlist] = useState<string[]>(() => readPersisted().wishlist);
+
+  // تحديد هوية المستخدم الفريدة (معرّف الحساب أو بريده)
+  const currentUserId = user?.id || profile?.id || null;
+
+  // عند فتح الموقع لأول مرة أو كزائر: السلة تبدأ بقيمة 0 تماماً
+  const [cart, setCart] = useState<CartLine[]>(() => {
+    return readPersisted(currentUserId).cart;
+  });
+  const [wishlist, setWishlist] = useState<string[]>(() => {
+    return readPersisted(currentUserId).wishlist;
+  });
   const [cartOpen, setCartOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
 
+  // عند تغيّر حالة المستخدم (تسجيل دخول، تسجيل خروج، تبديل جلسة)
   useEffect(() => {
-    writePersisted({ cart, wishlist });
-  }, [cart, wishlist]);
+    if (!currentUserId) {
+      // زائر جديد أو تم تسجيل الخروج: تصفير السلة فوراً إلى 0
+      setCart([]);
+      setWishlist(readPersisted(null).wishlist);
+    } else {
+      // مستخدم مسجل: تحميل سلته المعزولة فقط
+      const userState = readPersisted(currentUserId);
+      setCart(userState.cart);
+      setWishlist(userState.wishlist);
+    }
+  }, [currentUserId]);
+
+  // حفظ السلة والمفضلة داخل المفتاح المخصص للمستخدم فقط
+  useEffect(() => {
+    writePersisted(currentUserId, { cart, wishlist });
+  }, [currentUserId, cart, wishlist]);
 
   const addToCart = useCallback(
     (product: Product, color: string, quantity = 1, options?: { silent?: boolean }) => {
-      // تحقق حاسم: منع الإضافة للسلة لغير المسجلين
+      // تحقق حاسم: منع الإضافة للسلة لغير المسجلين لحماية السلة وضمان ارتباطها بالمستخدم
       const isAuthenticated = Boolean(user || profile);
       if (!isAuthenticated) {
         toast.error('يرجى تسجيل الدخول أولاً لإضافة القطع إلى السلة', {
-          description: 'سجّل دخولك لمتابعة التسوق وإضافة المنتجات إلى سلتك.',
+          description: 'سجّل دخولك لمتابعة التسوق وإضافة المنتجات إلى سلتك الخاصة.',
         });
         navigate('/login');
         return;
@@ -157,7 +236,14 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
     );
   }, []);
 
-  const clearCart = useCallback(() => setCart([]), []);
+  const clearCart = useCallback(() => {
+    setCart([]);
+    if (typeof window !== 'undefined' && currentUserId) {
+      try {
+        window.localStorage.removeItem(getCartStorageKey(currentUserId));
+      } catch {}
+    }
+  }, [currentUserId]);
 
   const toggleWishlist = useCallback((product: Product) => {
     setWishlist((current) => {
