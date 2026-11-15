@@ -21,8 +21,15 @@ import { useStore } from '@/contexts/StoreContext';
 import { formatPrice } from '@/data/catalog';
 import { cn } from '@/lib/utils';
 
-const ProductPage = () => {
-  const { slug } = useParams();
+export interface ProductPageProps {
+  slug?: string;
+  isModal?: boolean;
+  onClose?: () => void;
+}
+
+const ProductPage = ({ slug: propSlug, isModal }: ProductPageProps = {}) => {
+  const params = useParams();
+  const slug = propSlug ?? params.slug;
   const { products, stores } = useCatalog();
   const { addToCart, toggleWishlist, isWishlisted } = useStore();
   const { openChat } = useChat();
@@ -94,24 +101,35 @@ const ProductPage = () => {
 
   return (
     <>
-      <PageMeta title={`${product.name} — إيوان`} description={product.description} />
-      <div className="mx-auto w-full max-w-7xl px-6 pb-16 md:pb-24">
-        <nav className="flex items-center gap-2 py-5 text-xs text-muted-foreground">
-          <Link to="/" className="hover:text-foreground">الرئيسية</Link>
-          <span>/</span>
-          <Link to="/shop" className="hover:text-foreground">المتجر</Link>
-          <span>/</span>
-          <span className="truncate text-foreground">{product.name}</span>
-        </nav>
+      {!isModal && (
+        <PageMeta title={`${product.name} — إيوان`} description={product.description} />
+      )}
+      <div
+        className={cn(
+          'transition-all',
+          isModal
+            ? 'w-full max-h-[90vh] overflow-y-auto p-4 sm:p-6 [scrollbar-width:thin]'
+            : 'mx-auto w-full max-w-7xl px-6 pb-16 md:pb-24'
+        )}
+      >
+        {!isModal && (
+          <nav className="flex items-center gap-2 py-5 text-xs text-muted-foreground">
+            <Link to="/" className="hover:text-foreground">الرئيسية</Link>
+            <span>/</span>
+            <Link to="/shop" className="hover:text-foreground">المتجر</Link>
+            <span>/</span>
+            <span className="truncate text-foreground">{product.name}</span>
+          </nav>
+        )}
 
         <div className="grid gap-8 md:grid-cols-2 md:gap-14">
           <div className="space-y-3">
-            <div className="relative aspect-[4/5] w-full overflow-hidden rounded-3xl bg-muted">
+            <div className="relative w-full h-[320px] md:h-[400px] max-h-[400px] overflow-hidden rounded-2xl bg-[#F5EFE6] flex items-center justify-center">
               <img
                 key={activeImage}
                 src={activeImage}
                 alt={product.name}
-                className="h-full w-full object-cover animate-in fade-in duration-300"
+                className="w-full h-full max-h-[400px] object-cover object-center transition-all duration-300"
               />
               <span
                 className={cn(
@@ -299,7 +317,7 @@ const ProductPage = () => {
           </div>
         </div>
 
-        {related.length > 0 && (
+        {!isModal && related.length > 0 && (
           <section className="mt-16 md:mt-24">
             <h2 className="font-display text-2xl text-balance md:text-3xl">قطع مشابهة</h2>
             <div className="mt-6 grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-4 md:gap-x-6">
@@ -311,6 +329,36 @@ const ProductPage = () => {
         )}
       </div>
     </>
+  );
+};
+
+export const ProductModal = ({
+  slug,
+  isOpen,
+  onClose,
+}: {
+  slug?: string;
+  isOpen: boolean;
+  onClose: () => void;
+}) => {
+  if (!isOpen) return null;
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
+      <div
+        className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-3xl bg-[#FAF7F2] p-4 sm:p-6 shadow-2xl border border-[#E5DEC9] text-right [scrollbar-width:thin]"
+        dir="rtl"
+      >
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute top-4 left-4 z-50 flex h-8 w-8 items-center justify-center rounded-full bg-[#EFE7DA] text-[#231F1E] hover:bg-[#E5DEC9] transition-colors cursor-pointer"
+          aria-label="إغلاق"
+        >
+          ✕
+        </button>
+        <ProductPage slug={slug} isModal onClose={onClose} />
+      </div>
+    </div>
   );
 };
 
