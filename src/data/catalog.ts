@@ -391,11 +391,14 @@ export const products: Product[] = [
     rating: 4.7,
     reviews: 63,
     colors: [
-      { name: 'أبيض كريمي', hex: '#F2EDE4' },
-      { name: 'بيج رملي', hex: '#D9CBB6' },
+      { name: 'أبيض كريمي', hex: '#F5EFE6' },
+      { name: 'بني كراميل دافئ', hex: '#B88655' },
     ],
     materials: ['قماش بوكليه', 'هيكل خشب صلب', 'قاعدة معدنية'],
-    images: [IMG.armchair],
+    images: [
+      IMG.armchair,
+      'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=900&q=85',
+    ],
     badge: 'جديد',
     featured: true,
     description:

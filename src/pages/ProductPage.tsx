@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   BadgeCheck,
   Heart,
@@ -28,6 +28,14 @@ const ProductPage = () => {
   const { openChat } = useChat();
   const [quantity, setQuantity] = useState(1);
   const [colorIndex, setColorIndex] = useState(0);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+
+  // إعادة ضبط التحديد عند الانتقال لمنتج آخر
+  useEffect(() => {
+    setColorIndex(0);
+    setSelectedImageIndex(0);
+    setQuantity(1);
+  }, [slug]);
 
   const product = products.find((item) => item.slug === slug);
   const store = stores.find(
@@ -57,8 +65,26 @@ const ProductPage = () => {
   const colors = product.colors ?? [];
   const images = product.images ?? [];
   const color = colors[colorIndex]?.name ?? 'افتراضي';
-  const activeImage = images[colorIndex] ?? images[0] ?? '';
-  const hasAlternateImage = images.length > 1 && Boolean(images[colorIndex]);
+
+  // تبديل صورة المنتج تلقائياً عند اختيار اللون مع الرجوع الآمن للصورة الأساسية
+  const handleSelectColor = (index: number) => {
+    setColorIndex(index);
+    if (images[index]) {
+      setSelectedImageIndex(index);
+    } else {
+      setSelectedImageIndex(0);
+    }
+  };
+
+  // اختيار مصغر الصورة مع مطابقة اللون المقابل له
+  const handleSelectThumbnail = (index: number) => {
+    setSelectedImageIndex(index);
+    if (colors[index]) {
+      setColorIndex(index);
+    }
+  };
+
+  const activeImage = images[selectedImageIndex] ?? images[0] ?? '';
 
   const status = !product.available
     ? { label: 'نفذت الكمية', className: 'bg-sand text-sand-foreground' }
@@ -81,18 +107,12 @@ const ProductPage = () => {
         <div className="grid gap-8 md:grid-cols-2 md:gap-14">
           <div className="space-y-3">
             <div className="relative aspect-[4/5] w-full overflow-hidden rounded-3xl bg-muted">
-              <img src={activeImage} alt={product.name} className="h-full w-full object-cover" />
-              {colors[colorIndex] && !hasAlternateImage && (
-                <span
-                  aria-hidden
-                  className="pointer-events-none absolute inset-0 transition-colors duration-500"
-                  style={{
-                    backgroundColor: colors[colorIndex].hex,
-                    opacity: 0.14,
-                    mixBlendMode: 'multiply',
-                  }}
-                />
-              )}
+              <img
+                key={activeImage}
+                src={activeImage}
+                alt={product.name}
+                className="h-full w-full object-cover animate-in fade-in duration-300"
+              />
               <span
                 className={cn(
                   'absolute right-4 top-4 rounded-full px-3 py-1 text-[11px] font-medium',
@@ -108,10 +128,12 @@ const ProductPage = () => {
                   <button
                     key={index}
                     type="button"
-                    onClick={() => setColorIndex(index)}
+                    onClick={() => handleSelectThumbnail(index)}
                     className={cn(
-                      'aspect-square overflow-hidden rounded-xl border bg-muted transition-colors',
-                      colorIndex === index ? 'border-wood' : 'border-transparent',
+                      'aspect-square overflow-hidden rounded-xl border bg-muted transition-all cursor-pointer',
+                      selectedImageIndex === index
+                        ? 'border-wood ring-2 ring-wood/25 scale-[1.02]'
+                        : 'border-transparent opacity-70 hover:opacity-100',
                     )}
                   >
                     <img src={image} alt="" className="h-full w-full object-cover" loading="lazy" />
@@ -181,21 +203,23 @@ const ProductPage = () => {
                 <p className="text-sm font-medium">
                   اللون: <span className="font-normal text-muted-foreground">{color}</span>
                 </p>
-                <div className="mt-3 flex flex-wrap gap-2">
+                <div className="mt-3 flex flex-wrap gap-2.5">
                   {colors.map((option, index) => (
                     <button
                       key={option.name}
                       type="button"
                       aria-label={option.name}
                       aria-pressed={colorIndex === index}
-                      onClick={() => setColorIndex(index)}
+                      onClick={() => handleSelectColor(index)}
                       className={cn(
-                        'flex h-11 w-11 items-center justify-center rounded-full border-2 transition-colors',
-                        colorIndex === index ? 'border-wood' : 'border-border hover:border-wood/50',
+                        'flex h-11 w-11 items-center justify-center rounded-full border-2 transition-all cursor-pointer',
+                        colorIndex === index
+                          ? 'border-wood ring-2 ring-wood/25 scale-105 shadow-2xs'
+                          : 'border-border hover:border-wood/50 hover:scale-102',
                       )}
                     >
                       <span
-                        className="h-7 w-7 rounded-full border border-border"
+                        className="h-7 w-7 rounded-full border border-border shadow-xs"
                         style={{ backgroundColor: option.hex }}
                       />
                     </button>

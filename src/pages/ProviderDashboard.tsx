@@ -10,6 +10,7 @@ import {
   LogOut,
   MessageCircle,
   Package,
+  Palette,
   Pencil,
   Percent,
   Plus,
@@ -144,6 +145,7 @@ export const ProviderDashboardPage = () => {
   const [prodCategory, setProdCategory] = useState(categories[0]?.name ?? 'غرف معيشة');
   const [prodPrice, setProdPrice] = useState('');
   const [prodImage, setProdImage] = useState('');
+  const [prodExtraImages, setProdExtraImages] = useState<string[]>([]);
   const [prodDimensions, setProdDimensions] = useState('');
   const [prodMaterials, setProdMaterials] = useState('');
   const [prodSelectedColors, setProdSelectedColors] = useState<PresetColor[]>([PRESET_COLORS[0], PRESET_COLORS[2]]);
@@ -151,6 +153,7 @@ export const ProviderDashboardPage = () => {
   const [prodAvailable, setProdAvailable] = useState(true);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const extraFileInputRefs = useRef<Record<number, HTMLInputElement | null>>({});
 
   // شات العملاء
   const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(null);
@@ -606,6 +609,7 @@ export const ProviderDashboardPage = () => {
     setProdCategory(categories[0]?.name ?? 'غرف معيشة');
     setProdPrice('');
     setProdImage('');
+    setProdExtraImages([]);
     setProdDimensions('');
     setProdMaterials('');
     setProdSelectedColors([PRESET_COLORS[0], PRESET_COLORS[2]]);
@@ -621,6 +625,7 @@ export const ProviderDashboardPage = () => {
     setProdCategory(prod.category);
     setProdPrice(String(prod.price));
     setProdImage(prod.images[0] ?? '');
+    setProdExtraImages(prod.images.slice(1) ?? []);
     setProdDimensions(prod.dimensions || '');
     setProdMaterials(prod.materials?.join('، ') || '');
 
@@ -661,6 +666,41 @@ export const ProviderDashboardPage = () => {
     }
   };
 
+  // معالجة رفع صورة لون إضافي من الجهاز
+  const handleExtraImageFileChange = async (colorIdx: number, file?: File) => {
+    if (!file) return;
+    try {
+      toast.info('جارٍ ضغط وتجهيز صورة اللون…');
+      const dataUrl = await compressImage(file);
+      setProdExtraImages((prev) => {
+        const next = [...prev];
+        next[colorIdx] = dataUrl;
+        return next;
+      });
+      toast.success('تم تحميل صورة اللون وتجهيزها بنجاح');
+    } catch {
+      toast.error('تعذر معالجة صورة اللون');
+    }
+  };
+
+  // تغيير رابط صورة اللون الإضافي
+  const handleExtraImageUrlChange = (colorIdx: number, url: string) => {
+    setProdExtraImages((prev) => {
+      const next = [...prev];
+      next[colorIdx] = url;
+      return next;
+    });
+  };
+
+  // حذف صورة اللون الإضافي
+  const handleRemoveExtraImage = (colorIdx: number) => {
+    setProdExtraImages((prev) => {
+      const next = [...prev];
+      next[colorIdx] = '';
+      return next;
+    });
+  };
+
   // حفظ المنتج
   const handleSaveProduct = async () => {
     if (!prodName.trim()) {
@@ -692,6 +732,31 @@ export const ProviderDashboardPage = () => {
         ? editingProduct.slug
         : slugify(prodName.trim());
 
+    const mainImg =
+      prodImage.trim() ||
+      editingProduct?.images[0] ||
+      'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800&auto=format&fit=crop&q=80';
+
+    // بناء مصفوفة الصور بترتيب متناسق مع الألوان المختارة:
+    // الصورة الأولى هي الأساسية (mainImg)، وتليها صور الألوان الإضافية بالترتيب
+    const extraImgs: string[] = [];
+    if (prodSelectedColors.length > 1) {
+      for (let i = 0; i < prodSelectedColors.length - 1; i++) {
+        const extra = prodExtraImages[i]?.trim();
+        if (extra) {
+          extraImgs.push(extra);
+        }
+      }
+    } else if (prodExtraImages.length > 0) {
+      for (const extra of prodExtraImages) {
+        if (extra?.trim()) {
+          extraImgs.push(extra.trim());
+        }
+      }
+    }
+
+    const finalImages = [mainImg, ...extraImgs];
+
     const input: ProductInput = {
       name: prodName.trim(),
       slug: uniqueSlug,
@@ -703,11 +768,7 @@ export const ProviderDashboardPage = () => {
       care: editingProduct?.care ?? 'مسح بقطعة قماش ناعمة وجافة.',
       materials: prodMaterials.split(/[،,]/).map((item) => item.trim()).filter(Boolean),
       colors: prodSelectedColors,
-      images: prodImage.trim()
-        ? [prodImage.trim()]
-        : editingProduct?.images ?? [
-            'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800&auto=format&fit=crop&q=80',
-          ],
+      images: finalImages,
       badge: isDesigner ? 'تصميم حصري' : 'متوفر',
       featured: false,
       available: prodAvailable,
@@ -1492,6 +1553,100 @@ export const ProviderDashboardPage = () => {
                   );
                 })}
               </div>
+            </div>
+
+            {/* صور الألوان الإضافية (اختياري) */}
+            <div className="rounded-2xl border border-[#E5DEC9] bg-[#F5EFE6]/70 p-3.5 space-y-3">
+              <div>
+                <label className="text-xs font-bold text-[#231F1E] flex items-center gap-1.5">
+                  <Palette className="h-3.5 w-3.5 text-[#9C6644]" />
+                  صور الألوان الإضافية (اختياري)
+                </label>
+                <p className="text-[11px] text-[#786C65] mt-0.5">
+                  خصص صورة لكل لون إضافي ليتم تبديلها تلقائياً أمام العميل عند اختيار اللون في صفحة المنتج
+                </p>
+              </div>
+
+              {prodSelectedColors.length > 1 ? (
+                <div className="space-y-2.5 pt-1">
+                  {prodSelectedColors.slice(1).map((color, idx) => {
+                    const extraImg = prodExtraImages[idx] || '';
+                    return (
+                      <div
+                        key={color.hex}
+                        className="rounded-xl border border-[#DED4C6] bg-[#FAF7F2] p-2.5 flex items-center gap-3 transition-colors"
+                      >
+                        {/* مصغر المعاينة مع مؤشر دائري للون */}
+                        <div className="relative h-13 w-13 shrink-0 rounded-lg border border-[#DED4C6] bg-[#F3EDE2] overflow-hidden flex items-center justify-center">
+                          {extraImg ? (
+                            <img src={extraImg} alt={color.name} className="h-full w-full object-cover" />
+                          ) : (
+                            <span
+                              className="h-5 w-5 rounded-full border border-black/10 shadow-xs"
+                              style={{ backgroundColor: color.hex }}
+                            />
+                          )}
+                        </div>
+
+                        {/* تحكم الرفع والإدخال */}
+                        <div className="flex-1 min-w-0 space-y-1">
+                          <div className="flex items-center justify-between">
+                            <span className="inline-flex items-center gap-1.5 text-xs font-bold text-[#231F1E]">
+                              <span
+                                className="h-2.5 w-2.5 rounded-full border border-black/10"
+                                style={{ backgroundColor: color.hex }}
+                              />
+                              صورة لون: {color.name} (اللون {idx + 2})
+                            </span>
+                            {extraImg && (
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveExtraImage(idx)}
+                                className="text-[10px] text-red-600 hover:text-red-700 font-medium"
+                              >
+                                إزالة
+                              </button>
+                            )}
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            <button
+                              type="button"
+                              onClick={() => extraFileInputRefs.current[idx]?.click()}
+                              className="h-7 shrink-0 rounded-lg bg-[#FAF7F2] border border-[#DED4C6] px-2.5 text-[11px] font-bold text-[#231F1E] hover:border-[#9C6644] transition-colors"
+                            >
+                              اختيار من الجهاز
+                            </button>
+                            <input
+                              ref={(el) => {
+                                extraFileInputRefs.current[idx] = el;
+                              }}
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) void handleExtraImageFileChange(idx, file);
+                              }}
+                              className="hidden"
+                            />
+                            <input
+                              type="text"
+                              value={extraImg}
+                              onChange={(e) => handleExtraImageUrlChange(idx, e.target.value)}
+                              placeholder={`أو الصق رابط صورة ${color.name} هنا…`}
+                              className="flex-1 min-w-0 bg-transparent border-0 border-b border-[#DED4C6] pb-0.5 text-xs text-[#231F1E] outline-none focus:border-[#9C6644]"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="rounded-xl border border-dashed border-[#DED4C6] p-3 text-center text-xs text-[#786C65]">
+                  اختر لوناً ثانياً أو ثالثاً من قائمة <span className="font-bold text-[#231F1E]">"الألوان المتوفرة"</span> أعلاه لتخصيص صور إضافية لها هنا.
+                </div>
+              )}
             </div>
 
             {/* المقاسات والمواد */}
