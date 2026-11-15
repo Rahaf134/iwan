@@ -1276,25 +1276,25 @@ export const ProviderDashboardPage = () => {
                 {/* 1. إجمالي المبيعات */}
                 <div className="rounded-3xl border border-[#E5DEC9] bg-[#FAF7F2] p-5 shadow-xs">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-[#8C7355]">إجمالي المبيعات</span>
-                    <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-[#F3EDE2] text-[#5C4938]">
+                    <span className="text-xs font-medium text-stone-600">إجمالي المبيعات</span>
+                    <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-[#F3EDE2] text-stone-700">
                       <TrendingUp className="h-4 w-4" strokeWidth={1.8} />
                     </span>
                   </div>
-                  <p className="mt-2 text-2xl font-bold text-[#2C221E]">
+                  <p className="mt-2 text-xl md:text-2xl font-medium text-stone-800">
                     {formatPrice(walletStats.grossTotal)}
                   </p>
                 </div>
 
                 {/* 2. عمولة إيوان 4% */}
-                <div className="rounded-3xl border border-[#E5DEC9] bg-[#F3EDE2]/80 p-5 shadow-xs">
+                <div className="rounded-3xl border border-[#E5DEC9] bg-[#FAF7F2] p-5 shadow-xs">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-[#8C7355]">عمولة إيوان 4%</span>
-                    <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-[#FAF7F2] text-[#5C4938]">
-                      <Percent className="h-4 w-4" strokeWidth={2} />
+                    <span className="text-xs font-medium text-stone-600">عمولة إيوان 4%</span>
+                    <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-[#FAF7F2] text-stone-700">
+                      <Percent className="h-4 w-4" strokeWidth={1.8} />
                     </span>
                   </div>
-                  <p className="mt-2 text-2xl font-bold text-[#5C4938]">
+                  <p className="mt-2 text-xl md:text-2xl font-medium text-stone-800">
                     {formatPrice(walletStats.commissionTotal)}
                   </p>
                 </div>
@@ -1302,12 +1302,12 @@ export const ProviderDashboardPage = () => {
                 {/* 3. صافي الرصيد */}
                 <div className="rounded-3xl border border-[#DED4C6] bg-[#FAF7F2] p-5 shadow-xs">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-[#8C7355]">صافي الرصيد</span>
-                    <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-[#F3EDE2] text-[#2C221E]">
+                    <span className="text-xs font-medium text-stone-600">صافي الرصيد</span>
+                    <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-[#F3EDE2] text-stone-800">
                       <Wallet className="h-4 w-4" strokeWidth={1.8} />
                     </span>
                   </div>
-                  <p className="mt-2 text-2xl font-bold text-[#2C221E]">
+                  <p className="mt-2 text-xl md:text-2xl font-medium text-stone-800">
                     {formatPrice(walletStats.netTotal)}
                   </p>
                 </div>

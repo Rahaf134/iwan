@@ -71,65 +71,65 @@ export const RequestManager = () => {
       {validOrders.length === 0 ? (
         <AdminEmpty message="لا توجد طلبات واردة بعد." />
       ) : (
-        <div className="w-full overflow-hidden rounded-2xl border border-[#E5DEC9] bg-[#FAF7F2] shadow-sm">
+        <div className="w-full overflow-hidden rounded-2xl border border-[#E5DEC9] bg-[#FAF7F2] shadow-2xs">
           <table className="w-full text-right text-xs table-auto">
             <thead>
-              <tr className="border-b border-[#E5DEC9] bg-[#F3EDE2] text-[#231F1E]">
-                <th className="px-3.5 py-3 font-bold">العميل</th>
-                <th className="px-3.5 py-3 font-bold">رقم الجوال</th>
-                <th className="px-3.5 py-3 font-bold">القطعة والكمية</th>
-                <th className="px-3.5 py-3 font-bold">المعرض</th>
-                <th className="px-3.5 py-3 font-bold">الإجمالي والدفع</th>
-                <th className="px-3.5 py-3 font-bold">التاريخ</th>
-                <th className="px-3.5 py-3 font-bold">الحالة</th>
-                <th className="px-3.5 py-3 font-bold text-center">حذف</th>
+              <tr className="border-b border-[#E5DEC9] bg-[#FAF7F2] text-stone-700">
+                <th className="px-3.5 py-3 font-medium">العميل</th>
+                <th className="px-3.5 py-3 font-medium">رقم الجوال</th>
+                <th className="px-3.5 py-3 font-medium">القطعة والكمية</th>
+                <th className="px-3.5 py-3 font-medium">المعرض</th>
+                <th className="px-3.5 py-3 font-medium">الإجمالي والدفع</th>
+                <th className="px-3.5 py-3 font-medium">التاريخ</th>
+                <th className="px-3.5 py-3 font-medium">الحالة</th>
+                <th className="px-3.5 py-3 font-medium text-center">حذف</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#E5DEC9]/60 text-[#231F1E]">
+            <tbody className="divide-y divide-[#E5DEC9]/60 text-stone-700">
               {validOrders.map((request) => {
                 const order = parseOrderDetails(request.details, request.phone, request.name);
                 const clientName = order.customerName || request.name || 'عميل إيوان';
                 const clientPhone = request.phone || order.phone || '—';
 
                 return (
-                  <tr key={request.dbId} className="hover:bg-[#F3EDE2]/40 transition-colors">
-                    {/* 1. العميل (بدون تكرار الرقم تحته) */}
-                    <td className="px-3.5 py-3 font-bold text-[#231F1E] whitespace-nowrap">
+                  <tr key={request.dbId} className="hover:bg-[#F3EDE2]/30 transition-colors">
+                    {/* 1. العميل */}
+                    <td className="px-3.5 py-3 font-medium text-stone-800 whitespace-nowrap">
                       {clientName}
                     </td>
 
-                    {/* 2. رقم الجوال (نص هادئ ونظيف بدون أيقونات ملونة فاقعة) */}
-                    <td className="px-3.5 py-3 font-mono text-[#5C534E] whitespace-nowrap" dir="ltr">
+                    {/* 2. رقم الجوال */}
+                    <td className="px-3.5 py-3 font-normal text-stone-600 whitespace-nowrap" dir="ltr">
                       {clientPhone}
                     </td>
 
                     {/* 3. القطعة والكمية */}
                     <td className="px-3.5 py-3 max-w-[220px]">
-                      <p className="font-semibold text-[#231F1E] line-clamp-2 leading-relaxed">
+                      <p className="font-medium text-stone-800 line-clamp-2 leading-relaxed">
                         {order.productName || 'طلب أثاث'}
                       </p>
-                      <span className="text-[11px] text-[#786C65] block mt-0.5">
+                      <span className="text-[11px] text-stone-500 block mt-0.5">
                         × {order.quantity || 1} قطعة
                       </span>
                     </td>
 
                     {/* 4. المعرض */}
-                    <td className="px-3.5 py-3 font-semibold text-[#9C6644] whitespace-nowrap">
+                    <td className="px-3.5 py-3 font-medium text-stone-700 whitespace-nowrap">
                       {order.storeName || 'معارض إيوان'}
                     </td>
 
                     {/* 5. الإجمالي والدفع */}
                     <td className="px-3.5 py-3 whitespace-nowrap">
-                      <p className="font-bold text-[#9C6644] font-mono">
+                      <p className="font-medium text-stone-800">
                         {formatPrice(order.price)}
                       </p>
-                      <span className="text-[10px] text-[#786C65] block mt-0.5">
+                      <span className="text-[10px] text-stone-500 block mt-0.5">
                         {order.paymentLabel || order.paymentMethod || 'عند الاستلام'}
                       </span>
                     </td>
 
                     {/* 6. التاريخ */}
-                    <td className="px-3.5 py-3 text-[#786C65] font-mono text-[11px] whitespace-nowrap">
+                    <td className="px-3.5 py-3 text-stone-500 text-[11px] whitespace-nowrap">
                       {new Date(order.date || request.createdAt || Date.now()).toLocaleDateString('ar-YE')}
                     </td>
 

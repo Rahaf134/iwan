@@ -126,9 +126,9 @@ const AdminPage = () => {
           {/* إحصائيات عامة */}
           <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
             {stats.map((stat) => (
-              <div key={stat.label} className="rounded-2xl border border-[#E5DEC9] bg-[#FAF7F2] px-4 py-3.5 shadow-2xs">
-                <p className="text-xs font-semibold text-[#786C65]">{stat.label}</p>
-                <p className="mt-1 text-2xl font-bold text-[#2C221E]">{stat.value}</p>
+              <div key={stat.label} className="rounded-2xl border border-border bg-card px-4 py-3.5 shadow-2xs">
+                <p className="text-xl md:text-2xl font-medium text-stone-800">{stat.value}</p>
+                <p className="mt-0.5 text-xs text-muted-foreground">{stat.label}</p>
               </div>
             ))}
           </div>
