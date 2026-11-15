@@ -1,15 +1,15 @@
 import { useState } from 'react';
-import { ArrowLeft, CheckCircle2, Lock, Mail, Store, UserCheck } from 'lucide-react';
+import { ArrowLeft, Lock, Mail } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import PageMeta from '@/components/common/PageMeta';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { DEMO_ACCOUNTS, useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { heroImage } from '@/data/catalog';
 
 const LoginPage = () => {
-  const { signIn, quickLogin } = useAuth();
+  const { signIn } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -32,15 +32,6 @@ const LoginPage = () => {
       navigate('/provider', { replace: true });
     } else {
       navigate('/', { replace: true });
-    }
-  };
-
-  const handleQuickEnter = (acc: (typeof DEMO_ACCOUNTS)[0]) => {
-    quickLogin(acc);
-    if (acc.role === 'admin') {
-      navigate('/admin', { replace: true });
-    } else {
-      navigate('/provider', { replace: true });
     }
   };
 
@@ -114,34 +105,6 @@ const LoginPage = () => {
               {loading ? 'جارٍ الدخول…' : 'تسجيل الدخول'}
             </Button>
           </form>
-
-          {/* دخول سريع ومباشر بضغطة زر واحدة لجميع المعارض والمصممين */}
-          <div className="mt-8 max-w-md pt-6 border-t border-border">
-            <div className="flex items-center gap-2 mb-3">
-              <Store className="h-4 w-4 text-wood" />
-              <p className="text-xs font-bold text-foreground">دخول سريع مباشر لحسابات المعارض والمصممين:</p>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {DEMO_ACCOUNTS.map((acc) => {
-                const isHomeCentre = acc.id === 'demo-homecentre';
-                return (
-                  <button
-                    key={acc.id}
-                    type="button"
-                    onClick={() => handleQuickEnter(acc)}
-                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                      isHomeCentre
-                        ? 'bg-[#231F1E] text-white shadow-xs hover:bg-[#9C6644]'
-                        : 'bg-[#F3EDE2] text-[#231F1E] border border-[#E5DEC9] hover:bg-[#EFE7DA]'
-                    }`}
-                  >
-                    <span>{acc.name}</span>
-                    {isHomeCentre && <CheckCircle2 className="h-3 w-3 text-emerald-400" />}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
 
           <p className="mt-6 text-sm text-muted-foreground">
             ليس لديك حساب؟{' '}

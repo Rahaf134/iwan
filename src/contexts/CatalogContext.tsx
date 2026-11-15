@@ -104,9 +104,19 @@ interface CatalogContextValue {
 
 const CatalogContext = createContext<CatalogContextValue | null>(null);
 
-const STORE_OVERRIDES_KEY = 'iwannn_store_overrides_v1';
-const DESIGNER_OVERRIDES_KEY = 'iwannn_designer_overrides_v1';
+const STORE_OVERRIDES_KEY = 'iwannn_store_overrides_v2';
+const DESIGNER_OVERRIDES_KEY = 'iwannn_designer_overrides_v2';
 const ORDER_STATUSES_KEY = 'ewan_order_statuses';
+
+// تنظيف أي كاش قديم لتفادي طغيان البيانات القديمة على بيانات Supabase النظيفة
+if (typeof window !== 'undefined') {
+  try {
+    localStorage.removeItem('iwannn_store_overrides_v1');
+    localStorage.removeItem('iwannn_designer_overrides_v1');
+  } catch {
+    // ignore
+  }
+}
 
 const getStoredOrderStatuses = (): Record<string, string> => {
   try {
