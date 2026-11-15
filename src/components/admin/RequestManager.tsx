@@ -71,10 +71,10 @@ export const RequestManager = () => {
       {validOrders.length === 0 ? (
         <AdminEmpty message="لا توجد طلبات واردة بعد." />
       ) : (
-        <div className="w-full overflow-hidden rounded-2xl border border-[#E5DEC9] bg-[#FAF7F2] shadow-2xs">
+        <div className="w-full overflow-hidden rounded-2xl border border-border bg-card shadow-2xs">
           <table className="w-full text-right text-xs table-auto">
             <thead>
-              <tr className="border-b border-[#E5DEC9] bg-[#FAF7F2] text-stone-700">
+              <tr className="border-b border-border bg-card text-stone-700">
                 <th className="px-3.5 py-3 font-medium">العميل</th>
                 <th className="px-3.5 py-3 font-medium">رقم الجوال</th>
                 <th className="px-3.5 py-3 font-medium">القطعة والكمية</th>
@@ -85,21 +85,21 @@ export const RequestManager = () => {
                 <th className="px-3.5 py-3 font-medium text-center">حذف</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#E5DEC9]/60 text-stone-700">
+            <tbody className="divide-y divide-border/60 text-stone-700">
               {validOrders.map((request) => {
                 const order = parseOrderDetails(request.details, request.phone, request.name);
                 const clientName = order.customerName || request.name || 'عميل إيوان';
                 const clientPhone = request.phone || order.phone || '—';
 
                 return (
-                  <tr key={request.dbId} className="hover:bg-[#F3EDE2]/30 transition-colors">
+                  <tr key={request.dbId} className="hover:bg-background/40 transition-colors">
                     {/* 1. العميل */}
                     <td className="px-3.5 py-3 font-medium text-stone-800 whitespace-nowrap">
                       {clientName}
                     </td>
 
                     {/* 2. رقم الجوال */}
-                    <td className="px-3.5 py-3 font-normal text-stone-600 whitespace-nowrap" dir="ltr">
+                    <td className="px-3.5 py-3 font-normal text-stone-600 whitespace-nowrap font-display" dir="ltr">
                       {clientPhone}
                     </td>
 
@@ -108,7 +108,7 @@ export const RequestManager = () => {
                       <p className="font-medium text-stone-800 line-clamp-2 leading-relaxed">
                         {order.productName || 'طلب أثاث'}
                       </p>
-                      <span className="text-[11px] text-stone-500 block mt-0.5">
+                      <span className="text-[11px] text-stone-500 block mt-0.5 font-display">
                         × {order.quantity || 1} قطعة
                       </span>
                     </td>
@@ -120,7 +120,7 @@ export const RequestManager = () => {
 
                     {/* 5. الإجمالي والدفع */}
                     <td className="px-3.5 py-3 whitespace-nowrap">
-                      <p className="font-medium text-stone-800">
+                      <p className="font-display text-base text-stone-800">
                         {formatPrice(order.price)}
                       </p>
                       <span className="text-[10px] text-stone-500 block mt-0.5">
@@ -129,7 +129,7 @@ export const RequestManager = () => {
                     </td>
 
                     {/* 6. التاريخ */}
-                    <td className="px-3.5 py-3 text-stone-500 text-[11px] whitespace-nowrap">
+                    <td className="px-3.5 py-3 text-stone-500 text-[11px] whitespace-nowrap font-display">
                       {new Date(order.date || request.createdAt || Date.now()).toLocaleDateString('ar-YE')}
                     </td>
 
