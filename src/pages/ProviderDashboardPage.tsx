@@ -38,7 +38,17 @@ import { useCatalog } from '@/contexts/CatalogContext';
 import { useChat, type ChatMessage } from '@/contexts/ChatContext';
 import { categories, formatPrice } from '@/data/catalog';
 import { parseOrderDetails } from '@/lib/order';
-import { slugify, toValidStoreUuid, type ProductInput, type ProductRecord, type RequestRecordFull } from '@/lib/catalogApi';
+import {
+  slugify,
+  toValidStoreUuid,
+  resolveCanonicalProvider,
+  fallbackProducts,
+  type ProductInput,
+  type ProductRecord,
+  type RequestRecordFull,
+  type StoreRecord,
+  type DesignerRecord,
+} from '@/lib/catalogApi';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
@@ -107,29 +117,97 @@ export const ProviderDashboardPage = () => {
   const [isSending, setIsSending] = useState(false);
   const [chatRefreshing, setChatRefreshing] = useState(false);
 
-  // تحديد هوية المزود
-  const isDesigner = profile?.role === 'designer';
+  // تحديد هوية المزود المعتمد ومطابقة كافة المعرّفات بدقة
+  const canonical = useMemo(
+    () =>
+      resolveCanonicalProvider({
+        id: profile?.id,
+        email: profile?.email,
+        businessName: profile?.businessName,
+        fullName: profile?.fullName,
+        storeId: profile?.storeId,
+        designerId: profile?.designerId,
+      }),
+    [profile]
+  );
+
+  const isDesigner = profile?.role === 'designer' || canonical?.role === 'designer';
+
   const myStore = useMemo(() => {
-    if (!profile) return null;
-    return stores.find(
-      (s) =>
-        (profile.storeId && (s.id === profile.storeId || s.dbId === profile.storeId || s.legacyId === profile.storeId)) ||
-        (profile.businessName && s.name.includes(profile.businessName)) ||
-        (profile.fullName && s.name.includes(profile.fullName))
-    );
-  }, [profile, stores]);
+    if (!profile && !canonical) return null;
+    const targetUuid = canonical?.uuid || profile?.storeId;
+
+    const matched = stores.find((s) => {
+      if (targetUuid && (s.id === targetUuid || s.dbId === targetUuid)) return true;
+      if (canonical && (s.legacyId === canonical.legacyId || s.name.includes(canonical.name) || canonical.name.includes(s.name))) return true;
+      if (profile?.storeId && (s.id === profile.storeId || s.dbId === profile.storeId || s.legacyId === profile.storeId)) return true;
+      if (profile?.businessName && (s.name.includes(profile.businessName) || profile.businessName.includes(s.name))) return true;
+      if (profile?.fullName && (s.name.includes(profile.fullName) || profile.fullName.includes(s.name))) return true;
+      return false;
+    });
+
+    if (matched) return matched;
+
+    if (canonical && canonical.role === 'merchant') {
+      return {
+        id: canonical.uuid,
+        dbId: canonical.uuid,
+        legacyId: canonical.legacyId,
+        name: canonical.name,
+        city: 'المكلا',
+        area: 'حضرموت',
+        address: 'المكلا — حضرموت',
+        specialty: 'أثاث وديكور منزلي راقٍ',
+        phone: '05-300000',
+        rating: 5,
+        verified: true,
+        imageUrl: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800&auto=format&fit=crop&q=80',
+        description: canonical.name,
+        createdAt: '',
+      } as StoreRecord;
+    }
+
+    return null;
+  }, [profile, canonical, stores]);
 
   const myDesigner = useMemo(() => {
-    if (!profile) return null;
-    return designers.find(
-      (d) =>
-        (profile.designerId && (d.id === profile.designerId || d.dbId === profile.designerId || d.legacyId === profile.designerId)) ||
-        (profile.businessName && d.name.includes(profile.businessName)) ||
-        (profile.fullName && d.name.includes(profile.fullName))
-    );
-  }, [profile, designers]);
+    if (!profile && !canonical) return null;
+    const targetUuid = canonical?.uuid || profile?.designerId;
+
+    const matched = designers.find((d) => {
+      if (targetUuid && (d.id === targetUuid || d.dbId === targetUuid)) return true;
+      if (canonical && (d.legacyId === canonical.legacyId || d.name.includes(canonical.name) || canonical.name.includes(d.name))) return true;
+      if (profile?.designerId && (d.id === profile.designerId || d.dbId === profile.designerId || d.legacyId === profile.designerId)) return true;
+      if (profile?.businessName && (d.name.includes(profile.businessName) || profile.businessName.includes(d.name))) return true;
+      if (profile?.fullName && (d.name.includes(profile.fullName) || profile.fullName.includes(d.name))) return true;
+      return false;
+    });
+
+    if (matched) return matched;
+
+    if (canonical && canonical.role === 'designer') {
+      return {
+        id: canonical.uuid,
+        dbId: canonical.uuid,
+        legacyId: canonical.legacyId,
+        name: canonical.name,
+        title: 'مصمم داخلي معتمد',
+        area: 'المكلا',
+        years: 6,
+        rating: 4.9,
+        bio: canonical.name,
+        imageUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=800&auto=format&fit=crop&q=80',
+        portfolio: [],
+        kind: 'designer',
+        createdAt: '',
+      } as DesignerRecord;
+    }
+
+    return null;
+  }, [profile, canonical, designers]);
 
   const providerEntityId =
+    canonical?.uuid ||
     myStore?.id ||
     myStore?.dbId ||
     profile?.storeId ||
@@ -138,44 +216,99 @@ export const ProviderDashboardPage = () => {
     profile?.designerId ||
     'unknown';
   const providerEntityName =
-    profile?.businessName || myStore?.name || myDesigner?.name || profile?.fullName || 'المزود المعتمد';
+    profile?.businessName ||
+    canonical?.name ||
+    myStore?.name ||
+    myDesigner?.name ||
+    profile?.fullName ||
+    'المزود المعتمد';
 
-  // 1. تصفية منتجات وأعمال المزود (وضمان أن أعمال م. ريم الكثيري لا تظهر 0 أبداً)
+  // 1. تصفية منتجات وأعمال المزود (وضمان جلبها فوراً بالبريد أو المعرف أو الاسم مع حماية كاملة)
   const myProducts = useMemo<ProductRecord[]>(() => {
+    const targetUuids = new Set<string>();
+    const targetNames = new Set<string>();
+
+    if (canonical) {
+      targetUuids.add(canonical.uuid.toLowerCase());
+      targetUuids.add(canonical.legacyId.toLowerCase());
+      canonical.aliases.forEach((a) => targetNames.add(a.toLowerCase()));
+      targetNames.add(canonical.name.toLowerCase());
+    }
+    if (profile?.storeId) targetUuids.add(profile.storeId.toLowerCase());
+    if (profile?.designerId) targetUuids.add(profile.designerId.toLowerCase());
+    if (myStore) {
+      if (myStore.id) targetUuids.add(myStore.id.toLowerCase());
+      if (myStore.dbId) targetUuids.add(myStore.dbId.toLowerCase());
+      if (myStore.legacyId) targetUuids.add(myStore.legacyId.toLowerCase());
+      if (myStore.name) targetNames.add(myStore.name.toLowerCase());
+    }
+    if (myDesigner) {
+      if (myDesigner.id) targetUuids.add(myDesigner.id.toLowerCase());
+      if (myDesigner.dbId) targetUuids.add(myDesigner.dbId.toLowerCase());
+      if (myDesigner.legacyId) targetUuids.add(myDesigner.legacyId.toLowerCase());
+      if (myDesigner.name) targetNames.add(myDesigner.name.toLowerCase());
+    }
+    if (profile?.businessName) targetNames.add(profile.businessName.toLowerCase());
+    if (profile?.fullName) targetNames.add(profile.fullName.toLowerCase());
+
     const directMatches = products.filter((p) => {
-      if (myStore) {
-        if (
-          p.storeId === myStore.id ||
-          p.storeId === myStore.dbId ||
-          p.storeDbId === myStore.dbId ||
-          p.storeId === myStore.legacyId
-        ) {
-          return true;
-        }
-      }
-      if (profile?.storeId && (p.storeId === profile.storeId || p.storeDbId === profile.storeId)) {
-        return true;
-      }
-      if (profile?.designerId && (p.storeId === profile.designerId || p.storeDbId === profile.designerId)) {
-        return true;
-      }
+      const pStoreId = (p.storeId || '').toLowerCase();
+      const pStoreDbId = (p.storeDbId || '').toLowerCase();
+      const pLegacyId = (p.legacyId || '').toLowerCase();
+
+      // مطابقة المعرّف المباشر
       if (
-        myDesigner &&
-        (p.storeId === myDesigner.id ||
-          p.storeId === myDesigner.dbId ||
-          p.storeId === myDesigner.legacyId ||
-          p.storeDbId === myDesigner.dbId)
+        (pStoreId && targetUuids.has(pStoreId)) ||
+        (pStoreDbId && targetUuids.has(pStoreDbId)) ||
+        (pLegacyId && targetUuids.has(pLegacyId))
       ) {
         return true;
       }
-      if (profile?.businessName) {
-        const storeMatch = stores.find((s) => s.id === p.storeId || s.dbId === p.storeId);
-        if (storeMatch && storeMatch.name.includes(profile.businessName)) return true;
+
+      // مطابقة المعرّف المعياري المحول
+      if (pStoreId) {
+        const canonicalUuid = toValidStoreUuid(pStoreId).toLowerCase();
+        if (targetUuids.has(canonicalUuid)) return true;
       }
+
+      // مطابقة اسم المعرض المرتبط بالمنتج
+      const matchedStore = stores.find(
+        (s) => s.id === p.storeId || s.dbId === p.storeId || (s.legacyId && s.legacyId === p.storeId)
+      );
+      if (matchedStore) {
+        const sName = matchedStore.name.toLowerCase();
+        for (const name of targetNames) {
+          if (sName.includes(name) || name.includes(sName)) return true;
+        }
+      }
+
+      // مطابقة اسم المصمم المرتبط
+      const matchedDesigner = designers.find(
+        (d) => d.id === p.storeId || d.dbId === p.storeId || (d.legacyId && d.legacyId === p.storeId)
+      );
+      if (matchedDesigner) {
+        const dName = matchedDesigner.name.toLowerCase();
+        for (const name of targetNames) {
+          if (dName.includes(name) || name.includes(dName)) return true;
+        }
+      }
+
       return false;
     });
 
     if (directMatches.length > 0) return directMatches;
+
+    // استرجاع المنتجات الافتراضية في حال كانت بيانات Supabase قيد التحميل الأولي
+    const fallbackMatches = fallbackProducts.filter((p) => {
+      const pStoreId = (p.storeId || '').toLowerCase();
+      const pLegacyId = (p.legacyId || '').toLowerCase();
+      if (targetUuids.has(pStoreId) || targetUuids.has(pLegacyId)) return true;
+      const canonicalUuid = toValidStoreUuid(p.storeId).toLowerCase();
+      if (targetUuids.has(canonicalUuid)) return true;
+      return false;
+    });
+
+    if (fallbackMatches.length > 0) return fallbackMatches;
 
     // إذا كانت مصممة كـ م. ريم ولم تضف منتجات بعد، نعرض نماذج أعمالها ومشاريعها لتظهر مليئة فوراً ولا تكون 0
     if (isDesigner && myDesigner) {
@@ -217,10 +350,27 @@ export const ProviderDashboardPage = () => {
     }
 
     return directMatches;
-  }, [products, myStore, profile, stores, isDesigner, myDesigner]);
+  }, [products, stores, designers, profile, canonical, myStore, myDesigner, isDesigner]);
 
   // 2. تصفية الطلبات الواردة لهذا المزود فقط واستبعاد رسائل الشات والأسماء الوهمية
   const myOrders = useMemo(() => {
+    const targetUuids = new Set<string>();
+    const targetNames = new Set<string>();
+    if (canonical) {
+      targetUuids.add(canonical.uuid.toLowerCase());
+      targetUuids.add(canonical.legacyId.toLowerCase());
+      canonical.aliases.forEach((a) => targetNames.add(a.toLowerCase()));
+      targetNames.add(canonical.name.toLowerCase());
+    }
+    if (myStore) {
+      if (myStore.id) targetUuids.add(myStore.id.toLowerCase());
+      if (myStore.dbId) targetUuids.add(myStore.dbId.toLowerCase());
+      if (myStore.legacyId) targetUuids.add(myStore.legacyId.toLowerCase());
+      if (myStore.name) targetNames.add(myStore.name.toLowerCase());
+    }
+    if (profile?.storeId) targetUuids.add(profile.storeId.toLowerCase());
+    if (profile?.businessName) targetNames.add(profile.businessName.toLowerCase());
+
     return requests.filter((r) => {
       // 1. استبعاد سجلات الشات واللوك بوك
       if (r.type === 'chat_message' || r.type === 'lookbook_item') return false;
@@ -231,45 +381,72 @@ export const ProviderDashboardPage = () => {
       if (!order || !order.price || order.price <= 0) return false;
 
       // 3. استبعاد السجلات التي اسم العميل فيها هو اسم مصمم أو آدمن
-      const clientName = (order.customerName || r.name || '').trim();
-      const lower = clientName.toLowerCase();
+      const clientName = (order.customerName || r.name || '').trim().toLowerCase();
       if (
-        lower.includes('ريم الكثيري') ||
-        lower.includes('رحاف') ||
-        lower.includes('مديرة المنصة') ||
-        lower.includes('المزود') ||
-        lower === 'إيوان'
+        clientName.includes('ريم الكثيري') ||
+        clientName.includes('رحاف') ||
+        clientName.includes('مديرة المنصة') ||
+        clientName.includes('المزود') ||
+        clientName === 'إيوان'
       ) {
         return false;
       }
 
-      if (myStore) {
-        if (order.storeId && (order.storeId === myStore.id || order.storeId === myStore.dbId)) return true;
-        if (order.storeName && (order.storeName.includes(myStore.name) || myStore.name.includes(order.storeName))) {
-          return true;
+      const oStoreId = (order.storeId || '').toLowerCase();
+      if (oStoreId && targetUuids.has(oStoreId)) return true;
+
+      const oStoreName = (order.storeName || '').toLowerCase();
+      if (oStoreName) {
+        for (const name of targetNames) {
+          if (oStoreName.includes(name) || name.includes(oStoreName)) return true;
         }
       }
-      if (profile?.storeId && order.storeId === profile.storeId) return true;
-      if (profile?.businessName && order.storeName && order.storeName.includes(profile.businessName)) return true;
+
       if (isDesigner && r.type === 'custom') {
-        if (
-          r.details.includes(providerEntityName) ||
-          (profile?.fullName && r.details.includes(profile.fullName))
-        ) {
-          return true;
+        const detailsLower = (r.details || '').toLowerCase();
+        for (const name of targetNames) {
+          if (detailsLower.includes(name)) return true;
         }
       }
+
       return false;
     });
-  }, [requests, myStore, profile, isDesigner, providerEntityName]);
+  }, [requests, canonical, myStore, profile, isDesigner]);
 
   // 3. تنظيم محادثات العملاء (دمج رسائل كل عميل في محادثة واحدة وحذف الفارغة)
   const customerChats = useMemo<CustomerThread[]>(() => {
+    const targetUuids = new Set<string>();
+    const targetNames = new Set<string>();
+    if (canonical) {
+      targetUuids.add(canonical.uuid.toLowerCase());
+      targetUuids.add(canonical.legacyId.toLowerCase());
+      canonical.aliases.forEach((a) => targetNames.add(a.toLowerCase()));
+      targetNames.add(canonical.name.toLowerCase());
+    }
+    if (providerEntityId && providerEntityId !== 'unknown') targetUuids.add(providerEntityId.toLowerCase());
+    if (myStore) {
+      if (myStore.id) targetUuids.add(myStore.id.toLowerCase());
+      if (myStore.dbId) targetUuids.add(myStore.dbId.toLowerCase());
+      if (myStore.name) targetNames.add(myStore.name.toLowerCase());
+    }
+    if (myDesigner) {
+      if (myDesigner.id) targetUuids.add(myDesigner.id.toLowerCase());
+      if (myDesigner.dbId) targetUuids.add(myDesigner.dbId.toLowerCase());
+      if (myDesigner.name) targetNames.add(myDesigner.name.toLowerCase());
+    }
+    if (profile?.businessName) targetNames.add(profile.businessName.toLowerCase());
+
     const rawThreads = threads.filter((t) => {
-      if (t.id === providerEntityId || t.threadId.includes(providerEntityId)) return true;
-      if (myStore && (t.id === myStore.id || t.id === myStore.dbId || t.name.includes(myStore.name))) return true;
-      if (myDesigner && (t.id === myDesigner.id || t.id === myDesigner.dbId || t.name.includes(myDesigner.name))) return true;
-      if (profile?.businessName && t.name.includes(profile.businessName)) return true;
+      const tId = (t.id || '').toLowerCase();
+      const tThreadId = (t.threadId || '').toLowerCase();
+      const tName = (t.name || '').toLowerCase();
+
+      for (const id of targetUuids) {
+        if (tId === id || tThreadId.includes(id)) return true;
+      }
+      for (const name of targetNames) {
+        if (tName.includes(name) || name.includes(tName)) return true;
+      }
       return false;
     });
 
@@ -312,7 +489,7 @@ export const ProviderDashboardPage = () => {
     });
 
     return Array.from(groupedMap.values()).filter((c) => c.messages.length > 0);
-  }, [threads, providerEntityId, myStore, myDesigner, profile, providerEntityName]);
+  }, [threads, canonical, providerEntityId, myStore, myDesigner, profile, providerEntityName]);
 
   // المحادثة المحددة حالياً
   const activeChat = useMemo(() => {
@@ -400,7 +577,11 @@ export const ProviderDashboardPage = () => {
     }
 
     const assignedStoreId =
-      myStore?.dbId || myStore?.id || profile?.storeId || toValidStoreUuid(providerEntityId);
+      canonical?.uuid ||
+      myStore?.dbId ||
+      myStore?.id ||
+      profile?.storeId ||
+      toValidStoreUuid(providerEntityId);
 
     const input: ProductInput = {
       name: prodName.trim(),

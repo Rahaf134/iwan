@@ -42,6 +42,7 @@ import {
   updateRequestRow,
   updateReviewRow,
   updateStoreRow,
+  slugify,
   toValidStoreUuid,
   toValidUuid,
   type DesignerInput,
@@ -353,21 +354,79 @@ export const CatalogProvider = ({ children }: { children: ReactNode }) => {
       loading,
       error,
       refresh,
-      createProduct: (input) =>
-        run(() =>
-          insertProduct({
+      createProduct: async (input) => {
+        const safeStoreId = toValidStoreUuid(input.storeId);
+        const tempId = toValidUuid();
+        const optimisticProduct: ProductRecord = {
+          id: tempId,
+          dbId: tempId,
+          slug: slugify(input.name, input.slug),
+          name: input.name,
+          category: input.category,
+          price: input.price,
+          compareAt: input.compareAt ?? undefined,
+          rating: 5,
+          reviews: 1,
+          colors: input.colors,
+          materials: input.materials,
+          images: input.images,
+          badge: input.badge ?? undefined,
+          featured: input.featured,
+          description: input.description,
+          dimensions: input.dimensions,
+          care: input.care,
+          storeId: safeStoreId,
+          storeDbId: safeStoreId,
+          available: input.available,
+          createdAt: new Date().toISOString(),
+        };
+        setProducts((prev) => [optimisticProduct, ...prev]);
+        try {
+          await insertProduct({
             ...input,
-            storeId: toValidStoreUuid(input.storeId),
-          }),
-        ),
-      updateProduct: (dbId, input) =>
-        run(() =>
-          updateProductRow(dbId, {
+            storeId: safeStoreId,
+          });
+          await refresh();
+        } catch (err) {
+          await refresh();
+          throw err;
+        }
+      },
+      updateProduct: async (dbId, input) => {
+        const safeStoreId = toValidStoreUuid(input.storeId);
+        setProducts((prev) =>
+          prev.map((p) =>
+            p.dbId === dbId || p.id === dbId
+              ? {
+                  ...p,
+                  ...input,
+                  storeId: safeStoreId,
+                  storeDbId: safeStoreId,
+                }
+              : p,
+          ),
+        );
+        try {
+          await updateProductRow(dbId, {
             ...input,
-            storeId: toValidStoreUuid(input.storeId),
-          }),
-        ),
-      removeProduct: (dbId) => run(() => deleteProductRow(dbId)),
+            storeId: safeStoreId,
+          });
+          await refresh();
+        } catch (err) {
+          await refresh();
+          throw err;
+        }
+      },
+      removeProduct: async (dbId) => {
+        setProducts((prev) => prev.filter((p) => p.dbId !== dbId && p.id !== dbId));
+        try {
+          await deleteProductRow(dbId);
+          await refresh();
+        } catch (err) {
+          await refresh();
+          throw err;
+        }
+      },
       createStore: (input) => run(() => insertStore(input)),
       updateStore: async (dbId, input) => {
         const approvalStatus = input.approvalStatus || (input.verified ? 'approved' : 'pending');

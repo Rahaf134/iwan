@@ -202,6 +202,199 @@ export const slugify = (value: string, currentSlug?: string): string => {
   return `${prefix}-${randomSuffix}`.replace(/-+/g, '-').toLowerCase();
 };
 
+// خريطة الكيانات المعتمدة للمعارض والمصممين لضمان ربط دقيق 100%
+export interface CanonicalProvider {
+  uuid: string;
+  legacyId: string;
+  name: string;
+  aliases: string[];
+  emailKeywords: string[];
+  role: 'merchant' | 'designer';
+}
+
+export const CANONICAL_PROVIDERS: CanonicalProvider[] = [
+  {
+    uuid: 'e8a10002-0000-4000-8000-000000000002',
+    legacyId: 's-homecentre',
+    name: 'معرض هوم سنتر (Home Centre)',
+    aliases: ['هوم سنتر', 'معرض هوم سنتر', 'home centre', 'homecentre', 'home center', 'home-centre'],
+    emailKeywords: ['homecentre', 'homecenter', 'home_centre', 'home-centre'],
+    role: 'merchant',
+  },
+  {
+    uuid: 'e8a10001-0000-4000-8000-000000000001',
+    legacyId: 's-altaweel',
+    name: 'معرض الطويل للأثاث',
+    aliases: ['الطويل', 'معرض الطويل', 'altaweel', 'al-taweel', 'taweel'],
+    emailKeywords: ['altaweel', 'al-taweel', 'taweel'],
+    role: 'merchant',
+  },
+  {
+    uuid: '3117f43e-d0ca-41e1-82a1-7dead277af20',
+    legacyId: 's1',
+    name: 'معرض أرض حمير للأثاث والمطابخ',
+    aliases: ['أرض حمير', 'ارض حمير', 'معرض أرض حمير', 'حمير', 'ard himyar', 'ard-himyar', 'ardhimyar'],
+    emailKeywords: ['ard', 'ardhimyar', 'ard-himyar', 'himyar'],
+    role: 'merchant',
+  },
+  {
+    uuid: '19a63b7b-9e48-47b4-9143-b8542f6fe9a8',
+    legacyId: 's2',
+    name: 'مفروشات باصهيل',
+    aliases: ['باصهيل', 'مفروشات باصهيل', 'baseel', 'basheel'],
+    emailKeywords: ['baseel', 'basheel'],
+    role: 'merchant',
+  },
+  {
+    uuid: '7e6b4eaf-0b9f-48ce-9b9b-b27fd2d6f87c',
+    legacyId: 's3',
+    name: 'معرض بن دول للأثاث والديكور',
+    aliases: ['بن دول', 'معرض بن دول', 'bindool', 'bin dool', 'bin-dool'],
+    emailKeywords: ['bindool', 'bin-dool', 'dool'],
+    role: 'merchant',
+  },
+  {
+    uuid: 'bb034e56-54b2-4c5b-b15d-4602d49bb90d',
+    legacyId: 's4',
+    name: 'معرض الحضرمي للمطابخ والأثاث',
+    aliases: ['الحضرمي', 'معرض الحضرمي', 'hadrami', 'alhadrami', 'al-hadrami'],
+    emailKeywords: ['hadrami', 'alhadrami', 'al-hadrami'],
+    role: 'merchant',
+  },
+  {
+    uuid: 'c913879b-4070-459d-b3ad-7c7a0909d514',
+    legacyId: 's5',
+    name: 'مفروشات القصر العصري',
+    aliases: ['القصر العصري', 'مفروشات القصر', 'qasr', 'al-qasr', 'alqasr'],
+    emailKeywords: ['qasr', 'alqasr', 'al-qasr'],
+    role: 'merchant',
+  },
+  {
+    uuid: '3b3d9526-cd59-436d-802c-d7f1fd352d76',
+    legacyId: 's6',
+    name: 'معرض النخبة للأثاث والديكور',
+    aliases: ['النخبة', 'معرض النخبة', 'nokhba', 'al-nokhba', 'alnokhba'],
+    emailKeywords: ['nokhba', 'alnokhba', 'al-nokhba'],
+    role: 'merchant',
+  },
+  {
+    uuid: 'e7100a86-752b-48d5-8482-13a09c9a9401',
+    legacyId: 's7',
+    name: 'مفروشات بن هلابي',
+    aliases: ['بن هلابي', 'مفروشات بن هلابي', 'binhellabi', 'bin hellabi', 'hellabi'],
+    emailKeywords: ['binhellabi', 'bin-hellabi', 'hellabi'],
+    role: 'merchant',
+  },
+  {
+    uuid: 'ec65b6cd-afc8-49bf-93ce-0d1f05714848',
+    legacyId: 's8',
+    name: 'معرض الفخامة للأثاث',
+    aliases: ['الفخامة', 'معرض الفخامة', 'fakhama', 'al-fakhama', 'alfakhama'],
+    emailKeywords: ['fakhama', 'alfakhama', 'al-fakhama'],
+    role: 'merchant',
+  },
+  {
+    uuid: 'e8a10003-0000-4000-8000-000000000003',
+    legacyId: 's-aydaroos',
+    name: 'مفروشات ومطابخ العيدروس',
+    aliases: ['العيدروس', 'مفروشات العيدروس', 'مفروشات ومطابخ العيدروس', 'aydaroos', 'al-aydaroos', 'alaydaroos'],
+    emailKeywords: ['aydaroos', 'alaydaroos', 'al-aydaroos'],
+    role: 'merchant',
+  },
+  {
+    uuid: '285c6c4b-8816-47b3-b68c-2e6de07df5ef',
+    legacyId: 'd3',
+    name: 'م. ريم الكثيري',
+    aliases: ['ريم الكثيري', 'م. ريم الكثيري', 'ريم', 'reem'],
+    emailKeywords: ['reem'],
+    role: 'designer',
+  },
+  {
+    uuid: '39de3472-6097-464f-a904-30756ac13a13',
+    legacyId: 'd2',
+    name: 'المعلم عبدالله بن محفوظ',
+    aliases: ['عبدالله بن محفوظ', 'المعلم عبدالله بن محفوظ', 'بن محفوظ', 'mahfouz'],
+    emailKeywords: ['mahfouz'],
+    role: 'designer',
+  },
+  {
+    uuid: 'f5664289-cdce-49d7-9aa7-6d45347ef672',
+    legacyId: 'd5',
+    name: 'م. عمر بن سميط',
+    aliases: ['عمر بن سميط', 'م. عمر بن سميط', 'بن سميط', 'omar'],
+    emailKeywords: ['omar'],
+    role: 'designer',
+  },
+  {
+    uuid: '1638aaca-8a33-43c5-846b-1e786f510386',
+    legacyId: 'd4',
+    name: 'ورشة باجابر للنجارة الحديثة والديكور',
+    aliases: ['باجابر', 'ورشة باجابر', 'bajaber'],
+    emailKeywords: ['bajaber'],
+    role: 'designer',
+  },
+];
+
+export function resolveCanonicalProvider(query?: {
+  id?: string | null;
+  email?: string | null;
+  businessName?: string | null;
+  fullName?: string | null;
+  storeId?: string | null;
+  designerId?: string | null;
+}): CanonicalProvider | null {
+  if (!query) return null;
+  const rawId = (query.id || '').trim().toLowerCase();
+  const rawEmail = (query.email || '').trim().toLowerCase();
+  const rawEmailUser = rawEmail.includes('@') ? rawEmail.split('@')[0] : rawEmail;
+  const rawBName = (query.businessName || '').trim().toLowerCase();
+  const rawFName = (query.fullName || '').trim().toLowerCase();
+  const rawStoreId = (query.storeId || '').trim().toLowerCase();
+  const rawDesignerId = (query.designerId || '').trim().toLowerCase();
+
+  // 1. Direct UUID or legacy ID matches
+  for (const p of CANONICAL_PROVIDERS) {
+    const pUuid = p.uuid.toLowerCase();
+    const pLegacy = p.legacyId.toLowerCase();
+
+    if (
+      (rawStoreId && (rawStoreId === pUuid || rawStoreId === pLegacy)) ||
+      (rawDesignerId && (rawDesignerId === pUuid || rawDesignerId === pLegacy)) ||
+      (rawId && (rawId === pUuid || rawId === pLegacy || rawId === `demo-${pLegacy}` || rawId.includes(pLegacy)))
+    ) {
+      return p;
+    }
+  }
+
+  // 2. Email or handle matching
+  if (rawEmail) {
+    for (const p of CANONICAL_PROVIDERS) {
+      if (p.emailKeywords.some((kw) => rawEmailUser === kw || rawEmail.includes(kw))) {
+        return p;
+      }
+    }
+  }
+
+  // 3. Exact or substring alias matching on businessName / fullName / rawId
+  const candidateTexts = [rawBName, rawFName, rawId].filter(Boolean);
+  for (const text of candidateTexts) {
+    for (const p of CANONICAL_PROVIDERS) {
+      const pName = p.name.toLowerCase();
+      if (text.includes(pName) || pName.includes(text)) {
+        return p;
+      }
+      for (const alias of p.aliases) {
+        const aLower = alias.toLowerCase();
+        if (text.includes(aLower) || aLower.includes(text)) {
+          return p;
+        }
+      }
+    }
+  }
+
+  return null;
+}
+
 // خريطة المعرّفات المسبقة للربط المباشر مع Supabase
 export const knownLegacyToUuid = new Map<string, string>([
   ['s-altaweel', 'e8a10001-0000-4000-8000-000000000001'],
@@ -216,15 +409,17 @@ export const knownLegacyToUuid = new Map<string, string>([
   ['s7', 'e7100a86-752b-48d5-8482-13a09c9a9401'],
   ['s8', 'ec65b6cd-afc8-49bf-93ce-0d1f05714848'],
   ['d1', '8fa7d341-2b0f-48e0-a937-2900b86a0321'],
-  ['d2', '319b0e12-45e8-477f-a2e6-76495147814b'],
+  ['d2', '39de3472-6097-464f-a904-30756ac13a13'],
   ['d3', '285c6c4b-8816-47b3-b68c-2e6de07df5ef'],
   ['d4', '1638aaca-8a33-43c5-846b-1e786f510386'],
+  ['d5', 'f5664289-cdce-49d7-9aa7-6d45347ef672'],
 ]);
 
 export const storeNameToUuidMap = new Map<string, string>([
   ['معرض الطويل للأثاث', 'e8a10001-0000-4000-8000-000000000001'],
   ['معرض هوم سنتر', 'e8a10002-0000-4000-8000-000000000002'],
   ['معرض هوم سنتر (Home Centre)', 'e8a10002-0000-4000-8000-000000000002'],
+  ['مفروشات ومطابخ العيدروس', 'e8a10003-0000-4000-8000-000000000003'],
   ['مفروشات العيدروس', 'e8a10003-0000-4000-8000-000000000003'],
   ['معرض أرض حمير للأثاث والمطابخ', '3117f43e-d0ca-41e1-82a1-7dead277af20'],
   ['مفروشات باصهيل', '19a63b7b-9e48-47b4-9143-b8542f6fe9a8'],
@@ -234,6 +429,10 @@ export const storeNameToUuidMap = new Map<string, string>([
   ['معرض النخبة للأثاث والديكور', '3b3d9526-cd59-436d-802c-d7f1fd352d76'],
   ['مفروشات بن هلابي', 'e7100a86-752b-48d5-8482-13a09c9a9401'],
   ['معرض الفخامة للأثاث', 'ec65b6cd-afc8-49bf-93ce-0d1f05714848'],
+  ['م. ريم الكثيري', '285c6c4b-8816-47b3-b68c-2e6de07df5ef'],
+  ['المعلم عبدالله بن محفوظ', '39de3472-6097-464f-a904-30756ac13a13'],
+  ['م. عمر بن سميط', 'f5664289-cdce-49d7-9aa7-6d45347ef672'],
+  ['ورشة باجابر للنجارة الحديثة والديكور', '1638aaca-8a33-43c5-846b-1e786f510386'],
 ]);
 
 export const isValidUuid = (id?: string | null): boolean => {
@@ -270,6 +469,16 @@ export const toValidUuid = (id?: string | null): string => {
   const clean = id.trim();
   if (isValidUuid(clean)) return clean;
 
+  const canonical = resolveCanonicalProvider({
+    id: clean,
+    email: clean,
+    businessName: clean,
+    fullName: clean,
+    storeId: clean,
+    designerId: clean,
+  });
+  if (canonical?.uuid) return canonical.uuid;
+
   const known = knownLegacyToUuid.get(clean.toLowerCase());
   if (known && isValidUuid(known)) return known;
 
@@ -287,6 +496,19 @@ export const toValidStoreUuid = (storeId?: string | null): string => {
   if (isValidUuid(clean)) {
     return clean;
   }
+
+  const canonical = resolveCanonicalProvider({
+    id: clean,
+    email: clean,
+    businessName: clean,
+    fullName: clean,
+    storeId: clean,
+    designerId: clean,
+  });
+  if (canonical?.uuid) {
+    return canonical.uuid;
+  }
+
   const known = knownLegacyToUuid.get(clean.toLowerCase());
   if (known && isValidUuid(known)) return known;
 

@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import type { User } from '@supabase/supabase-js';
 import { supabase } from '@/db/supabase';
+import { resolveCanonicalProvider } from '@/lib/catalogApi';
 
 export type UserRole = 'customer' | 'merchant' | 'designer';
 
@@ -414,20 +415,46 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const profile = useMemo<EwanProfile | null>(() => {
     if (demoSession) {
+      const canonical = resolveCanonicalProvider({
+        id: demoSession.id,
+        email: demoSession.email,
+        businessName: demoSession.businessName,
+        fullName: demoSession.name,
+        storeId: demoSession.storeId,
+        designerId: demoSession.designerId,
+      });
       return {
         id: demoSession.id,
         fullName: demoSession.name,
         email: demoSession.email,
         role: demoSession.role,
         businessName: demoSession.businessName,
-        storeId: demoSession.storeId,
-        designerId: demoSession.designerId,
+        storeId: canonical?.role === 'merchant' ? canonical.uuid : demoSession.storeId,
+        designerId: canonical?.role === 'designer' ? canonical.uuid : demoSession.designerId,
         specialty: demoSession.badge,
       };
     }
     if (adminSession) return ADMIN_PROFILE;
     const base = toProfile(user);
     if (base && base.email.toLowerCase() === ADMIN_EMAIL) return ADMIN_PROFILE;
+    if (base) {
+      const canonical = resolveCanonicalProvider({
+        id: base.id,
+        email: base.email,
+        businessName: base.businessName,
+        fullName: base.fullName,
+      });
+      if (canonical) {
+        return {
+          ...base,
+          role: base.role === 'customer' ? canonical.role : base.role,
+          storeId: canonical.role === 'merchant' ? canonical.uuid : undefined,
+          designerId: canonical.role === 'designer' ? canonical.uuid : undefined,
+          businessName: base.businessName || canonical.name,
+          specialty: base.specialty || canonical.name,
+        };
+      }
+    }
     return base;
   }, [demoSession, adminSession, user]);
 
