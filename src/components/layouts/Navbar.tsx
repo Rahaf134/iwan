@@ -227,7 +227,26 @@ export const Navbar = () => {
                         طلباتي وتتبع الشحنات
                       </Link>
                     </li>
-                    {(isAdmin || isProvider) && (
+                    {isProvider && (
+                      <li>
+                        <NavLink
+                          to="/provider"
+                          onClick={() => setMobileOpen(false)}
+                          className={({ isActive }) =>
+                            cn(
+                              'flex min-h-12 items-center gap-2 rounded-full px-4 text-sm font-medium transition-colors',
+                              isActive
+                                ? 'bg-[#9C6644] text-white'
+                                : 'text-[#9C6644] hover:bg-[#F3EDE2]',
+                            )
+                          }
+                        >
+                          <LayoutDashboard className="h-4 w-4" strokeWidth={1.6} />
+                          لوحة تحكم المعرض/المصمم
+                        </NavLink>
+                      </li>
+                    )}
+                    {isAdmin && (
                       <li>
                         <NavLink
                           to="/admin"
@@ -242,7 +261,7 @@ export const Navbar = () => {
                           }
                         >
                           <LayoutDashboard className="h-4 w-4" strokeWidth={1.6} />
-                          لوحة التحكم
+                          لوحة إشراف الإدارة
                         </NavLink>
                       </li>
                     )}

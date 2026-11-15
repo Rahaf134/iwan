@@ -33,7 +33,7 @@ import {
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
-import { DEMO_ACCOUNTS, useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { useCatalog } from '@/contexts/CatalogContext';
 import { useChat, type ChatMessage } from '@/contexts/ChatContext';
 import { categories, formatPrice } from '@/data/catalog';
@@ -105,7 +105,7 @@ const compressImage = (file: File): Promise<string> =>
   });
 
 export const ProviderDashboardPage = () => {
-  const { profile, signOut, quickLogin } = useAuth();
+  const { profile, signOut } = useAuth();
   const {
     products,
     stores,
@@ -118,6 +118,13 @@ export const ProviderDashboardPage = () => {
   } = useCatalog();
   const { threads, refreshChats, sendReply, markThreadAsRead } = useChat();
   const navigate = useNavigate();
+
+  // عزل مشدد: منع العملاء من البقاء في لوحة المزود وإعادتهم فوراً للصفحة الرئيسية
+  useEffect(() => {
+    if (profile && profile.role === 'customer') {
+      navigate('/', { replace: true });
+    }
+  }, [profile, navigate]);
 
   const [activeTab, setActiveTab] = useState<ProviderTab>('products');
   const [productModalOpen, setProductModalOpen] = useState(false);
@@ -720,41 +727,22 @@ export const ProviderDashboardPage = () => {
           <div className="mx-auto w-full max-w-7xl px-4 py-4 sm:px-6 md:px-8">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="font-display text-xl sm:text-2xl font-bold text-[#231F1E]">
-                  {providerEntityName}
-                </h1>
+                <div className="flex items-center gap-2.5">
+                  <h1 className="font-display text-xl sm:text-2xl font-bold text-[#231F1E]">
+                    {providerEntityName}
+                  </h1>
+                  <span className="inline-flex items-center rounded-full bg-[#E5DEC9] px-2.5 py-0.5 text-xs font-semibold text-[#8C4A32]">
+                    {profile?.role === 'designer' ? 'مصمم معتمد' : 'معرض معتمد'}
+                  </span>
+                </div>
+                {profile?.email && (
+                  <p className="text-xs text-[#786C65] mt-0.5 font-mono">
+                    {profile.email}
+                  </p>
+                )}
               </div>
 
               <div className="flex items-center gap-2">
-                {/* قائمة سريعة لتبديل المعرض / الحساب بسهولة تامة دون تسجيل الخروج */}
-                <div className="flex items-center gap-1.5">
-                  <Select
-                    value={
-                      canonical?.legacyId
-                        ? `demo-${canonical.legacyId.replace('s-', '').replace('d-', '')}`
-                        : profile?.id || 'demo-homecentre'
-                    }
-                    onValueChange={(val) => {
-                      const acc = DEMO_ACCOUNTS.find((a) => a.id === val);
-                      if (acc) {
-                        quickLogin(acc);
-                        toast.success(`تم التبديل إلى: ${acc.name}`);
-                      }
-                    }}
-                  >
-                    <SelectTrigger className="h-9 w-[170px] sm:w-[210px] rounded-full border-[#DED4C6] bg-[#FAF7F2] text-xs font-bold text-[#231F1E]">
-                      <SelectValue placeholder="تبديل المعرض" />
-                    </SelectTrigger>
-                    <SelectContent className="rounded-2xl border-[#E5DEC9] bg-[#FAF7F2]">
-                      {DEMO_ACCOUNTS.filter((a) => a.role === 'merchant' || a.role === 'designer').map((acc) => (
-                        <SelectItem key={acc.id} value={acc.id} className="text-xs">
-                          {acc.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
                 <Button
                   variant="ghost"
                   onClick={() => {

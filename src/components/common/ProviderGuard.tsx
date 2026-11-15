@@ -2,9 +2,9 @@ import type { ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 
-/** يحمي لوحة تحكم المزود: لا يصلها إلا مزود معتمد */
+/** يحمي لوحة تحكم المزود: لا يصلها إلا مزود معتمد (معرض أو مصمم) */
 export const ProviderGuard = ({ children }: { children: ReactNode }) => {
-  const { isProvider, isAdmin, loading } = useAuth();
+  const { isProvider, isAdmin, profile, loading } = useAuth();
 
   if (loading) {
     return (
@@ -14,14 +14,14 @@ export const ProviderGuard = ({ children }: { children: ReactNode }) => {
     );
   }
 
-  // إذا كان آدمن، نوجهه للوحة الآدمن
+  // إذا كان آدمن فقط، نوجهه للوحة الآدمن
   if (isAdmin && !isProvider) {
     return <Navigate to="/admin" replace />;
   }
 
-  // إذا لم يكن مزوداً، نوجهه لصفحة الدخول
-  if (!isProvider) {
-    return <Navigate to="/login" replace />;
+  // إذا كان عميلاً (customer) أو زائراً غير مسجل أو ليس مزوداً، نوجهه فوراً للصفحة الرئيسية
+  if (!isProvider || !profile || profile.role === 'customer') {
+    return <Navigate to="/" replace />;
   }
 
   return <>{children}</>;
