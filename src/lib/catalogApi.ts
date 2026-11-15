@@ -460,11 +460,24 @@ export const toDeterministicUuid = (code: string): string => {
   return `00000000-0000-4000-8000-${hex}`;
 };
 
+export const generateUuid = (): string => {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    try {
+      return crypto.randomUUID();
+    } catch {
+      // fallback below
+    }
+  }
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+};
+
 export const toValidUuid = (id?: string | null): string => {
   if (!id || !id.trim()) {
-    return typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
-      ? crypto.randomUUID()
-      : '00000000-0000-4000-8000-000000000001';
+    return generateUuid();
   }
   const clean = id.trim();
   if (isValidUuid(clean)) return clean;
@@ -488,11 +501,28 @@ export const toValidUuid = (id?: string | null): string => {
   return toDeterministicUuid(clean);
 };
 
+export const VALID_STORE_UUIDS = new Set([
+  'e8a10002-0000-4000-8000-000000000002', // هوم سنتر
+  'e8a10001-0000-4000-8000-000000000001', // الطويل
+  'e8a10003-0000-4000-8000-000000000003', // العيدروس
+  '3117f43e-d0ca-41e1-82a1-7dead277af20', // أرض حمير
+  '19a63b7b-9e48-47b4-9143-b8542f6fe9a8', // باصهيل
+  '7e6b4eaf-0b9f-48ce-9b9b-b27fd2d6f87c', // بن دول
+  'bb034e56-54b2-4c5b-b15d-4602d49bb90d', // الحضرمي
+  'c913879b-4070-459d-b3ad-7c7a0909d514', // القصر العصري
+  '3b3d9526-cd59-436d-802c-d7f1fd352d76', // النخبة
+  'e7100a86-752b-48d5-8482-13a09c9a9401', // بن هلابي
+  'ec65b6cd-afc8-49bf-93ce-0d1f05714848', // الفخامة
+]);
+
 export const toValidStoreUuid = (storeId?: string | null): string => {
   if (!storeId || !storeId.trim()) {
-    return '3117f43e-d0ca-41e1-82a1-7dead277af20';
+    return 'e8a10002-0000-4000-8000-000000000002';
   }
   const clean = storeId.trim();
+  if (VALID_STORE_UUIDS.has(clean.toLowerCase())) {
+    return clean;
+  }
   if (isValidUuid(clean)) {
     return clean;
   }
@@ -505,23 +535,23 @@ export const toValidStoreUuid = (storeId?: string | null): string => {
     storeId: clean,
     designerId: clean,
   });
-  if (canonical?.uuid) {
+  if (canonical?.uuid && VALID_STORE_UUIDS.has(canonical.uuid)) {
     return canonical.uuid;
   }
 
   const known = knownLegacyToUuid.get(clean.toLowerCase());
-  if (known && isValidUuid(known)) return known;
+  if (known && isValidUuid(known) && VALID_STORE_UUIDS.has(known)) return known;
 
   const byName = storeNameToUuidMap.get(clean);
-  if (byName && isValidUuid(byName)) return byName;
+  if (byName && isValidUuid(byName) && VALID_STORE_UUIDS.has(byName)) return byName;
 
   for (const [name, uuid] of storeNameToUuidMap.entries()) {
     if (name.includes(clean) || clean.includes(name)) {
-      return uuid;
+      if (VALID_STORE_UUIDS.has(uuid)) return uuid;
     }
   }
 
-  return '3117f43e-d0ca-41e1-82a1-7dead277af20';
+  return 'e8a10002-0000-4000-8000-000000000002';
 };
 
 export const fallbackStores: StoreRecord[] = seedStores.map((store) => {
@@ -769,16 +799,23 @@ export async function fetchRequests(): Promise<RequestRecordFull[]> {
 }
 
 const productRow = (input: ProductInput) => {
-  const safeSlug =
+  let safeSlug =
     input.slug && input.slug.trim() && input.slug.trim() !== '-'
       ? input.slug.trim()
       : slugify(input.name);
+
+  if (!safeSlug || safeSlug.length < 3 || safeSlug === '-') {
+    safeSlug = `piece-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
+  }
+
+  const rawPrice = Number(input.price);
+  const safePrice = isNaN(rawPrice) || rawPrice <= 0 ? 10000 : rawPrice;
 
   return {
     slug: safeSlug,
     name: input.name,
     category: input.category,
-    price: input.price,
+    price: safePrice,
     compare_at: input.compareAt,
     description: input.description,
     dimensions: input.dimensions,
@@ -794,12 +831,21 @@ const productRow = (input: ProductInput) => {
 };
 
 export async function insertProduct(input: ProductInput) {
-  const row = {
-    ...productRow(input),
-    id: toValidUuid(),
-  };
+  const row = productRow(input);
+  // ندع Supabase يولد المعرف الأساسي gen_random_uuid() تلقائياً لمنع أي تعارض pkey
   const { error } = await supabase.from('products').insert(row);
-  if (error) throw new Error(error.message);
+  if (error) {
+    if (error.message.includes('products_slug_key')) {
+      const retrySlug = `${row.slug}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
+      const { error: retryErr } = await supabase.from('products').insert({
+        ...row,
+        slug: retrySlug,
+      });
+      if (retryErr) throw new Error(retryErr.message);
+      return;
+    }
+    throw new Error(error.message);
+  }
 }
 
 export async function updateProductRow(dbId: string, input: ProductInput) {

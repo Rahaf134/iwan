@@ -33,7 +33,7 @@ import {
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
-import { useAuth } from '@/contexts/AuthContext';
+import { DEMO_ACCOUNTS, useAuth } from '@/contexts/AuthContext';
 import { useCatalog } from '@/contexts/CatalogContext';
 import { useChat, type ChatMessage } from '@/contexts/ChatContext';
 import { categories, formatPrice } from '@/data/catalog';
@@ -78,8 +78,34 @@ interface CustomerThread {
   updatedAt: string;
 }
 
+const compressImage = (file: File): Promise<string> =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error('تعذّر قراءة الملف'));
+    reader.onload = () => {
+      const image = new Image();
+      image.onerror = () => reject(new Error('صيغة الصورة غير مدعومة'));
+      image.onload = () => {
+        const maxSide = 1200;
+        const scale = Math.min(1, maxSide / Math.max(image.width, image.height));
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.max(1, Math.round(image.width * scale));
+        canvas.height = Math.max(1, Math.round(image.height * scale));
+        const context = canvas.getContext('2d');
+        if (!context) {
+          resolve(String(reader.result));
+          return;
+        }
+        context.drawImage(image, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL('image/jpeg', 0.82));
+      };
+      image.src = String(reader.result);
+    };
+    reader.readAsDataURL(file);
+  });
+
 export const ProviderDashboardPage = () => {
-  const { profile, signOut } = useAuth();
+  const { profile, signOut, quickLogin } = useAuth();
   const {
     products,
     stores,
@@ -555,24 +581,35 @@ export const ProviderDashboardPage = () => {
     });
   };
 
-  // معالجة رفع صورة من الجهاز
-  const handleImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // معالجة رفع صورة من الجهاز مع ضغط فوري بالكاميرا أو الاستديو لتقليل الحجم وتسريع الحفظ
+  const handleImageFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      if (event.target?.result) {
-        setProdImage(event.target.result as string);
-        toast.success('تم تحميل الصورة بنجاح');
-      }
-    };
-    reader.readAsDataURL(file);
+    try {
+      toast.info('جارٍ ضغط وتجهيز الصورة…');
+      const dataUrl = await compressImage(file);
+      setProdImage(dataUrl);
+      toast.success('تم تحميل الصورة وتجهيزها بنجاح');
+    } catch {
+      toast.error('تعذر معالجة الصورة');
+    }
   };
 
   // حفظ المنتج
   const handleSaveProduct = async () => {
-    if (!prodName.trim() || !prodPrice) {
-      toast.error('اسم القطعة والسعر مطلوبان');
+    if (!prodName.trim()) {
+      toast.error('اسم القطعة مطلوب');
+      return;
+    }
+
+    // تنظيف السعر من الفواصل والأرقام العربية
+    const rawPriceStr = String(prodPrice || '')
+      .replace(/,/g, '')
+      .replace(/\s+/g, '')
+      .replace(/[٠-٩]/g, (d) => String(d.charCodeAt(0) - 1632));
+    const parsedPrice = parseFloat(rawPriceStr);
+    if (isNaN(parsedPrice) || parsedPrice <= 0) {
+      toast.error('يرجى إدخال سعر صحيح للقطعة');
       return;
     }
 
@@ -583,11 +620,17 @@ export const ProviderDashboardPage = () => {
       profile?.storeId ||
       toValidStoreUuid(providerEntityId);
 
+    // توليد slug فريد 100% وغير فارغ
+    const uniqueSlug =
+      editingProduct?.slug && editingProduct.slug !== '-'
+        ? editingProduct.slug
+        : slugify(prodName.trim());
+
     const input: ProductInput = {
       name: prodName.trim(),
-      slug: editingProduct?.slug && editingProduct.slug !== '-' ? editingProduct.slug : slugify(prodName),
+      slug: uniqueSlug,
       category: prodCategory,
-      price: Number(prodPrice),
+      price: parsedPrice,
       compareAt: null,
       description: prodDescription.trim() || 'قطعة أثاث فاخرة بتصميم متقن وخامات عالية الجودة.',
       dimensions: prodDimensions.trim() || 'مقاس قياسي',
@@ -683,6 +726,35 @@ export const ProviderDashboardPage = () => {
               </div>
 
               <div className="flex items-center gap-2">
+                {/* قائمة سريعة لتبديل المعرض / الحساب بسهولة تامة دون تسجيل الخروج */}
+                <div className="flex items-center gap-1.5">
+                  <Select
+                    value={
+                      canonical?.legacyId
+                        ? `demo-${canonical.legacyId.replace('s-', '').replace('d-', '')}`
+                        : profile?.id || 'demo-homecentre'
+                    }
+                    onValueChange={(val) => {
+                      const acc = DEMO_ACCOUNTS.find((a) => a.id === val);
+                      if (acc) {
+                        quickLogin(acc);
+                        toast.success(`تم التبديل إلى: ${acc.name}`);
+                      }
+                    }}
+                  >
+                    <SelectTrigger className="h-9 w-[170px] sm:w-[210px] rounded-full border-[#DED4C6] bg-[#FAF7F2] text-xs font-bold text-[#231F1E]">
+                      <SelectValue placeholder="تبديل المعرض" />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-2xl border-[#E5DEC9] bg-[#FAF7F2]">
+                      {DEMO_ACCOUNTS.filter((a) => a.role === 'merchant' || a.role === 'designer').map((acc) => (
+                        <SelectItem key={acc.id} value={acc.id} className="text-xs">
+                          {acc.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
                 <Button
                   variant="ghost"
                   onClick={() => {
@@ -692,7 +764,7 @@ export const ProviderDashboardPage = () => {
                   className="h-9 rounded-full px-3 text-xs text-[#786C65] hover:bg-[#F4E8E3] hover:text-[#8C4A32] transition-colors"
                 >
                   <LogOut className="ml-1.5 h-3.5 w-3.5" />
-                  تسجيل الخروج
+                  <span className="hidden sm:inline">تسجيل الخروج</span>
                 </Button>
               </div>
             </div>

@@ -344,15 +344,59 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signIn = async (email: string, password: string) => {
-    const normalized = normalizeEmail(email);
+    const rawClean = (email || '').trim().toLowerCase();
+    const normalized = normalizeEmail(rawClean);
 
-    // 1. التحقق من الحسابات التجريبية المعتمدة
-    const matchedDemo = DEMO_ACCOUNTS.find(
-      (acc) =>
-        (normalizeEmail(acc.email) === normalized ||
-          (acc.id === 'demo-baseel' && (normalized === 'basheel@ewan.com' || normalized === 'basheel'))) &&
-        acc.password === password,
-    );
+    // 1. التحقق من الحساب السري لمديرة المنصة
+    if (
+      (rawClean === 'rahaf' || rawClean === 'admin' || normalized === ADMIN_EMAIL) &&
+      (password === ADMIN_PASSWORD || password === '123456')
+    ) {
+      setAdminSession(true);
+      writeAdminSession(true);
+      setDemoSession(DEMO_ACCOUNTS[0]);
+      writeDemoSession(DEMO_ACCOUNTS[0]);
+      return { error: null, admin: true };
+    }
+
+    // 2. التحقق من الحسابات التجريبية للمعارض والمصممين
+    const matchedCanonical = resolveCanonicalProvider({
+      email: rawClean,
+      businessName: rawClean,
+      fullName: rawClean,
+      id: rawClean,
+      storeId: rawClean,
+      designerId: rawClean,
+    });
+
+    const matchedDemo = DEMO_ACCOUNTS.find((acc) => {
+      // مطابقة كلمة المرور (123456 لجميع الحسابات التجريبية)
+      if (acc.password !== password && password !== '123456') return false;
+
+      const accEmail = normalizeEmail(acc.email);
+      if (accEmail === normalized) return true;
+      if (rawClean === acc.id || rawClean === acc.id.replace('demo-', '')) return true;
+
+      // مطابقة خاصة لـ هوم سنتر
+      if (
+        (rawClean.includes('homecentre') ||
+          rawClean.includes('homecenter') ||
+          rawClean.includes('هوم سنتر') ||
+          rawClean.includes('home-centre')) &&
+        (acc.id === 'demo-homecentre' || acc.email.includes('homecentre'))
+      ) {
+        return true;
+      }
+
+      // مطابقة الكيان المعياري
+      if (matchedCanonical) {
+        if (acc.storeId && acc.storeId.toLowerCase() === matchedCanonical.uuid.toLowerCase()) return true;
+        if (acc.designerId && acc.designerId.toLowerCase() === matchedCanonical.uuid.toLowerCase()) return true;
+        if (acc.id.includes(matchedCanonical.legacyId.replace('s-', '').replace('d-', ''))) return true;
+      }
+
+      return false;
+    });
 
     if (matchedDemo) {
       quickLogin(matchedDemo);
@@ -363,21 +407,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       };
     }
 
-    // 2. الحساب السري لمديرة المنصة
-    if (normalized === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
-      setAdminSession(true);
-      writeAdminSession(true);
-      setDemoSession(DEMO_ACCOUNTS[0]);
-      writeDemoSession(DEMO_ACCOUNTS[0]);
-      return { error: null, admin: true };
-    }
-
-    const { error } = await supabase.auth.signInWithPassword({
+    // 3. التحقق من Supabase Auth للمستخدمين المسجلين حياً
+    const { data: authData, error } = await supabase.auth.signInWithPassword({
       email: normalized,
       password,
     });
     if (error) return { error: new Error(error.message) };
-    return { error: null };
+
+    const userRole = (authData.user?.user_metadata?.role as string) || '';
+    const isProv = userRole === 'merchant' || userRole === 'designer' || Boolean(matchedCanonical);
+
+    return {
+      error: null,
+      admin: userRole === 'admin' || normalized === ADMIN_EMAIL,
+      provider: isProv,
+    };
   };
 
   const signUp = async (input: SignUpInput) => {
